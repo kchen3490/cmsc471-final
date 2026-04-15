@@ -1,0 +1,42 @@
+body {
+  background: #222;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+svg {
+  background: #1a4a6e;
+  border-radius: 50%;
+}
+.hex {
+  stroke: #fff;
+  stroke-width: 2px;
+}
+.label {
+  fill: black;
+  font-family: sans-serif;
+  font-weight: bold;
+  text-anchor: middle;
+  pointer-events: none;
+}
+/* Resource Colors */
+.type-0 {
+  fill: #d2b48c;
+} /* Desert */
+.type-1 {
+  fill: #228b22;
+} /* Wood */
+.type-2 {
+  fill: #8b4513;
+} /* Brick */
+.type-3 {
+  fill: #90ee90;
+} /* Sheep */
+.type-4 {
+  fill: #ffd700;
+} /* Wheat */
+.type-5 {
+  fill: #808080;
+} /* Ore */

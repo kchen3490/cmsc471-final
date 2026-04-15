@@ -1,0 +1,5755 @@
+{
+  "data": {
+    "eventHistory": {
+      "events": [
+        {
+          "input": { "deltaS": 57.9 },
+          "stateChange": {
+            "mapState": {
+              "tileCornerStates": { "33": { "owner": 3, "buildingType": 1 } }
+            },
+            "currentState": {
+              "startTime": 1765499155415,
+              "actionState": 3,
+              "allocatedTime": 15
+            },
+            "gameLogState": {
+              "2": {
+                "from": 3,
+                "text": { "type": 4, "pieceEnum": 2, "playerColor": 3 }
+              }
+            },
+            "playerStates": { "3": { "victoryPointsState": { "0": 1 } } },
+            "mechanicSettlementState": { "3": { "bankSettlementAmount": 4 } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.9 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "67": { "type": 1, "owner": 3 } }
+            },
+            "currentState": {
+              "startTime": 1765499156283,
+              "actionState": 1,
+              "allocatedTime": 60,
+              "completedTurns": 1,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": {
+              "3": {
+                "from": 3,
+                "text": { "type": 4, "pieceEnum": 0, "playerColor": 3 }
+              },
+              "4": { "text": { "type": 44 } }
+            },
+            "mechanicRoadState": { "3": { "bankRoadAmount": 14 } },
+            "mechanicLongestRoadState": { "3": { "longestRoad": 1 } }
+          }
+        },
+        {
+          "input": { "deltaS": 47.8 },
+          "stateChange": {
+            "mapState": {
+              "tileCornerStates": { "14": { "owner": 2, "buildingType": 1 } }
+            },
+            "currentState": {
+              "startTime": 1765499204049,
+              "actionState": 3,
+              "allocatedTime": 15
+            },
+            "gameLogState": {
+              "5": {
+                "from": 2,
+                "text": { "type": 4, "pieceEnum": 2, "playerColor": 2 }
+              }
+            },
+            "playerStates": { "2": { "victoryPointsState": { "0": 1 } } },
+            "mechanicSettlementState": { "2": { "bankSettlementAmount": 4 } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.9 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "64": { "type": 1, "owner": 2 } }
+            },
+            "currentState": {
+              "startTime": 1765499205009,
+              "actionState": 1,
+              "allocatedTime": 60,
+              "completedTurns": 2
+            },
+            "gameLogState": {
+              "6": {
+                "from": 2,
+                "text": { "type": 4, "pieceEnum": 0, "playerColor": 2 }
+              },
+              "7": { "text": { "type": 44 } }
+            },
+            "mechanicRoadState": { "2": { "bankRoadAmount": 14 } },
+            "mechanicLongestRoadState": { "2": { "longestRoad": 1 } }
+          }
+        },
+        {
+          "input": { "deltaS": 5.1 },
+          "stateChange": {
+            "mapState": {
+              "tileCornerStates": { "23": { "owner": 2, "buildingType": 1 } }
+            },
+            "bankState": { "resourceCards": { "1": 17, "4": 18 } },
+            "currentState": {
+              "startTime": 1765499210165,
+              "actionState": 3,
+              "allocatedTime": 15
+            },
+            "gameLogState": {
+              "8": {
+                "from": 2,
+                "text": { "type": 4, "pieceEnum": 2, "playerColor": 2 }
+              },
+              "9": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [1, 4, 1],
+                  "distributionType": 0
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [1, 4, 1] },
+                "victoryPointsState": { "0": 2 }
+              }
+            },
+            "mechanicSettlementState": { "2": { "bankSettlementAmount": 3 } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.9 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "27": { "type": 1, "owner": 2 } }
+            },
+            "currentState": {
+              "startTime": 1765499211034,
+              "actionState": 1,
+              "allocatedTime": 60,
+              "completedTurns": 3,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": {
+              "10": {
+                "from": 2,
+                "text": { "type": 4, "pieceEnum": 0, "playerColor": 2 }
+              },
+              "11": { "text": { "type": 44 } }
+            },
+            "mechanicRoadState": { "2": { "bankRoadAmount": 13 } }
+          }
+        },
+        {
+          "input": { "deltaS": 7.5 },
+          "stateChange": {
+            "mapState": {
+              "tileCornerStates": { "44": { "owner": 3, "buildingType": 1 } }
+            },
+            "bankState": { "resourceCards": { "3": 18, "4": 16 } },
+            "currentState": {
+              "startTime": 1765499218571,
+              "actionState": 3,
+              "allocatedTime": 15
+            },
+            "gameLogState": {
+              "12": {
+                "from": 3,
+                "text": { "type": 4, "pieceEnum": 2, "playerColor": 3 }
+              },
+              "13": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [4, 3, 4],
+                  "distributionType": 0
+                }
+              }
+            },
+            "playerStates": {
+              "3": {
+                "resourceCards": { "cards": [4, 3, 4] },
+                "victoryPointsState": { "0": 2 }
+              }
+            },
+            "mechanicSettlementState": { "3": { "bankSettlementAmount": 3 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.2 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "53": { "type": 1, "owner": 3 } }
+            },
+            "currentState": {
+              "startTime": 1765499219794,
+              "turnState": 1,
+              "actionState": 0,
+              "allocatedTime": 3,
+              "completedTurns": 4
+            },
+            "gameLogState": {
+              "14": {
+                "from": 3,
+                "text": { "type": 4, "pieceEnum": 0, "playerColor": 3 }
+              },
+              "15": { "text": { "type": 44 } }
+            },
+            "mechanicRoadState": { "3": { "bankRoadAmount": 13 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.1 },
+          "stateChange": {
+            "diceState": { "dice1": 5, "dice2": 2, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499220861,
+              "actionState": 24,
+              "allocatedTime": 15
+            },
+            "gameLogState": {
+              "16": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 5,
+                  "secondDice": 2,
+                  "playerColor": 3
+                }
+              },
+              "17": { "text": { "all": false, "type": 60 } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2 },
+          "stateChange": {
+            "currentState": {
+              "startTime": 1765499222844,
+              "turnState": 2,
+              "actionState": 0,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "18": {
+                "from": 3,
+                "text": {
+                  "type": 11,
+                  "tileInfo": {
+                    "tileType": 3,
+                    "diceNumber": 3,
+                    "resourceType": 3
+                  },
+                  "pieceEnum": 5,
+                  "playerColor": 3
+                }
+              },
+              "19": { "from": 3, "text": { "type": 74 } }
+            },
+            "mechanicRobberState": { "locationTileIndex": 4 }
+          }
+        },
+        {
+          "input": { "deltaS": 1.1 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499223952,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 5,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "20": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 15 } },
+            "diceState": { "dice1": 2, "dice2": 3, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499225686,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "21": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 2,
+                  "secondDice": 3,
+                  "playerColor": 2
+                }
+              },
+              "22": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              },
+              "23": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [1, 4, 1, 1] } },
+              "3": { "resourceCards": { "cards": [4, 3, 4, 1] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.4 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499227081,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 6,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "24": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 14, "4": 15 } },
+            "diceState": { "dice1": 3, "dice2": 5, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499227756,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "25": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 3,
+                  "secondDice": 5,
+                  "playerColor": 3
+                }
+              },
+              "26": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              },
+              "27": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [4],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [1, 4, 1, 1, 1] } },
+              "3": { "resourceCards": { "cards": [4, 3, 4, 1, 4] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.1 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499228816,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 7,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "28": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.1 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 12 } },
+            "diceState": { "dice1": 4, "dice2": 1, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499228954,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "29": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 4,
+                  "secondDice": 1,
+                  "playerColor": 2
+                }
+              },
+              "30": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              },
+              "31": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [1, 4, 1, 1, 1, 1] } },
+              "3": { "resourceCards": { "cards": [4, 3, 4, 1, 4, 1] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.7 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499230656,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 8,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "32": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 18, "5": 18 } },
+            "diceState": { "dice1": 3, "dice2": 3, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499231355,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "33": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 3,
+                  "secondDice": 3,
+                  "playerColor": 3
+                }
+              },
+              "34": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [2],
+                  "distributionType": 1
+                }
+              },
+              "35": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [5],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [1, 4, 1, 1, 1, 1, 2] } },
+              "3": { "resourceCards": { "cards": [4, 3, 4, 1, 4, 1, 5] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.7 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499234107,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 9,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "36": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.7 },
+          "stateChange": {
+            "diceState": { "dice1": 2, "dice2": 5, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499234838,
+              "actionState": 24,
+              "allocatedTime": 15
+            },
+            "gameLogState": {
+              "37": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 2,
+                  "secondDice": 5,
+                  "playerColor": 2
+                }
+              },
+              "38": { "text": { "all": false, "type": 60 } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2 },
+          "stateChange": {
+            "currentState": {
+              "startTime": 1765499236892,
+              "turnState": 2,
+              "actionState": 0,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "39": {
+                "from": 2,
+                "text": {
+                  "type": 11,
+                  "tileInfo": {
+                    "tileType": 3,
+                    "diceNumber": 12,
+                    "resourceType": 3
+                  },
+                  "pieceEnum": 5,
+                  "playerColor": 2
+                }
+              },
+              "40": { "from": 2, "text": { "type": 74 } }
+            },
+            "mechanicRobberState": { "locationTileIndex": 8 }
+          }
+        },
+        {
+          "input": { "deltaS": 6.1 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "63": { "type": 1, "owner": 2 } }
+            },
+            "bankState": { "resourceCards": { "1": 13, "2": 19 } },
+            "currentState": { "allocatedTime": 35 },
+            "gameLogState": {
+              "41": {
+                "from": 2,
+                "text": {
+                  "isVp": false,
+                  "type": 5,
+                  "pieceEnum": 0,
+                  "playerColor": 2
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 1, 1, 1, 1] } }
+            },
+            "mechanicRoadState": { "2": { "bankRoadAmount": 12 } },
+            "mechanicLongestRoadState": { "2": { "longestRoad": 2 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.6 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499244636,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 10,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "42": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.7 },
+          "stateChange": {
+            "diceState": { "dice1": 6, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499245307,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "43": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 6,
+                  "secondDice": 5,
+                  "playerColor": 3
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.1 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499246397,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 11,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "44": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.1 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 11 } },
+            "diceState": { "dice1": 3, "dice2": 2, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499246528,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "45": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 3,
+                  "secondDice": 2,
+                  "playerColor": 2
+                }
+              },
+              "46": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              },
+              "47": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 1, 1, 1, 1, 1] } },
+              "3": { "resourceCards": { "cards": [4, 3, 4, 1, 4, 1, 5, 1] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 5 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 15, "3": 17 } },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "48": {
+                "from": 2,
+                "text": {
+                  "type": 116,
+                  "playerColor": 2,
+                  "givenCardEnums": [1, 1, 1, 1],
+                  "receivedCardEnums": [3]
+                }
+              }
+            },
+            "playerStates": { "2": { "resourceCards": { "cards": [4, 1, 3] } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.8 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499252337,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 12,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "49": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "4": 14 } },
+            "diceState": { "dice1": 4, "dice2": 6, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499253007,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "50": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 4,
+                  "secondDice": 6,
+                  "playerColor": 3
+                }
+              },
+              "51": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [4],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 1, 3, 4] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.3 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 18, "4": 15, "5": 19 } },
+            "currentState": { "allocatedTime": 35 },
+            "gameLogState": {
+              "52": { "from": 3, "text": { "type": 1, "playerColor": 3 } }
+            },
+            "playerStates": {
+              "3": {
+                "resourceCards": { "cards": [4, 1, 4, 1, 1] },
+                "victoryPointsState": { "2": 1 }
+              }
+            },
+            "mechanicDevelopmentCardsState": {
+              "players": {
+                "3": {
+                  "developmentCards": { "cards": [12] },
+                  "developmentCardsBoughtThisTurn": [12]
+                }
+              },
+              "bankDevelopmentCards": {
+                "cards": [
+                  10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+                  10, 10, 10, 10, 10, 10, 10, 10, 10
+                ]
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.5 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499254782,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 13,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "53": { "text": { "type": 44 } } },
+            "mechanicDevelopmentCardsState": {
+              "players": { "3": { "developmentCardsBoughtThisTurn": null } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.2 },
+          "stateChange": {
+            "diceState": { "dice1": 6, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499255025,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "54": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 6,
+                  "secondDice": 6,
+                  "playerColor": 2
+                }
+              },
+              "55": {
+                "text": {
+                  "type": 49,
+                  "tileInfo": {
+                    "tileType": 3,
+                    "diceNumber": 12,
+                    "resourceType": 3
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.1 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499257119,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 14,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "56": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 18, "5": 18 } },
+            "diceState": { "dice1": 2, "dice2": 4, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499257806,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "57": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 2,
+                  "secondDice": 4,
+                  "playerColor": 3
+                }
+              },
+              "58": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [2],
+                  "distributionType": 1
+                }
+              },
+              "59": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [5],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 1, 3, 4, 2] } },
+              "3": { "resourceCards": { "cards": [4, 1, 4, 1, 1, 5] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.8 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499258561,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 15,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "60": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.4 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 14, "4": 14 } },
+            "diceState": { "dice2": 6, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499259006,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "61": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 2,
+                  "secondDice": 6,
+                  "playerColor": 2
+                }
+              },
+              "62": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              },
+              "63": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [4],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 1, 3, 4, 2, 1] } },
+              "3": { "resourceCards": { "cards": [4, 1, 4, 1, 1, 5, 4] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.6 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499260864,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 16,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "64": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.6 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 17, "4": 13 } },
+            "diceState": { "dice1": 1, "dice2": 3, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499261517,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "65": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 1,
+                  "secondDice": 3,
+                  "playerColor": 3
+                }
+              },
+              "66": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [2],
+                  "distributionType": 1
+                }
+              },
+              "67": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [4],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 1, 3, 4, 2, 1, 2] } },
+              "3": { "resourceCards": { "cards": [4, 1, 4, 1, 1, 5, 4, 4] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 3.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 16, "4": 17 } },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "68": {
+                "from": 3,
+                "text": {
+                  "type": 116,
+                  "playerColor": 3,
+                  "givenCardEnums": [4, 4, 4, 4],
+                  "receivedCardEnums": [2]
+                }
+              }
+            },
+            "playerStates": {
+              "3": { "resourceCards": { "cards": [1, 1, 1, 5, 2] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.1 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499267384,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 17,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "69": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 15, "4": 16 } },
+            "diceState": { "dice1": 3, "dice2": 1, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499268091,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "70": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 3,
+                  "secondDice": 1,
+                  "playerColor": 2
+                }
+              },
+              "71": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [2],
+                  "distributionType": 1
+                }
+              },
+              "72": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [4],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 1, 3, 4, 2, 1, 2, 2] } },
+              "3": { "resourceCards": { "cards": [1, 1, 1, 5, 2, 4] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 3.3 },
+          "stateChange": {
+            "mapState": {
+              "tileCornerStates": { "49": { "owner": 2, "buildingType": 1 } }
+            },
+            "bankState": {
+              "resourceCards": { "1": 15, "2": 16, "3": 19, "4": 17 }
+            },
+            "currentState": { "allocatedTime": 35 },
+            "gameLogState": {
+              "73": {
+                "from": 2,
+                "text": {
+                  "isVp": true,
+                  "type": 5,
+                  "pieceEnum": 2,
+                  "playerColor": 2
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [4, 1, 2, 2] },
+                "victoryPointsState": { "0": 3 }
+              }
+            },
+            "mechanicSettlementState": { "2": { "bankSettlementAmount": 2 } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.9 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499272239,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 18,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "74": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 15, "4": 16 } },
+            "diceState": { "dice1": 2, "dice2": 2, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499272950,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "75": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 2,
+                  "secondDice": 2,
+                  "playerColor": 3
+                }
+              },
+              "76": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [2],
+                  "distributionType": 1
+                }
+              },
+              "77": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [4],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 1, 2, 2, 2] } },
+              "3": { "resourceCards": { "cards": [1, 1, 1, 5, 2, 4, 4] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.4 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499274310,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 19,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "78": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.6 },
+          "stateChange": {
+            "diceState": { "dice1": 3, "dice2": 4, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499274925,
+              "actionState": 24,
+              "allocatedTime": 15
+            },
+            "gameLogState": {
+              "79": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 3,
+                  "secondDice": 4,
+                  "playerColor": 2
+                }
+              },
+              "80": { "text": { "all": false, "type": 60 } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.4 },
+          "stateChange": {
+            "currentState": {
+              "startTime": 1765499277359,
+              "turnState": 2,
+              "actionState": 0,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "81": {
+                "from": 2,
+                "text": {
+                  "type": 11,
+                  "tileInfo": {
+                    "tileType": 4,
+                    "diceNumber": 11,
+                    "resourceType": 4
+                  },
+                  "pieceEnum": 5,
+                  "playerColor": 2
+                }
+              },
+              "82": { "from": 2, "text": { "type": 74 } }
+            },
+            "mechanicRobberState": { "locationTileIndex": 9 }
+          }
+        },
+        {
+          "input": { "deltaS": 10.5 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "28": { "type": 1, "owner": 2 } }
+            },
+            "bankState": { "resourceCards": { "1": 16, "2": 16 } },
+            "currentState": { "allocatedTime": 35 },
+            "gameLogState": {
+              "83": {
+                "from": 2,
+                "text": {
+                  "isVp": false,
+                  "type": 5,
+                  "pieceEnum": 0,
+                  "playerColor": 2
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 2, 2] } }
+            },
+            "mechanicRoadState": { "2": { "bankRoadAmount": 11 } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.9 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499288820,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 20,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "84": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.6 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 18 } },
+            "diceState": { "dice1": 1, "dice2": 2, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499289450,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "85": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 1,
+                  "secondDice": 2,
+                  "playerColor": 3
+                }
+              },
+              "86": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [3],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "3": { "resourceCards": { "cards": [1, 1, 1, 5, 2, 4, 4, 3] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.3 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499290800,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 21,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "87": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.2 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 17, "4": 15 } },
+            "diceState": { "dice1": 5, "dice2": 5, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499290964,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "88": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 5,
+                  "secondDice": 5,
+                  "playerColor": 2
+                }
+              },
+              "89": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [4, 3],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 2, 2, 4, 3] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.1 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499292091,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 22,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "90": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 15, "5": 16 } },
+            "diceState": { "dice1": 6, "dice2": 3, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499292792,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "91": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 6,
+                  "secondDice": 3,
+                  "playerColor": 3
+                }
+              },
+              "92": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [5, 5],
+                  "distributionType": 1
+                }
+              },
+              "93": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 2, 2, 4, 3, 5, 5] } },
+              "3": { "resourceCards": { "cards": [1, 1, 1, 5, 2, 4, 4, 3, 1] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 3.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 19, "2": 15 } },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "94": {
+                "from": 3,
+                "text": {
+                  "type": 116,
+                  "playerColor": 3,
+                  "givenCardEnums": [1, 1, 1, 1],
+                  "receivedCardEnums": [2]
+                }
+              }
+            },
+            "playerStates": {
+              "3": { "resourceCards": { "cards": [5, 2, 4, 4, 3, 2] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.6 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499297137,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 23,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "95": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.2 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 18, "4": 14 } },
+            "diceState": { "dice1": 4, "dice2": 4, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499297308,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "96": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 4,
+                  "secondDice": 4,
+                  "playerColor": 2
+                }
+              },
+              "97": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              },
+              "98": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [4],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 2, 2, 4, 3, 5, 5, 1] } },
+              "3": { "resourceCards": { "cards": [5, 2, 4, 4, 3, 2, 4] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.7 },
+          "stateChange": {
+            "mapState": {
+              "portEdgeStates": { "2": { "owner": 2 } },
+              "tileCornerStates": { "25": { "owner": 2, "buildingType": 1 } }
+            },
+            "bankState": {
+              "resourceCards": { "1": 19, "2": 16, "3": 18, "4": 15 }
+            },
+            "currentState": { "allocatedTime": 35 },
+            "gameLogState": {
+              "99": {
+                "from": 2,
+                "text": {
+                  "isVp": true,
+                  "type": 5,
+                  "pieceEnum": 2,
+                  "playerColor": 2
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [2, 4, 5, 5] },
+                "victoryPointsState": { "0": 4 },
+                "bankTradeRatiosState": { "2": 2 }
+              }
+            },
+            "mechanicSettlementState": { "2": { "bankSettlementAmount": 1 } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.9 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499299941,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 24,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "100": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.6 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 15, "5": 15 } },
+            "diceState": { "dice1": 5, "dice2": 1, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499300549,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "101": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 5,
+                  "secondDice": 1,
+                  "playerColor": 3
+                }
+              },
+              "102": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [2],
+                  "distributionType": 1
+                }
+              },
+              "103": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [5],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [2, 4, 5, 5, 2] } },
+              "3": { "resourceCards": { "cards": [5, 2, 4, 4, 3, 2, 4, 5] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.1 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499302688,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 25,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "104": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.1 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 14 } },
+            "diceState": { "dice2": 6, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499303832,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "105": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 5,
+                  "secondDice": 6,
+                  "playerColor": 2
+                }
+              },
+              "106": {
+                "text": {
+                  "type": 49,
+                  "tileInfo": {
+                    "tileType": 4,
+                    "diceNumber": 11,
+                    "resourceType": 4
+                  }
+                }
+              },
+              "107": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [2],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [2, 4, 5, 5, 2, 2] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.9 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499305794,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 26,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "108": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.7 },
+          "stateChange": {
+            "diceState": { "dice1": 1, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499306482,
+              "actionState": 24,
+              "allocatedTime": 15
+            },
+            "gameLogState": {
+              "109": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 1,
+                  "secondDice": 6,
+                  "playerColor": 3
+                }
+              },
+              "110": { "text": { "all": false, "type": 60 } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.7 },
+          "stateChange": {
+            "currentState": {
+              "startTime": 1765499308223,
+              "turnState": 2,
+              "actionState": 0,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "111": {
+                "from": 3,
+                "text": {
+                  "type": 11,
+                  "tileInfo": {
+                    "tileType": 1,
+                    "diceNumber": 8,
+                    "resourceType": 1
+                  },
+                  "pieceEnum": 5,
+                  "playerColor": 3
+                }
+              },
+              "112": {
+                "from": 3,
+                "text": { "type": 14, "cardEnums": [2], "playerColor": 2 },
+                "toSpectators": false,
+                "specificRecipients": [3]
+              },
+              "113": {
+                "from": 3,
+                "text": { "type": 15, "cardEnums": [2], "playerColor": 3 },
+                "toSpectators": false,
+                "specificRecipients": [2]
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 5, 5, 2, 2] } },
+              "3": { "resourceCards": { "cards": [5, 2, 4, 4, 3, 2, 4, 5, 2] } }
+            },
+            "mechanicRobberState": { "locationTileIndex": 5 }
+          }
+        },
+        {
+          "input": { "deltaS": 1.3 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499309552,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 27,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "115": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.8 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 18, "5": 13 } },
+            "diceState": { "dice1": 4, "dice2": 5, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499310335,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "116": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 4,
+                  "secondDice": 5,
+                  "playerColor": 2
+                }
+              },
+              "117": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [5, 5],
+                  "distributionType": 1
+                }
+              },
+              "118": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 5, 5, 2, 2, 5, 5] } },
+              "3": {
+                "resourceCards": { "cards": [5, 2, 4, 4, 3, 2, 4, 5, 2, 1] }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 3.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 16, "4": 14 } },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "119": {
+                "from": 2,
+                "text": {
+                  "type": 116,
+                  "playerColor": 2,
+                  "givenCardEnums": [2, 2],
+                  "receivedCardEnums": [4]
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 5, 5, 5, 5, 4] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.1 },
+          "stateChange": {
+            "mapState": { "tileCornerStates": { "14": { "buildingType": 2 } } },
+            "bankState": { "resourceCards": { "4": 16, "5": 16 } },
+            "currentState": { "allocatedTime": 45 },
+            "gameLogState": {
+              "120": {
+                "from": 2,
+                "text": {
+                  "isVp": true,
+                  "type": 5,
+                  "pieceEnum": 3,
+                  "playerColor": 2
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [5] },
+                "victoryPointsState": { "0": 3, "1": 1 }
+              }
+            },
+            "mechanicCityState": { "2": { "bankCityAmount": 3 } },
+            "mechanicSettlementState": { "2": { "bankSettlementAmount": 2 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.1 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499317422,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 28,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "121": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 16 } },
+            "diceState": { "dice1": 3, "dice2": 2, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499318113,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "122": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 3,
+                  "secondDice": 2,
+                  "playerColor": 3
+                }
+              },
+              "123": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              },
+              "124": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 1] } },
+              "3": {
+                "resourceCards": { "cards": [5, 2, 4, 4, 3, 2, 4, 5, 2, 1, 1] }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "68": { "type": 1, "owner": 3 } }
+            },
+            "bankState": { "resourceCards": { "1": 17, "2": 17 } },
+            "currentState": { "allocatedTime": 35 },
+            "gameLogState": {
+              "125": {
+                "from": 3,
+                "text": {
+                  "isVp": false,
+                  "type": 5,
+                  "pieceEnum": 0,
+                  "playerColor": 3
+                }
+              }
+            },
+            "playerStates": {
+              "3": { "resourceCards": { "cards": [5, 4, 4, 3, 2, 4, 5, 2, 1] } }
+            },
+            "mechanicRoadState": { "3": { "bankRoadAmount": 12 } },
+            "mechanicLongestRoadState": { "3": { "longestRoad": 2 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.1 },
+          "stateChange": {
+            "mapState": {
+              "tileCornerStates": { "51": { "owner": 3, "buildingType": 1 } }
+            },
+            "bankState": {
+              "resourceCards": { "1": 18, "2": 18, "3": 19, "4": 17 }
+            },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "126": {
+                "from": 3,
+                "text": {
+                  "isVp": true,
+                  "type": 5,
+                  "pieceEnum": 2,
+                  "playerColor": 3
+                }
+              }
+            },
+            "playerStates": {
+              "3": {
+                "resourceCards": { "cards": [5, 4, 4, 5, 2] },
+                "victoryPointsState": { "0": 3 }
+              }
+            },
+            "mechanicSettlementState": { "3": { "bankSettlementAmount": 2 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499322218,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 29,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "127": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.6 },
+          "stateChange": {
+            "diceState": { "dice1": 6, "dice2": 1, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499322806,
+              "actionState": 24,
+              "allocatedTime": 15
+            },
+            "gameLogState": {
+              "128": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 6,
+                  "secondDice": 1,
+                  "playerColor": 2
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.2 },
+          "stateChange": {
+            "currentState": {
+              "startTime": 1765499325040,
+              "turnState": 2,
+              "actionState": 0,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "129": {
+                "from": 2,
+                "text": {
+                  "type": 11,
+                  "tileInfo": {
+                    "tileType": 5,
+                    "diceNumber": 6,
+                    "resourceType": 5
+                  },
+                  "pieceEnum": 5,
+                  "playerColor": 2
+                }
+              },
+              "130": {
+                "from": 2,
+                "text": { "type": 14, "cardEnums": [4], "playerColor": 3 },
+                "toSpectators": false,
+                "specificRecipients": [2]
+              },
+              "131": {
+                "from": 2,
+                "text": { "type": 15, "cardEnums": [4], "playerColor": 2 },
+                "toSpectators": false,
+                "specificRecipients": [3]
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 1, 4] } },
+              "3": { "resourceCards": { "cards": [5, 4, 5, 2] } }
+            },
+            "mechanicRobberState": { "locationTileIndex": 16 }
+          }
+        },
+        {
+          "input": { "deltaS": 1.4 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499326443,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 30,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "133": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 16, "4": 16 } },
+            "diceState": { "dice1": 2, "dice2": 6, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499327133,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "134": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 2,
+                  "secondDice": 6,
+                  "playerColor": 3
+                }
+              },
+              "135": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [1, 1],
+                  "distributionType": 1
+                }
+              },
+              "136": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [4],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 1, 4, 1, 1] } },
+              "3": { "resourceCards": { "cards": [5, 4, 5, 2, 4] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.6 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499328717,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 31,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "137": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.3 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 18 } },
+            "diceState": { "dice2": 1, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499329011,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "138": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 2,
+                  "secondDice": 1,
+                  "playerColor": 2
+                }
+              },
+              "139": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [3],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "3": { "resourceCards": { "cards": [5, 4, 5, 2, 4, 3] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.2 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499330249,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 32,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "140": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 16 } },
+            "diceState": { "dice1": 3, "dice2": 3, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499330923,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "141": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 3,
+                  "secondDice": 3,
+                  "playerColor": 3
+                }
+              },
+              "142": {
+                "text": {
+                  "type": 49,
+                  "tileInfo": {
+                    "tileType": 5,
+                    "diceNumber": 6,
+                    "resourceType": 5
+                  }
+                }
+              },
+              "143": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [2, 2],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 1, 4, 1, 1, 2, 2] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 19, "4": 17, "5": 17 } },
+            "currentState": { "allocatedTime": 35 },
+            "gameLogState": {
+              "144": { "from": 3, "text": { "type": 1, "playerColor": 3 } }
+            },
+            "playerStates": {
+              "3": { "resourceCards": { "cards": [5, 2, 4] } }
+            },
+            "mechanicDevelopmentCardsState": {
+              "players": {
+                "3": {
+                  "developmentCards": { "cards": [12, 11] },
+                  "developmentCardsBoughtThisTurn": [11]
+                }
+              },
+              "bankDevelopmentCards": {
+                "cards": [
+                  10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+                  10, 10, 10, 10, 10, 10, 10, 10
+                ]
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.5 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499332361,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 33,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "145": { "text": { "type": 44 } } },
+            "mechanicDevelopmentCardsState": {
+              "players": { "3": { "developmentCardsBoughtThisTurn": null } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.2 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 18, "4": 16 } },
+            "diceState": { "dice1": 6, "dice2": 4, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499332607,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "146": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 6,
+                  "secondDice": 4,
+                  "playerColor": 2
+                }
+              },
+              "147": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [4, 3],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 1, 4, 1, 1, 2, 2, 4, 3] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 4.8 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "61": { "type": 1, "owner": 2 } }
+            },
+            "bankState": { "resourceCards": { "1": 17, "2": 17 } },
+            "currentState": { "allocatedTime": 35 },
+            "gameLogState": {
+              "148": {
+                "from": 2,
+                "text": {
+                  "isVp": false,
+                  "type": 5,
+                  "pieceEnum": 0,
+                  "playerColor": 2
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 4, 1, 1, 2, 4, 3] } }
+            },
+            "mechanicRoadState": { "2": { "bankRoadAmount": 10 } },
+            "mechanicLongestRoadState": { "2": { "longestRoad": 3 } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.8 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "71": { "type": 1, "owner": 2 } }
+            },
+            "bankState": { "resourceCards": { "1": 18, "2": 18 } },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "149": {
+                "from": 2,
+                "text": {
+                  "isVp": false,
+                  "type": 5,
+                  "pieceEnum": 0,
+                  "playerColor": 2
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 4, 1, 4, 3] } }
+            },
+            "mechanicRoadState": { "2": { "bankRoadAmount": 9 } },
+            "mechanicLongestRoadState": { "2": { "longestRoad": 4 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.8 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499340045,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 34,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "150": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 2.9 },
+          "stateChange": {
+            "currentState": { "actionState": 24, "allocatedTime": 18 },
+            "gameLogState": {
+              "151": {
+                "from": 3,
+                "text": { "type": 20, "cardEnum": 11, "playerColor": 3 }
+              }
+            },
+            "mechanicDevelopmentCardsState": {
+              "players": {
+                "3": {
+                  "developmentCards": { "cards": [12] },
+                  "developmentCardsUsed": [11],
+                  "hasUsedDevelopmentCardThisTurn": true
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.9 },
+          "stateChange": {
+            "currentState": { "actionState": 0 },
+            "gameLogState": {
+              "152": {
+                "from": 3,
+                "text": {
+                  "type": 11,
+                  "tileInfo": {
+                    "tileType": 1,
+                    "diceNumber": 8,
+                    "resourceType": 1
+                  },
+                  "pieceEnum": 5,
+                  "playerColor": 3
+                }
+              },
+              "153": {
+                "from": 3,
+                "text": { "type": 14, "cardEnums": [3], "playerColor": 2 },
+                "toSpectators": false,
+                "specificRecipients": [3]
+              },
+              "154": {
+                "from": 3,
+                "text": { "type": 15, "cardEnums": [3], "playerColor": 3 },
+                "toSpectators": false,
+                "specificRecipients": [2]
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 4, 1, 4] } },
+              "3": { "resourceCards": { "cards": [5, 2, 4, 3] } }
+            },
+            "mechanicRobberState": { "locationTileIndex": 5 }
+          }
+        },
+        {
+          "input": { "deltaS": 0.2 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 17, "4": 15 } },
+            "diceState": { "dice1": 4, "dice2": 6, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499344118,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "156": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 4,
+                  "secondDice": 6,
+                  "playerColor": 3
+                }
+              },
+              "157": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [4, 3],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 4, 1, 4, 4, 3] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.3 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 18, "4": 16, "5": 18 } },
+            "currentState": { "allocatedTime": 35 },
+            "gameLogState": {
+              "158": { "from": 3, "text": { "type": 1, "playerColor": 3 } }
+            },
+            "playerStates": { "3": { "resourceCards": { "cards": [2] } } },
+            "mechanicDevelopmentCardsState": {
+              "players": {
+                "3": {
+                  "developmentCards": { "cards": [12, 13] },
+                  "developmentCardsBoughtThisTurn": [13]
+                }
+              },
+              "bankDevelopmentCards": {
+                "cards": [
+                  10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+                  10, 10, 10, 10, 10, 10, 10
+                ]
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.6 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499346972,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 35,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "159": { "text": { "type": 44 } } },
+            "mechanicDevelopmentCardsState": {
+              "players": {
+                "3": {
+                  "developmentCardsBoughtThisTurn": null,
+                  "hasUsedDevelopmentCardThisTurn": null
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.4 },
+          "stateChange": {
+            "diceState": { "dice1": 5, "dice2": 2, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499347412,
+              "actionState": 24,
+              "allocatedTime": 15
+            },
+            "gameLogState": {
+              "160": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 5,
+                  "secondDice": 2,
+                  "playerColor": 2
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.7 },
+          "stateChange": {
+            "currentState": {
+              "startTime": 1765499349162,
+              "turnState": 2,
+              "actionState": 0,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "161": {
+                "from": 2,
+                "text": {
+                  "type": 11,
+                  "tileInfo": {
+                    "tileType": 5,
+                    "diceNumber": 6,
+                    "resourceType": 5
+                  },
+                  "pieceEnum": 5,
+                  "playerColor": 2
+                }
+              },
+              "162": {
+                "from": 2,
+                "text": { "type": 14, "cardEnums": [2], "playerColor": 3 },
+                "toSpectators": false,
+                "specificRecipients": [2]
+              },
+              "163": {
+                "from": 2,
+                "text": { "type": 15, "cardEnums": [2], "playerColor": 2 },
+                "toSpectators": false,
+                "specificRecipients": [3]
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 4, 1, 4, 4, 3, 2] } },
+              "3": { "resourceCards": { "cards": [] } }
+            },
+            "mechanicRobberState": { "locationTileIndex": 16 }
+          }
+        },
+        {
+          "input": { "deltaS": 1.7 },
+          "stateChange": {
+            "mapState": {
+              "tileCornerStates": { "53": { "owner": 2, "buildingType": 1 } }
+            },
+            "bankState": {
+              "resourceCards": { "1": 19, "2": 19, "3": 19, "4": 17 }
+            },
+            "currentState": { "allocatedTime": 35 },
+            "gameLogState": {
+              "165": {
+                "from": 2,
+                "text": {
+                  "isVp": true,
+                  "type": 5,
+                  "pieceEnum": 2,
+                  "playerColor": 2
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [5, 4, 4] },
+                "victoryPointsState": { "0": 4 }
+              }
+            },
+            "mechanicSettlementState": { "2": { "bankSettlementAmount": 1 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.2 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499352045,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 36,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "166": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 16, "4": 16 } },
+            "diceState": { "dice1": 3, "dice2": 1, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499352704,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "167": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 3,
+                  "secondDice": 1,
+                  "playerColor": 3
+                }
+              },
+              "168": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [2, 2],
+                  "distributionType": 1
+                }
+              },
+              "169": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [4, 2],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 4, 4, 2, 2] } },
+              "3": { "resourceCards": { "cards": [4, 2] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.7 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499355452,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 37,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "170": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 14 } },
+            "diceState": { "dice1": 4, "dice2": 2, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499356116,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "171": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 4,
+                  "secondDice": 2,
+                  "playerColor": 2
+                }
+              },
+              "172": {
+                "text": {
+                  "type": 49,
+                  "tileInfo": {
+                    "tileType": 5,
+                    "diceNumber": 6,
+                    "resourceType": 5
+                  }
+                }
+              },
+              "173": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [2, 2],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 4, 4, 2, 2, 2, 2] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 16, "3": 18 } },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "174": {
+                "from": 2,
+                "text": {
+                  "type": 116,
+                  "playerColor": 2,
+                  "givenCardEnums": [2, 2],
+                  "receivedCardEnums": [3]
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 4, 4, 2, 2, 3] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.4 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 19, "4": 17, "5": 19 } },
+            "currentState": { "allocatedTime": 45 },
+            "gameLogState": {
+              "175": { "from": 2, "text": { "type": 1, "playerColor": 2 } }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 2, 2] } }
+            },
+            "mechanicDevelopmentCardsState": {
+              "players": {
+                "2": {
+                  "developmentCards": { "cards": [11] },
+                  "developmentCardsBoughtThisTurn": [11]
+                }
+              },
+              "bankDevelopmentCards": {
+                "cards": [
+                  10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+                  10, 10, 10, 10, 10, 10
+                ]
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.7 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499359880,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 38,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "176": { "text": { "type": 44 } } },
+            "mechanicDevelopmentCardsState": {
+              "players": { "2": { "developmentCardsBoughtThisTurn": null } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.6 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 17, "4": 16 } },
+            "diceState": { "dice1": 6, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499360468,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "177": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 6,
+                  "secondDice": 2,
+                  "playerColor": 3
+                }
+              },
+              "178": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [1, 1],
+                  "distributionType": 1
+                }
+              },
+              "179": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [4],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 2, 2, 1, 1] } },
+              "3": { "resourceCards": { "cards": [4, 2, 4] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.7 },
+          "stateChange": {
+            "currentState": { "actionState": 0, "allocatedTime": 40 },
+            "gameLogState": {
+              "180": {
+                "from": 3,
+                "text": { "type": 20, "cardEnum": 13, "playerColor": 3 }
+              },
+              "181": {
+                "from": 3,
+                "text": {
+                  "type": 86,
+                  "cardEnum": 1,
+                  "playerColor": 3,
+                  "amountStolen": 2
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 2, 2] } },
+              "3": { "resourceCards": { "cards": [4, 2, 4, 1, 1] } }
+            },
+            "mechanicDevelopmentCardsState": {
+              "players": {
+                "3": {
+                  "developmentCards": { "cards": [12] },
+                  "developmentCardsUsed": [11, 13],
+                  "hasUsedDevelopmentCardThisTurn": true
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.3 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "50": { "type": 1, "owner": 3 } }
+            },
+            "bankState": { "resourceCards": { "1": 18, "2": 17 } },
+            "currentState": { "allocatedTime": 45 },
+            "gameLogState": {
+              "182": {
+                "from": 3,
+                "text": {
+                  "isVp": false,
+                  "type": 5,
+                  "pieceEnum": 0,
+                  "playerColor": 3
+                }
+              }
+            },
+            "playerStates": {
+              "3": { "resourceCards": { "cards": [4, 4, 1] } }
+            },
+            "mechanicRoadState": { "3": { "bankRoadAmount": 11 } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.8 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499366665,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 39,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "183": { "text": { "type": 44 } } },
+            "mechanicDevelopmentCardsState": {
+              "players": { "3": { "hasUsedDevelopmentCardThisTurn": null } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.6 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 15 } },
+            "diceState": { "dice1": 1, "dice2": 4, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499368226,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "184": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 1,
+                  "secondDice": 4,
+                  "playerColor": 2
+                }
+              },
+              "185": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              },
+              "186": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [1, 1],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 2, 2, 1] } },
+              "3": { "resourceCards": { "cards": [4, 4, 1, 1, 1] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 4.2 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499372452,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 40,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "187": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.6 },
+          "stateChange": {
+            "diceState": { "dice1": 6, "dice2": 6, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499373040,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "188": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 6,
+                  "secondDice": 6,
+                  "playerColor": 3
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.3 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499375010,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 41,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "189": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.8 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 14 } },
+            "diceState": { "dice2": 5, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499375773,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "190": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 6,
+                  "secondDice": 5,
+                  "playerColor": 2
+                }
+              },
+              "191": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [2, 2],
+                  "distributionType": 1
+                }
+              },
+              "192": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [2],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 2, 2, 1, 2, 2] } },
+              "3": { "resourceCards": { "cards": [4, 4, 1, 1, 1, 2] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 5.3 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499381075,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 42,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "193": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 8.9 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 11, "4": 15 } },
+            "diceState": { "dice1": 2, "dice2": 2, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499389996,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "194": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 2,
+                  "secondDice": 2,
+                  "playerColor": 3
+                }
+              },
+              "195": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [2, 2],
+                  "distributionType": 1
+                }
+              },
+              "196": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [4, 2],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 2, 2, 1, 2, 2, 2, 2] } },
+              "3": { "resourceCards": { "cards": [4, 4, 1, 1, 1, 2, 4, 2] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 9.4 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499399368,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 43,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "197": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.5 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 14, "5": 16 } },
+            "diceState": { "dice1": 6, "dice2": 3, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499399894,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "198": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 6,
+                  "secondDice": 3,
+                  "playerColor": 2
+                }
+              },
+              "199": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [5, 5, 5],
+                  "distributionType": 1
+                }
+              },
+              "200": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [4, 2, 2, 1, 2, 2, 2, 2, 5, 5, 5] }
+              },
+              "3": { "resourceCards": { "cards": [4, 4, 1, 1, 1, 2, 4, 2, 1] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 3.9 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 13, "4": 14 } },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "201": {
+                "from": 2,
+                "text": {
+                  "type": 116,
+                  "playerColor": 2,
+                  "givenCardEnums": [2, 2],
+                  "receivedCardEnums": [4]
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [4, 1, 2, 2, 2, 2, 5, 5, 5, 4] }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.2 },
+          "stateChange": {
+            "mapState": { "tileCornerStates": { "23": { "buildingType": 2 } } },
+            "bankState": { "resourceCards": { "4": 16, "5": 19 } },
+            "currentState": { "allocatedTime": 45 },
+            "gameLogState": {
+              "202": {
+                "from": 2,
+                "text": {
+                  "isVp": true,
+                  "type": 5,
+                  "pieceEnum": 3,
+                  "playerColor": 2
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [1, 2, 2, 2, 2] },
+                "victoryPointsState": { "0": 3, "1": 2 }
+              }
+            },
+            "mechanicCityState": { "2": { "bankCityAmount": 2 } },
+            "mechanicSettlementState": { "2": { "bankSettlementAmount": 2 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.2 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499406156,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 44,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "203": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 8.9 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 11 } },
+            "diceState": { "dice1": 1, "dice2": 5, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499415080,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "204": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 1,
+                  "secondDice": 5,
+                  "playerColor": 3
+                }
+              },
+              "205": {
+                "text": {
+                  "type": 49,
+                  "tileInfo": {
+                    "tileType": 5,
+                    "diceNumber": 6,
+                    "resourceType": 5
+                  }
+                }
+              },
+              "206": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [2, 2],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [1, 2, 2, 2, 2, 2, 2] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 18.5 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499433572,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 45,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "207": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.2 },
+          "stateChange": {
+            "diceState": { "dice2": 1, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499433748,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "208": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 1,
+                  "secondDice": 1,
+                  "playerColor": 2
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.4 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499435187,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 46,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "209": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.6 },
+          "stateChange": {
+            "diceState": { "dice1": 2, "dice2": 5, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499436815,
+              "actionState": 24,
+              "allocatedTime": 15
+            },
+            "gameLogState": {
+              "210": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 2,
+                  "secondDice": 5,
+                  "playerColor": 3
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.6 },
+          "stateChange": {
+            "currentState": {
+              "startTime": 1765499439418,
+              "turnState": 2,
+              "actionState": 0,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "211": {
+                "from": 3,
+                "text": {
+                  "type": 11,
+                  "tileInfo": {
+                    "tileType": 1,
+                    "diceNumber": 8,
+                    "resourceType": 1
+                  },
+                  "pieceEnum": 5,
+                  "playerColor": 3
+                }
+              },
+              "212": {
+                "from": 3,
+                "text": { "type": 14, "cardEnums": [2], "playerColor": 2 },
+                "toSpectators": false,
+                "specificRecipients": [3]
+              },
+              "213": {
+                "from": 3,
+                "text": { "type": 15, "cardEnums": [2], "playerColor": 3 },
+                "toSpectators": false,
+                "specificRecipients": [2]
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [1, 2, 2, 2, 2, 2] } },
+              "3": {
+                "resourceCards": { "cards": [4, 4, 1, 1, 1, 2, 4, 2, 1, 2] }
+              }
+            },
+            "mechanicRobberState": { "locationTileIndex": 5 }
+          }
+        },
+        {
+          "input": { "deltaS": 5.8 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "49": { "type": 1, "owner": 3 } }
+            },
+            "bankState": { "resourceCards": { "1": 15, "2": 12 } },
+            "currentState": { "allocatedTime": 35 },
+            "gameLogState": {
+              "215": {
+                "from": 3,
+                "text": {
+                  "isVp": false,
+                  "type": 5,
+                  "pieceEnum": 0,
+                  "playerColor": 3
+                }
+              }
+            },
+            "playerStates": {
+              "3": { "resourceCards": { "cards": [4, 4, 1, 1, 4, 2, 1, 2] } }
+            },
+            "mechanicRoadState": { "3": { "bankRoadAmount": 10 } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.9 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "48": { "type": 1, "owner": 3 } }
+            },
+            "bankState": { "resourceCards": { "1": 16, "2": 13 } },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "216": {
+                "from": 3,
+                "text": {
+                  "isVp": false,
+                  "type": 5,
+                  "pieceEnum": 0,
+                  "playerColor": 3
+                }
+              }
+            },
+            "playerStates": {
+              "3": { "resourceCards": { "cards": [4, 4, 1, 4, 1, 2] } }
+            },
+            "mechanicRoadState": { "3": { "bankRoadAmount": 9 } },
+            "mechanicLongestRoadState": { "3": { "longestRoad": 3 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499447223,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 47,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "217": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.2 },
+          "stateChange": {
+            "currentState": { "actionState": 24, "allocatedTime": 18 },
+            "gameLogState": {
+              "218": {
+                "from": 2,
+                "text": { "type": 20, "cardEnum": 11, "playerColor": 2 }
+              }
+            },
+            "mechanicDevelopmentCardsState": {
+              "players": {
+                "2": {
+                  "developmentCards": { "cards": [] },
+                  "developmentCardsUsed": [11],
+                  "hasUsedDevelopmentCardThisTurn": true
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.8 },
+          "stateChange": {
+            "currentState": { "actionState": 0 },
+            "gameLogState": {
+              "219": {
+                "from": 2,
+                "text": {
+                  "type": 11,
+                  "tileInfo": {
+                    "tileType": 4,
+                    "diceNumber": 8,
+                    "resourceType": 4
+                  },
+                  "pieceEnum": 5,
+                  "playerColor": 2
+                }
+              },
+              "220": {
+                "from": 2,
+                "text": { "type": 14, "cardEnums": [1], "playerColor": 3 },
+                "toSpectators": false,
+                "specificRecipients": [2]
+              },
+              "221": {
+                "from": 2,
+                "text": { "type": 15, "cardEnums": [1], "playerColor": 2 },
+                "toSpectators": false,
+                "specificRecipients": [3]
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [1, 2, 2, 2, 2, 2, 1] } },
+              "3": { "resourceCards": { "cards": [4, 4, 4, 1, 2] } }
+            },
+            "mechanicRobberState": { "locationTileIndex": 11 }
+          }
+        },
+        {
+          "input": { "deltaS": 1 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 12 } },
+            "diceState": { "dice1": 4, "dice2": 1, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499452236,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "223": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 4,
+                  "secondDice": 1,
+                  "playerColor": 2
+                }
+              },
+              "224": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [1, 1],
+                  "distributionType": 1
+                }
+              },
+              "225": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [1, 1],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [1, 2, 2, 2, 2, 2, 1, 1, 1] }
+              },
+              "3": { "resourceCards": { "cards": [4, 4, 4, 1, 2, 1, 1] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 5.7 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "60": { "type": 1, "owner": 2 } }
+            },
+            "bankState": { "resourceCards": { "1": 13, "2": 14 } },
+            "currentState": { "allocatedTime": 35 },
+            "gameLogState": {
+              "226": {
+                "from": 2,
+                "text": {
+                  "isVp": false,
+                  "type": 5,
+                  "pieceEnum": 0,
+                  "playerColor": 2
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [2, 2, 2, 2, 1, 1, 1] } }
+            },
+            "mechanicRoadState": { "2": { "bankRoadAmount": 8 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.1 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "58": { "type": 1, "owner": 2 } }
+            },
+            "bankState": { "resourceCards": { "1": 14, "2": 15 } },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "227": {
+                "from": 2,
+                "text": {
+                  "isVp": false,
+                  "type": 5,
+                  "pieceEnum": 0,
+                  "playerColor": 2
+                }
+              },
+              "228": {
+                "from": 2,
+                "text": { "type": 66, "playerColor": 2, "achievementEnum": 0 }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [2, 2, 2, 1, 1] },
+                "victoryPointsState": { "4": 1 }
+              }
+            },
+            "mechanicRoadState": { "2": { "bankRoadAmount": 7 } },
+            "mechanicLongestRoadState": {
+              "2": { "longestRoad": 5, "hasLongestRoad": true }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.2 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499460290,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 48,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "229": { "text": { "type": 44 } } },
+            "mechanicDevelopmentCardsState": {
+              "players": { "2": { "hasUsedDevelopmentCardThisTurn": null } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 13, "5": 16 } },
+            "diceState": { "dice1": 3, "dice2": 6, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499461338,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "230": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 3,
+                  "secondDice": 6,
+                  "playerColor": 3
+                }
+              },
+              "231": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [5, 5, 5],
+                  "distributionType": 1
+                }
+              },
+              "232": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [2, 2, 2, 1, 1, 5, 5, 5] } },
+              "3": { "resourceCards": { "cards": [4, 4, 4, 1, 2, 1, 1, 1] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.5 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499463821,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 49,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "233": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.9 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 17 } },
+            "diceState": { "dice1": 1, "dice2": 2, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499464707,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "234": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 1,
+                  "secondDice": 2,
+                  "playerColor": 2
+                }
+              },
+              "235": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [3],
+                  "distributionType": 1
+                }
+              },
+              "236": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [3],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [2, 2, 2, 1, 1, 5, 5, 5, 3] }
+              },
+              "3": { "resourceCards": { "cards": [4, 4, 4, 1, 2, 1, 1, 1, 3] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 3.3 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 17, "4": 15 } },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "237": {
+                "from": 2,
+                "text": {
+                  "type": 116,
+                  "playerColor": 2,
+                  "givenCardEnums": [2, 2],
+                  "receivedCardEnums": [4]
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [2, 1, 1, 5, 5, 5, 3, 4] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.1 },
+          "stateChange": {
+            "mapState": {
+              "tileCornerStates": { "2": { "owner": 2, "buildingType": 1 } }
+            },
+            "bankState": {
+              "resourceCards": { "1": 14, "2": 18, "3": 18, "4": 16 }
+            },
+            "currentState": { "allocatedTime": 45 },
+            "gameLogState": {
+              "238": {
+                "from": 2,
+                "text": {
+                  "isVp": true,
+                  "type": 5,
+                  "pieceEnum": 2,
+                  "playerColor": 2
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [1, 5, 5, 5] },
+                "victoryPointsState": { "0": 4 }
+              }
+            },
+            "mechanicSettlementState": { "2": { "bankSettlementAmount": 1 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.1 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499470188,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 50,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "239": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.8 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 11 } },
+            "diceState": { "dice1": 3, "dice2": 5, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499471037,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "240": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 3,
+                  "secondDice": 5,
+                  "playerColor": 3
+                }
+              },
+              "241": {
+                "text": {
+                  "type": 49,
+                  "tileInfo": {
+                    "tileType": 4,
+                    "diceNumber": 8,
+                    "resourceType": 4
+                  }
+                }
+              },
+              "242": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [1, 1, 1],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [1, 5, 5, 5, 1, 1, 1] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.7 },
+          "stateChange": {
+            "mapState": {
+              "portEdgeStates": { "8": { "owner": 3 } },
+              "tileCornerStates": { "38": { "owner": 3, "buildingType": 1 } }
+            },
+            "bankState": {
+              "resourceCards": { "1": 12, "2": 19, "3": 19, "4": 17 }
+            },
+            "currentState": { "allocatedTime": 35 },
+            "gameLogState": {
+              "243": {
+                "from": 3,
+                "text": {
+                  "isVp": true,
+                  "type": 5,
+                  "pieceEnum": 2,
+                  "playerColor": 3
+                }
+              }
+            },
+            "playerStates": {
+              "3": {
+                "resourceCards": { "cards": [4, 4, 1, 1, 1] },
+                "victoryPointsState": { "0": 4 },
+                "bankTradeRatiosState": { "4": 2 }
+              }
+            },
+            "mechanicSettlementState": { "3": { "bankSettlementAmount": 1 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.5 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499474235,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 51,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "244": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.7 },
+          "stateChange": {
+            "diceState": { "dice1": 1, "dice2": 6, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499474972,
+              "actionState": 24,
+              "allocatedTime": 15
+            },
+            "gameLogState": {
+              "245": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 1,
+                  "secondDice": 6,
+                  "playerColor": 2
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 4.8 },
+          "stateChange": {
+            "currentState": {
+              "startTime": 1765499479733,
+              "turnState": 2,
+              "actionState": 0,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "246": {
+                "from": 2,
+                "text": {
+                  "type": 11,
+                  "tileInfo": {
+                    "tileType": 5,
+                    "diceNumber": 6,
+                    "resourceType": 5
+                  },
+                  "pieceEnum": 5,
+                  "playerColor": 2
+                }
+              },
+              "247": {
+                "from": 2,
+                "text": { "type": 14, "cardEnums": [1], "playerColor": 3 },
+                "toSpectators": false,
+                "specificRecipients": [2]
+              },
+              "248": {
+                "from": 2,
+                "text": { "type": 15, "cardEnums": [1], "playerColor": 2 },
+                "toSpectators": false,
+                "specificRecipients": [3]
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [1, 5, 5, 5, 1, 1, 1, 1] } },
+              "3": { "resourceCards": { "cards": [4, 4, 1, 1] } }
+            },
+            "mechanicRobberState": { "locationTileIndex": 16 }
+          }
+        },
+        {
+          "input": { "deltaS": 1.8 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499481532,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 52,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "250": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.8 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 16, "4": 15 } },
+            "diceState": { "dice2": 3, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499482309,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "251": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 1,
+                  "secondDice": 3,
+                  "playerColor": 3
+                }
+              },
+              "252": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [2, 2],
+                  "distributionType": 1
+                }
+              },
+              "253": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [4, 4, 2],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [1, 5, 5, 5, 1, 1, 1, 1, 2, 2] }
+              },
+              "3": { "resourceCards": { "cards": [4, 4, 1, 1, 4, 4, 2] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 4 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 18, "4": 17 } },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "254": {
+                "from": 3,
+                "text": {
+                  "type": 116,
+                  "playerColor": 3,
+                  "givenCardEnums": [4, 4],
+                  "receivedCardEnums": [3]
+                }
+              }
+            },
+            "playerStates": {
+              "3": { "resourceCards": { "cards": [1, 1, 4, 4, 2, 3] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1 },
+          "stateChange": {
+            "mapState": {
+              "tileCornerStates": { "37": { "owner": 3, "buildingType": 1 } }
+            },
+            "bankState": {
+              "resourceCards": { "1": 13, "2": 17, "3": 19, "4": 18 }
+            },
+            "currentState": { "allocatedTime": 45 },
+            "gameLogState": {
+              "255": {
+                "from": 3,
+                "text": {
+                  "isVp": true,
+                  "type": 5,
+                  "pieceEnum": 2,
+                  "playerColor": 3
+                }
+              }
+            },
+            "playerStates": {
+              "3": {
+                "resourceCards": { "cards": [1, 4] },
+                "victoryPointsState": { "0": 5 }
+              }
+            },
+            "mechanicSettlementState": { "3": { "bankSettlementAmount": 0 } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.8 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499488115,
+              "turnState": 1,
+              "allocatedTime": 3,
+              "completedTurns": 53,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "256": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.5 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 15 } },
+            "diceState": { "dice1": 5, "dice2": 1, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499488597,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "257": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 5,
+                  "secondDice": 1,
+                  "playerColor": 2
+                }
+              },
+              "258": {
+                "text": {
+                  "type": 49,
+                  "tileInfo": {
+                    "tileType": 5,
+                    "diceNumber": 6,
+                    "resourceType": 5
+                  }
+                }
+              },
+              "259": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [2, 2],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": {
+                  "cards": [1, 5, 5, 5, 1, 1, 1, 1, 2, 2, 2, 2]
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 3.1 },
+          "stateChange": {
+            "bankState": {
+              "resourceCards": { "1": 17, "2": 17, "3": 18, "4": 17 }
+            },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "260": {
+                "from": 2,
+                "text": {
+                  "type": 116,
+                  "playerColor": 2,
+                  "givenCardEnums": [2, 2, 1, 1, 1, 1],
+                  "receivedCardEnums": [4, 3]
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 5, 5, 1, 2, 2, 4, 3] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.4 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 19, "4": 18, "5": 17 } },
+            "currentState": { "allocatedTime": 45 },
+            "gameLogState": {
+              "261": { "from": 2, "text": { "type": 1, "playerColor": 2 } }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 5, 1, 2, 2] } }
+            },
+            "mechanicDevelopmentCardsState": {
+              "players": {
+                "2": {
+                  "developmentCards": { "cards": [11] },
+                  "developmentCardsBoughtThisTurn": [11]
+                }
+              },
+              "bankDevelopmentCards": {
+                "cards": [
+                  10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+                  10, 10, 10, 10, 10
+                ]
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499493072,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 54,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "262": { "text": { "type": 44 } } },
+            "mechanicDevelopmentCardsState": {
+              "players": { "2": { "developmentCardsBoughtThisTurn": null } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.2 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 14, "4": 16 } },
+            "diceState": { "dice1": 2, "dice2": 6, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499495290,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "263": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 2,
+                  "secondDice": 6,
+                  "playerColor": 3
+                }
+              },
+              "264": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [1, 1, 1, 4],
+                  "distributionType": 1
+                }
+              },
+              "265": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [4],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [5, 5, 1, 2, 2, 1, 1, 1, 4] }
+              },
+              "3": { "resourceCards": { "cards": [1, 4, 4] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.8 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499497140,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 55,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "266": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.6 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 11, "4": 14 } },
+            "diceState": { "dice1": 6, "dice2": 2, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499497696,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "267": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 6,
+                  "secondDice": 2,
+                  "playerColor": 2
+                }
+              },
+              "268": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [1, 1, 1, 4],
+                  "distributionType": 1
+                }
+              },
+              "269": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [4],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": {
+                  "cards": [5, 5, 1, 2, 2, 1, 1, 1, 4, 1, 1, 1, 4]
+                }
+              },
+              "3": { "resourceCards": { "cards": [1, 4, 4, 4] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.6 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "34": { "type": 1, "owner": 2 } }
+            },
+            "bankState": { "resourceCards": { "1": 12, "2": 18 } },
+            "currentState": { "allocatedTime": 35 },
+            "gameLogState": {
+              "270": {
+                "from": 2,
+                "text": {
+                  "isVp": false,
+                  "type": 5,
+                  "pieceEnum": 0,
+                  "playerColor": 2
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [5, 5, 2, 1, 1, 1, 4, 1, 1, 1, 4] }
+              }
+            },
+            "mechanicRoadState": { "2": { "bankRoadAmount": 6 } }
+          }
+        },
+        {
+          "input": { "deltaS": 10.8 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 16, "5": 16 } },
+            "currentState": { "allocatedTime": 45 },
+            "gameLogState": {
+              "271": {
+                "from": 2,
+                "text": {
+                  "type": 116,
+                  "playerColor": 2,
+                  "givenCardEnums": [1, 1, 1, 1],
+                  "receivedCardEnums": [5]
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 5, 2, 4, 1, 1, 4, 5] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1 },
+          "stateChange": {
+            "mapState": { "tileCornerStates": { "2": { "buildingType": 2 } } },
+            "bankState": { "resourceCards": { "4": 16, "5": 19 } },
+            "currentState": { "allocatedTime": 50 },
+            "gameLogState": {
+              "272": {
+                "from": 2,
+                "text": {
+                  "isVp": true,
+                  "type": 5,
+                  "pieceEnum": 3,
+                  "playerColor": 2
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [2, 1, 1] },
+                "victoryPointsState": { "0": 3, "1": 3 }
+              }
+            },
+            "mechanicCityState": { "2": { "bankCityAmount": 1 } },
+            "mechanicSettlementState": { "2": { "bankSettlementAmount": 2 } }
+          }
+        },
+        {
+          "input": { "deltaS": 3 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499515865,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 56,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "273": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.9 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 16 } },
+            "diceState": { "dice1": 3, "dice2": 3, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499516759,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "274": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 3,
+                  "secondDice": 3,
+                  "playerColor": 3
+                }
+              },
+              "275": {
+                "text": {
+                  "type": 49,
+                  "tileInfo": {
+                    "tileType": 5,
+                    "diceNumber": 6,
+                    "resourceType": 5
+                  }
+                }
+              },
+              "276": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [2, 2],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [2, 1, 1, 2, 2] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.4 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499518118,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 57,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "277": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.8 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 16, "4": 14 } },
+            "diceState": { "dice1": 5, "dice2": 5, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499518913,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "278": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 5,
+                  "secondDice": 5,
+                  "playerColor": 2
+                }
+              },
+              "279": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [4, 4, 3, 3, 3],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [2, 1, 1, 2, 2, 4, 4, 3, 3, 3] }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.6 },
+          "stateChange": {
+            "mapState": {
+              "tileCornerStates": { "29": { "owner": 2, "buildingType": 1 } }
+            },
+            "bankState": {
+              "resourceCards": { "1": 17, "2": 17, "3": 17, "4": 15 }
+            },
+            "currentState": { "allocatedTime": 35 },
+            "gameLogState": {
+              "280": {
+                "from": 2,
+                "text": {
+                  "isVp": true,
+                  "type": 5,
+                  "pieceEnum": 2,
+                  "playerColor": 2
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [1, 2, 2, 4, 3, 3] },
+                "victoryPointsState": { "0": 4 }
+              }
+            },
+            "mechanicSettlementState": { "2": { "bankSettlementAmount": 1 } }
+          }
+        },
+        {
+          "input": { "deltaS": 11.8 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "1": { "type": 1, "owner": 2 } }
+            },
+            "bankState": { "resourceCards": { "1": 18, "2": 18 } },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "281": {
+                "from": 2,
+                "text": {
+                  "isVp": false,
+                  "type": 5,
+                  "pieceEnum": 0,
+                  "playerColor": 2
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [2, 4, 3, 3] } }
+            },
+            "mechanicRoadState": { "2": { "bankRoadAmount": 5 } },
+            "mechanicLongestRoadState": { "2": { "longestRoad": 6 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499533309,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 58,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "282": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 1 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 17, "5": 16 } },
+            "diceState": { "dice2": 4, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499534291,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "283": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 5,
+                  "secondDice": 4,
+                  "playerColor": 3
+                }
+              },
+              "284": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [5, 5, 5],
+                  "distributionType": 1
+                }
+              },
+              "285": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [2, 4, 3, 3, 5, 5, 5] } },
+              "3": { "resourceCards": { "cards": [1, 4, 4, 4, 1] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.3 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499535613,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 59,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "286": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.4 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 13 } },
+            "diceState": { "dice1": 2, "dice2": 3, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499536064,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "287": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 2,
+                  "secondDice": 3,
+                  "playerColor": 2
+                }
+              },
+              "288": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [1, 1],
+                  "distributionType": 1
+                }
+              },
+              "289": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [1, 1],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [2, 4, 3, 3, 5, 5, 5, 1, 1] }
+              },
+              "3": { "resourceCards": { "cards": [1, 4, 4, 4, 1, 1, 1] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.8 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "59": { "type": 1, "owner": 2 } }
+            },
+            "bankState": { "resourceCards": { "1": 14, "2": 19 } },
+            "currentState": { "allocatedTime": 35 },
+            "gameLogState": {
+              "290": {
+                "from": 2,
+                "text": {
+                  "isVp": false,
+                  "type": 5,
+                  "pieceEnum": 0,
+                  "playerColor": 2
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [4, 3, 3, 5, 5, 5, 1] } }
+            },
+            "mechanicRoadState": { "2": { "bankRoadAmount": 4 } },
+            "mechanicLongestRoadState": { "2": { "longestRoad": 7 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.3 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 18, "4": 16, "5": 17 } },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "291": { "from": 2, "text": { "type": 1, "playerColor": 2 } }
+            },
+            "playerStates": {
+              "2": {
+                "resourceCards": { "cards": [3, 5, 5, 1] },
+                "victoryPointsState": { "2": 1 }
+              }
+            },
+            "mechanicDevelopmentCardsState": {
+              "players": {
+                "2": {
+                  "developmentCards": { "cards": [11, 12] },
+                  "developmentCardsBoughtThisTurn": [12]
+                }
+              },
+              "bankDevelopmentCards": {
+                "cards": [
+                  10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+                  10, 10, 10, 10
+                ]
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.5 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499540716,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 60,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "292": { "text": { "type": 44 } } },
+            "mechanicDevelopmentCardsState": {
+              "players": { "2": { "developmentCardsBoughtThisTurn": null } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.9 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 17 } },
+            "diceState": { "dice1": 6, "dice2": 6, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499541581,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "293": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 6,
+                  "secondDice": 6,
+                  "playerColor": 3
+                }
+              },
+              "294": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [3],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "3": { "resourceCards": { "cards": [1, 4, 4, 4, 1, 1, 1, 3] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499543623,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 61,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "295": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.9 },
+          "stateChange": {
+            "currentState": { "actionState": 24, "allocatedTime": 18 },
+            "gameLogState": {
+              "296": {
+                "from": 2,
+                "text": { "type": 20, "cardEnum": 11, "playerColor": 2 }
+              }
+            },
+            "mechanicDevelopmentCardsState": {
+              "players": {
+                "2": {
+                  "developmentCards": { "cards": [12] },
+                  "developmentCardsUsed": [11, 11],
+                  "hasUsedDevelopmentCardThisTurn": true
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.8 },
+          "stateChange": {
+            "currentState": { "actionState": 0 },
+            "gameLogState": {
+              "297": {
+                "from": 2,
+                "text": {
+                  "type": 11,
+                  "tileInfo": {
+                    "tileType": 4,
+                    "diceNumber": 4,
+                    "resourceType": 4
+                  },
+                  "pieceEnum": 5,
+                  "playerColor": 2
+                }
+              },
+              "298": {
+                "from": 2,
+                "text": { "type": 14, "cardEnums": [1], "playerColor": 3 },
+                "toSpectators": false,
+                "specificRecipients": [2]
+              },
+              "299": {
+                "from": 2,
+                "text": { "type": 15, "cardEnums": [1], "playerColor": 2 },
+                "toSpectators": false,
+                "specificRecipients": [3]
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [3, 5, 5, 1, 1] } },
+              "3": { "resourceCards": { "cards": [4, 4, 4, 1, 1, 1, 3] } }
+            },
+            "mechanicRobberState": { "locationTileIndex": 10 }
+          }
+        },
+        {
+          "input": { "deltaS": 1 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 10 } },
+            "diceState": { "dice1": 4, "dice2": 1, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499546341,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "301": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 4,
+                  "secondDice": 1,
+                  "playerColor": 2
+                }
+              },
+              "302": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [1, 1],
+                  "distributionType": 1
+                }
+              },
+              "303": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [1, 1],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [3, 5, 5, 1, 1, 1, 1] } },
+              "3": { "resourceCards": { "cards": [4, 4, 4, 1, 1, 1, 3, 1, 1] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.7 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 14, "4": 15 } },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "304": {
+                "from": 2,
+                "text": {
+                  "type": 116,
+                  "playerColor": 2,
+                  "givenCardEnums": [1, 1, 1, 1],
+                  "receivedCardEnums": [4]
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [3, 5, 5, 4] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.4 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 18, "4": 16, "5": 18 } },
+            "currentState": { "allocatedTime": 45 },
+            "gameLogState": {
+              "305": { "from": 2, "text": { "type": 1, "playerColor": 2 } }
+            },
+            "playerStates": { "2": { "resourceCards": { "cards": [5] } } },
+            "mechanicDevelopmentCardsState": {
+              "players": {
+                "2": {
+                  "developmentCards": { "cards": [12, 15] },
+                  "developmentCardsBoughtThisTurn": [15]
+                }
+              },
+              "bankDevelopmentCards": {
+                "cards": [
+                  10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+                  10, 10, 10
+                ]
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.2 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499550639,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 62,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "306": { "text": { "type": 44 } } },
+            "mechanicDevelopmentCardsState": {
+              "players": {
+                "2": {
+                  "developmentCardsBoughtThisTurn": null,
+                  "hasUsedDevelopmentCardThisTurn": null
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.6 },
+          "stateChange": {
+            "diceState": { "dice1": 3, "dice2": 4, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499551265,
+              "actionState": 24,
+              "allocatedTime": 15
+            },
+            "gameLogState": {
+              "307": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 3,
+                  "secondDice": 4,
+                  "playerColor": 3
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.9 },
+          "stateChange": {
+            "currentState": {
+              "startTime": 1765499554206,
+              "turnState": 2,
+              "actionState": 0,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "308": {
+                "from": 3,
+                "text": {
+                  "type": 11,
+                  "tileInfo": {
+                    "tileType": 1,
+                    "diceNumber": 8,
+                    "resourceType": 1
+                  },
+                  "pieceEnum": 5,
+                  "playerColor": 3
+                }
+              },
+              "309": {
+                "from": 3,
+                "text": { "type": 14, "cardEnums": [5], "playerColor": 2 },
+                "toSpectators": false,
+                "specificRecipients": [3]
+              },
+              "310": {
+                "from": 3,
+                "text": { "type": 15, "cardEnums": [5], "playerColor": 3 },
+                "toSpectators": false,
+                "specificRecipients": [2]
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [] } },
+              "3": {
+                "resourceCards": { "cards": [4, 4, 4, 1, 1, 1, 3, 1, 1, 5] }
+              }
+            },
+            "mechanicRobberState": { "locationTileIndex": 5 }
+          }
+        },
+        {
+          "input": { "deltaS": 5.8 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 18, "5": 17 } },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "312": {
+                "from": 3,
+                "text": {
+                  "type": 116,
+                  "playerColor": 3,
+                  "givenCardEnums": [1, 1, 1, 1],
+                  "receivedCardEnums": [5]
+                }
+              }
+            },
+            "playerStates": {
+              "3": { "resourceCards": { "cards": [4, 4, 4, 3, 1, 5, 5] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.6 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499560555,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 63,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "313": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.8 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "1": 17, "5": 14 } },
+            "diceState": { "dice1": 4, "dice2": 5, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499561387,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "314": {
+                "from": 2,
+                "text": {
+                  "type": 10,
+                  "firstDice": 4,
+                  "secondDice": 5,
+                  "playerColor": 2
+                }
+              },
+              "315": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [5, 5, 5],
+                  "distributionType": 1
+                }
+              },
+              "316": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [1],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 5, 5] } },
+              "3": { "resourceCards": { "cards": [4, 4, 4, 3, 1, 5, 5, 1] } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.8 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 17, "4": 15 } },
+            "currentState": { "actionState": 0, "allocatedTime": 40 },
+            "gameLogState": {
+              "317": {
+                "from": 2,
+                "text": { "type": 20, "cardEnum": 15, "playerColor": 2 }
+              },
+              "318": {
+                "from": 2,
+                "text": { "type": 21, "cardEnums": [4, 3], "playerColor": 2 }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 5, 5, 4, 3] } }
+            },
+            "mechanicDevelopmentCardsState": {
+              "players": {
+                "2": {
+                  "developmentCards": { "cards": [12] },
+                  "developmentCardsUsed": [11, 11, 15],
+                  "hasUsedDevelopmentCardThisTurn": true
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.1 },
+          "stateChange": {
+            "gameLogState": {
+              "319": {
+                "from": 3,
+                "text": {
+                  "type": 24,
+                  "playerColor": 3,
+                  "is10SecondRuleDisabled": true
+                }
+              },
+              "320": { "text": { "type": 130, "count": 100 } }
+            },
+            "playerStates": { "3": { "isConnected": false } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.3 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "3": 18, "4": 16, "5": 15 } },
+            "currentState": { "allocatedTime": 45 },
+            "gameLogState": {
+              "321": { "from": 2, "text": { "type": 1, "playerColor": 2 } }
+            },
+            "playerStates": { "2": { "resourceCards": { "cards": [5, 5] } } },
+            "mechanicDevelopmentCardsState": {
+              "players": {
+                "2": {
+                  "developmentCards": { "cards": [12, 11] },
+                  "developmentCardsBoughtThisTurn": [11]
+                }
+              },
+              "bankDevelopmentCards": {
+                "cards": [
+                  10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+                  10, 10
+                ]
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 4.5 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499569666,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 64,
+              "currentTurnPlayerColor": 3
+            },
+            "gameLogState": { "322": { "text": { "type": 44 } } },
+            "mechanicDevelopmentCardsState": {
+              "players": {
+                "2": {
+                  "developmentCardsBoughtThisTurn": null,
+                  "hasUsedDevelopmentCardThisTurn": null
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 8.8 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "2": 16, "4": 14 } },
+            "diceState": { "dice1": 5, "dice2": 6, "diceThrown": true },
+            "currentState": {
+              "startTime": 1765499578449,
+              "turnState": 2,
+              "allocatedTime": 30
+            },
+            "gameLogState": {
+              "323": {
+                "from": 3,
+                "text": {
+                  "type": 10,
+                  "firstDice": 5,
+                  "secondDice": 6,
+                  "playerColor": 3
+                }
+              },
+              "324": {
+                "from": 2,
+                "text": {
+                  "type": 47,
+                  "playerColor": 2,
+                  "cardsToBroadcast": [2, 2],
+                  "distributionType": 1
+                }
+              },
+              "325": {
+                "from": 3,
+                "text": {
+                  "type": 47,
+                  "playerColor": 3,
+                  "cardsToBroadcast": [4, 4, 2],
+                  "distributionType": 1
+                }
+              }
+            },
+            "playerStates": {
+              "2": { "resourceCards": { "cards": [5, 5, 2, 2] } },
+              "3": {
+                "resourceCards": { "cards": [4, 4, 4, 3, 1, 5, 5, 1, 4, 4, 2] }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 19.3 },
+          "stateChange": {
+            "bankState": { "resourceCards": { "4": 16, "5": 14 } },
+            "currentState": { "allocatedTime": 40 },
+            "gameLogState": {
+              "326": {
+                "from": 3,
+                "text": {
+                  "type": 116,
+                  "playerColor": 3,
+                  "givenCardEnums": [4, 4],
+                  "receivedCardEnums": [5]
+                }
+              }
+            },
+            "playerStates": {
+              "3": {
+                "resourceCards": { "cards": [4, 3, 1, 5, 5, 1, 4, 4, 2, 5] }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 1.9 },
+          "stateChange": {
+            "mapState": { "tileCornerStates": { "33": { "buildingType": 2 } } },
+            "bankState": { "resourceCards": { "4": 18, "5": 17 } },
+            "currentState": { "actionState": 0, "allocatedTime": 45 },
+            "gameLogState": {
+              "327": {
+                "from": 3,
+                "text": {
+                  "isVp": true,
+                  "type": 5,
+                  "pieceEnum": 3,
+                  "playerColor": 3
+                }
+              }
+            },
+            "playerStates": {
+              "3": {
+                "resourceCards": { "cards": [3, 1, 1, 4, 2] },
+                "victoryPointsState": { "0": 4, "1": 1 }
+              }
+            },
+            "mechanicCityState": { "3": { "bankCityAmount": 3 } },
+            "mechanicSettlementState": { "3": { "bankSettlementAmount": 1 } }
+          }
+        },
+        {
+          "input": { "deltaS": 2.3 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "44": { "type": 1, "owner": 3 } }
+            },
+            "bankState": { "resourceCards": { "1": 18, "2": 17 } },
+            "currentState": { "actionState": 0, "allocatedTime": 50 },
+            "gameLogState": {
+              "328": {
+                "from": 3,
+                "text": {
+                  "isVp": false,
+                  "type": 5,
+                  "pieceEnum": 0,
+                  "playerColor": 3
+                }
+              }
+            },
+            "playerStates": {
+              "3": { "resourceCards": { "cards": [3, 1, 4] } }
+            },
+            "mechanicRoadState": { "3": { "bankRoadAmount": 8 } },
+            "mechanicLongestRoadState": { "3": { "longestRoad": 4 } }
+          }
+        },
+        {
+          "input": { "deltaS": 2 },
+          "stateChange": {
+            "diceState": { "diceThrown": false },
+            "currentState": {
+              "startTime": 1765499607547,
+              "turnState": 1,
+              "allocatedTime": 8,
+              "completedTurns": 65,
+              "currentTurnPlayerColor": 2
+            },
+            "gameLogState": { "329": { "text": { "type": 44 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.2 },
+          "stateChange": {
+            "currentState": { "actionState": 24, "allocatedTime": 18 },
+            "gameLogState": {
+              "330": {
+                "from": 2,
+                "text": { "type": 20, "cardEnum": 11, "playerColor": 2 }
+              },
+              "331": {
+                "from": 2,
+                "text": { "type": 66, "playerColor": 2, "achievementEnum": 1 }
+              }
+            },
+            "playerStates": { "2": { "victoryPointsState": { "3": 1 } } },
+            "mechanicLargestArmyState": { "2": { "hasLargestArmy": true } },
+            "mechanicDevelopmentCardsState": {
+              "players": {
+                "2": {
+                  "developmentCards": { "cards": [12] },
+                  "developmentCardsUsed": [11, 11, 15, 11],
+                  "hasUsedDevelopmentCardThisTurn": true
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0 },
+          "stateChange": {
+            "currentState": {
+              "startTime": 1765499608769,
+              "turnState": 3,
+              "actionState": 0,
+              "allocatedTime": 300
+            },
+            "gameLogState": {
+              "332": { "text": { "type": 44 } },
+              "333": { "from": 2, "text": { "type": 45, "playerColor": 2 } },
+              "334": { "text": { "type": 44 } }
+            }
+          }
+        }
+      ],
+      "version": 0,
+      "startTime": "2025-12-12T00:24:57.542Z",
+      "botUserNames": [],
+      "endGameState": {
+        "players": {
+          "2": {
+            "rank": 1,
+            "color": 2,
+            "victoryPoints": { "0": 4, "1": 3, "2": 1, "3": 1, "4": 1 },
+            "winningPlayer": true
+          },
+          "3": {
+            "rank": 2,
+            "color": 3,
+            "victoryPoints": { "0": 4, "1": 1, "2": 1 },
+            "winningPlayer": false
+          }
+        },
+        "diceStats": [1, 3, 6, 8, 8, 9, 8, 6, 5, 4, 3],
+        "activityStats": {
+          "2": {
+            "color": 2,
+            "devCardsUsed": 4,
+            "resourcesUsed": 68,
+            "devCardsBought": 5,
+            "proposedTrades": 0,
+            "successfulTrades": 0,
+            "resourceIncomeBlocked": 5
+          },
+          "3": {
+            "color": 3,
+            "devCardsUsed": 2,
+            "resourcesUsed": 36,
+            "devCardsBought": 3,
+            "proposedTrades": 0,
+            "successfulTrades": 0,
+            "resourceIncomeBlocked": 8
+          }
+        },
+        "resourceStats": {
+          "2": {
+            "color": 2,
+            "tradeLoss": 26,
+            "goldIncome": 0,
+            "devCardLoss": 2,
+            "robbingLoss": 4,
+            "rollingLoss": 0,
+            "tradeIncome": 9,
+            "devCardIncome": 2,
+            "robbingIncome": 5,
+            "rollingIncome": 85,
+            "totalResourceLoss": 32,
+            "totalResourceScore": 69,
+            "totalResourceIncome": 101
+          },
+          "3": {
+            "color": 3,
+            "tradeLoss": 16,
+            "goldIncome": 0,
+            "devCardLoss": 0,
+            "robbingLoss": 5,
+            "rollingLoss": 0,
+            "tradeIncome": 5,
+            "devCardIncome": 2,
+            "robbingIncome": 4,
+            "rollingIncome": 46,
+            "totalResourceLoss": 21,
+            "totalResourceScore": 36,
+            "totalResourceIncome": 57
+          }
+        },
+        "totalTurnCount": 66,
+        "gameDurationInMS": 511257,
+        "resourceCardsStats": [
+          1, 4, 1, 4, 3, 4, 1, 1, 1, 4, 1, 1, 2, 5, 1, 1, 3, 4, 2, 5, 1, 4, 4,
+          2, 2, 4, 2, 4, 2, 3, 4, 3, 1, 5, 5, 2, 1, 4, 2, 5, 2, 1, 5, 5, 4, 1,
+          1, 1, 1, 4, 3, 2, 2, 4, 3, 4, 3, 4, 2, 2, 2, 2, 2, 3, 1, 1, 4, 1, 1,
+          1, 2, 2, 2, 4, 2, 2, 2, 1, 5, 5, 5, 4, 2, 2, 1, 1, 1, 1, 1, 5, 5, 5,
+          3, 3, 4, 1, 1, 1, 4, 4, 2, 2, 2, 3, 2, 2, 4, 3, 1, 1, 1, 4, 4, 1, 1,
+          1, 4, 4, 5, 2, 2, 4, 4, 3, 3, 3, 1, 5, 5, 5, 1, 1, 1, 1, 3, 1, 1, 1,
+          1, 4, 5, 1, 5, 5, 5, 4, 3, 4, 4, 2, 2, 2, 5
+        ],
+        "developmentCardStats": [12, 11, 13, 11, 11, 12, 15, 11]
+      },
+      "initialState": {
+        "mapState": {
+          "tileHexStates": {
+            "0": { "x": 0, "y": -2, "type": 0, "diceNumber": 0 },
+            "1": { "x": -1, "y": -1, "type": 1, "diceNumber": 5 },
+            "2": { "x": -2, "y": 0, "type": 5, "diceNumber": 2 },
+            "3": { "x": -2, "y": 1, "type": 2, "diceNumber": 6 },
+            "4": { "x": -2, "y": 2, "type": 3, "diceNumber": 3 },
+            "5": { "x": -1, "y": 2, "type": 1, "diceNumber": 8 },
+            "6": { "x": 0, "y": 2, "type": 4, "diceNumber": 10 },
+            "7": { "x": 1, "y": 1, "type": 1, "diceNumber": 9 },
+            "8": { "x": 2, "y": 0, "type": 3, "diceNumber": 12 },
+            "9": { "x": 2, "y": -1, "type": 4, "diceNumber": 11 },
+            "10": { "x": 2, "y": -2, "type": 4, "diceNumber": 4 },
+            "11": { "x": 1, "y": -2, "type": 4, "diceNumber": 8 },
+            "12": { "x": 0, "y": -1, "type": 3, "diceNumber": 10 },
+            "13": { "x": -1, "y": 0, "type": 5, "diceNumber": 9 },
+            "14": { "x": -1, "y": 1, "type": 2, "diceNumber": 4 },
+            "15": { "x": 0, "y": 1, "type": 1, "diceNumber": 5 },
+            "16": { "x": 1, "y": 0, "type": 5, "diceNumber": 6 },
+            "17": { "x": 1, "y": -1, "type": 3, "diceNumber": 3 },
+            "18": { "x": 0, "y": 0, "type": 2, "diceNumber": 11 }
+          },
+          "portEdgeStates": {
+            "0": { "x": 0, "y": -2, "z": 0, "type": 6 },
+            "1": { "x": -2, "y": 2, "z": 2, "type": 1 },
+            "2": { "x": -1, "y": 3, "z": 0, "type": 3 },
+            "3": { "x": 3, "y": 0, "z": 1, "type": 1 },
+            "4": { "x": -1, "y": -1, "z": 1, "type": 1 },
+            "5": { "x": -2, "y": 1, "z": 1, "type": 1 },
+            "6": { "x": 1, "y": 2, "z": 0, "type": 4 },
+            "7": { "x": 2, "y": -3, "z": 2, "type": 2 },
+            "8": { "x": 3, "y": -2, "z": 2, "type": 5 }
+          },
+          "tileEdgeStates": {
+            "0": { "x": 1, "y": -3, "z": 2 },
+            "1": { "x": 1, "y": -2, "z": 1 },
+            "2": { "x": 0, "y": -1, "z": 0 },
+            "3": { "x": 0, "y": -2, "z": 2 },
+            "4": { "x": 0, "y": -2, "z": 1 },
+            "5": { "x": 0, "y": -2, "z": 0 },
+            "6": { "x": 0, "y": -1, "z": 1 },
+            "7": { "x": -1, "y": 0, "z": 0 },
+            "8": { "x": -1, "y": -1, "z": 2 },
+            "9": { "x": -1, "y": -1, "z": 1 },
+            "10": { "x": -1, "y": -1, "z": 0 },
+            "11": { "x": -1, "y": 0, "z": 1 },
+            "12": { "x": -2, "y": 1, "z": 0 },
+            "13": { "x": -2, "y": 0, "z": 2 },
+            "14": { "x": -2, "y": 0, "z": 1 },
+            "15": { "x": -2, "y": 0, "z": 0 },
+            "16": { "x": -1, "y": 0, "z": 2 },
+            "17": { "x": -1, "y": 1, "z": 1 },
+            "18": { "x": -2, "y": 2, "z": 0 },
+            "19": { "x": -2, "y": 1, "z": 2 },
+            "20": { "x": -2, "y": 1, "z": 1 },
+            "21": { "x": -1, "y": 1, "z": 2 },
+            "22": { "x": -1, "y": 2, "z": 1 },
+            "23": { "x": -2, "y": 3, "z": 0 },
+            "24": { "x": -2, "y": 2, "z": 2 },
+            "25": { "x": -2, "y": 2, "z": 1 },
+            "26": { "x": 0, "y": 1, "z": 2 },
+            "27": { "x": 0, "y": 2, "z": 1 },
+            "28": { "x": -1, "y": 3, "z": 0 },
+            "29": { "x": -1, "y": 2, "z": 2 },
+            "30": { "x": -1, "y": 2, "z": 0 },
+            "31": { "x": 1, "y": 1, "z": 2 },
+            "32": { "x": 1, "y": 2, "z": 1 },
+            "33": { "x": 0, "y": 3, "z": 0 },
+            "34": { "x": 0, "y": 2, "z": 2 },
+            "35": { "x": 0, "y": 2, "z": 0 },
+            "36": { "x": 2, "y": 0, "z": 2 },
+            "37": { "x": 2, "y": 1, "z": 1 },
+            "38": { "x": 1, "y": 2, "z": 0 },
+            "39": { "x": 1, "y": 1, "z": 1 },
+            "40": { "x": 1, "y": 1, "z": 0 },
+            "41": { "x": 3, "y": -1, "z": 2 },
+            "42": { "x": 3, "y": 0, "z": 1 },
+            "43": { "x": 2, "y": 1, "z": 0 },
+            "44": { "x": 2, "y": 0, "z": 1 },
+            "45": { "x": 2, "y": 0, "z": 0 },
+            "46": { "x": 3, "y": -2, "z": 2 },
+            "47": { "x": 3, "y": -1, "z": 1 },
+            "48": { "x": 2, "y": -1, "z": 2 },
+            "49": { "x": 2, "y": -1, "z": 1 },
+            "50": { "x": 2, "y": -1, "z": 0 },
+            "51": { "x": 3, "y": -3, "z": 2 },
+            "52": { "x": 3, "y": -2, "z": 1 },
+            "53": { "x": 2, "y": -2, "z": 2 },
+            "54": { "x": 2, "y": -2, "z": 1 },
+            "55": { "x": 2, "y": -2, "z": 0 },
+            "56": { "x": 2, "y": -3, "z": 2 },
+            "57": { "x": 1, "y": -1, "z": 0 },
+            "58": { "x": 1, "y": -2, "z": 2 },
+            "59": { "x": 1, "y": -2, "z": 0 },
+            "60": { "x": 1, "y": -1, "z": 1 },
+            "61": { "x": 0, "y": 0, "z": 0 },
+            "62": { "x": 0, "y": -1, "z": 2 },
+            "63": { "x": 0, "y": 0, "z": 1 },
+            "64": { "x": -1, "y": 1, "z": 0 },
+            "65": { "x": 0, "y": 0, "z": 2 },
+            "66": { "x": 0, "y": 1, "z": 1 },
+            "67": { "x": 1, "y": 0, "z": 2 },
+            "68": { "x": 0, "y": 1, "z": 0 },
+            "69": { "x": 1, "y": 0, "z": 1 },
+            "70": { "x": 1, "y": 0, "z": 0 },
+            "71": { "x": 1, "y": -1, "z": 2 }
+          },
+          "tileCornerStates": {
+            "0": { "x": 0, "y": -2, "z": 0 },
+            "1": { "x": 1, "y": -3, "z": 1 },
+            "2": { "x": 0, "y": -1, "z": 0 },
+            "3": { "x": 0, "y": -2, "z": 1 },
+            "4": { "x": -1, "y": -1, "z": 0 },
+            "5": { "x": 0, "y": -3, "z": 1 },
+            "6": { "x": -1, "y": 0, "z": 0 },
+            "7": { "x": -1, "y": -1, "z": 1 },
+            "8": { "x": -2, "y": 0, "z": 0 },
+            "9": { "x": -1, "y": -2, "z": 1 },
+            "10": { "x": -2, "y": 1, "z": 0 },
+            "11": { "x": -2, "y": 0, "z": 1 },
+            "12": { "x": -3, "y": 1, "z": 0 },
+            "13": { "x": -2, "y": -1, "z": 1 },
+            "14": { "x": -1, "y": 0, "z": 1 },
+            "15": { "x": -2, "y": 2, "z": 0 },
+            "16": { "x": -2, "y": 1, "z": 1 },
+            "17": { "x": -3, "y": 2, "z": 0 },
+            "18": { "x": -1, "y": 1, "z": 1 },
+            "19": { "x": -2, "y": 3, "z": 0 },
+            "20": { "x": -2, "y": 2, "z": 1 },
+            "21": { "x": -3, "y": 3, "z": 0 },
+            "22": { "x": -1, "y": 2, "z": 0 },
+            "23": { "x": 0, "y": 1, "z": 1 },
+            "24": { "x": -1, "y": 3, "z": 0 },
+            "25": { "x": -1, "y": 2, "z": 1 },
+            "26": { "x": 0, "y": 2, "z": 0 },
+            "27": { "x": 1, "y": 1, "z": 1 },
+            "28": { "x": 0, "y": 3, "z": 0 },
+            "29": { "x": 0, "y": 2, "z": 1 },
+            "30": { "x": 1, "y": 1, "z": 0 },
+            "31": { "x": 2, "y": 0, "z": 1 },
+            "32": { "x": 1, "y": 2, "z": 0 },
+            "33": { "x": 1, "y": 0, "z": 1 },
+            "34": { "x": 2, "y": 0, "z": 0 },
+            "35": { "x": 3, "y": -1, "z": 1 },
+            "36": { "x": 2, "y": 1, "z": 0 },
+            "37": { "x": 2, "y": -1, "z": 1 },
+            "38": { "x": 2, "y": -1, "z": 0 },
+            "39": { "x": 3, "y": -2, "z": 1 },
+            "40": { "x": 1, "y": 0, "z": 0 },
+            "41": { "x": 2, "y": -2, "z": 1 },
+            "42": { "x": 2, "y": -2, "z": 0 },
+            "43": { "x": 3, "y": -3, "z": 1 },
+            "44": { "x": 1, "y": -1, "z": 0 },
+            "45": { "x": 2, "y": -3, "z": 1 },
+            "46": { "x": 1, "y": -2, "z": 0 },
+            "47": { "x": 1, "y": -2, "z": 1 },
+            "48": { "x": 0, "y": 0, "z": 0 },
+            "49": { "x": 0, "y": -1, "z": 1 },
+            "50": { "x": -1, "y": 1, "z": 0 },
+            "51": { "x": 0, "y": 0, "z": 1 },
+            "52": { "x": 0, "y": 1, "z": 0 },
+            "53": { "x": 1, "y": -1, "z": 1 }
+          }
+        },
+        "bankState": {
+          "hideBankCards": true,
+          "resourceCards": { "1": 19, "2": 19, "3": 19, "4": 19, "5": 19 }
+        },
+        "diceState": { "dice1": 1, "dice2": 1, "diceThrown": false },
+        "tradeState": {
+          "activeOffers": {},
+          "closedOffers": {},
+          "embargoState": {
+            "2": { "activeEmbargosAgainst": [] },
+            "3": { "activeEmbargosAgainst": [] }
+          }
+        },
+        "currentState": {
+          "startTime": 1765499097512,
+          "turnState": 0,
+          "actionState": 1,
+          "allocatedTime": 60,
+          "completedTurns": 0,
+          "currentTurnPlayerColor": 3
+        },
+        "gameLogState": {
+          "0": { "text": { "type": 2, "isDiscord": false } },
+          "1": { "text": { "type": 44 } }
+        },
+        "playerStates": {
+          "2": {
+            "color": 2,
+            "isConnected": true,
+            "resourceCards": { "cards": [] },
+            "isTakingAction": false,
+            "cardDiscardLimit": 9,
+            "victoryPointsState": {},
+            "bankTradeRatiosState": { "1": 4, "2": 4, "3": 4, "4": 4, "5": 4 }
+          },
+          "3": {
+            "color": 3,
+            "isConnected": true,
+            "resourceCards": { "cards": [] },
+            "isTakingAction": false,
+            "cardDiscardLimit": 9,
+            "victoryPointsState": {},
+            "bankTradeRatiosState": { "1": 4, "2": 4, "3": 4, "4": 4, "5": 4 }
+          }
+        },
+        "gameChatState": {},
+        "mechanicCityState": {
+          "2": { "bankCityAmount": 4 },
+          "3": { "bankCityAmount": 4 }
+        },
+        "mechanicRoadState": {
+          "2": { "bankRoadAmount": 15 },
+          "3": { "bankRoadAmount": 15 }
+        },
+        "mechanicRobberState": { "isActive": true, "locationTileIndex": 0 },
+        "mechanicSettlementState": {
+          "2": { "bankSettlementAmount": 5 },
+          "3": { "bankSettlementAmount": 5 }
+        },
+        "mechanicLargestArmyState": { "2": {}, "3": {} },
+        "mechanicLongestRoadState": {
+          "2": { "longestRoad": 0 },
+          "3": { "longestRoad": 0 }
+        },
+        "mechanicDevelopmentCardsState": {
+          "players": {
+            "2": {
+              "developmentCards": { "cards": [] },
+              "developmentCardsUsed": []
+            },
+            "3": {
+              "developmentCards": { "cards": [] },
+              "developmentCardsUsed": []
+            }
+          },
+          "bankDevelopmentCards": {
+            "cards": [
+              10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+              10, 10, 10, 10, 10, 10, 10, 10, 10
+            ]
+          }
+        }
+      },
+      "eventsPerspectives": [2, 3]
+    },
+    "playerUserStates": [
+      {
+        "databaseIcon": 11,
+        "isBot": false,
+        "selectedColor": 2,
+        "playerId": "player_1"
+      },
+      {
+        "databaseIcon": 11,
+        "isBot": false,
+        "selectedColor": 3,
+        "playerId": "player_2"
+      }
+    ],
+    "playOrder": [3, 2],
+    "gameDetails": { "isDiscord": false, "isRanked": false },
+    "gameSettings": {
+      "id": "tile1424",
+      "gameType": 6,
+      "privateGame": false,
+      "playOrderSelectionActive": false,
+      "minimumKarma": 0,
+      "eloType": 3,
+      "modeSetting": 0,
+      "extensionSetting": 0,
+      "scenarioSetting": 0,
+      "mapSetting": 0,
+      "diceSetting": 1,
+      "victoryPointsToWin": 15,
+      "karmaActive": true,
+      "cardDiscardLimit": 9,
+      "maxPlayers": 2,
+      "gameSpeed": 0,
+      "botSpeed": 1,
+      "hideBankCards": true,
+      "friendlyRobber": true
+    },
+    "databaseGameId": "193251073",
+    "playerPerspective": 2
+  }
+}

@@ -1,0 +1,842 @@
+{
+  "data": {
+    "eventHistory": {
+      "events": [
+        {
+          "input": { "deltaS": 6.4 },
+          "stateChange": {
+            "gameChatState": {
+              "0": {
+                "text": {
+                  "from": 5,
+                  "type": 0,
+                  "message": "let&#39;s point farm everyone"
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 4.5 },
+          "stateChange": {
+            "gameChatState": {
+              "1": {
+                "text": {
+                  "from": 5,
+                  "type": 0,
+                  "message": "so we can make it to tomorrow"
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 19.3 },
+          "stateChange": {
+            "gameChatState": {
+              "2": { "text": { "from": 1, "type": 0, "message": "holup" } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.4 },
+          "stateChange": {
+            "mapState": {
+              "tileCornerStates": { "33": { "owner": 2, "buildingType": 1 } }
+            },
+            "currentState": {
+              "startTime": 1764443049814,
+              "actionState": 3,
+              "allocatedTime": 15
+            },
+            "gameLogState": {
+              "2": {
+                "from": 2,
+                "text": { "type": 4, "pieceEnum": 2, "playerColor": 2 }
+              }
+            },
+            "playerStates": { "2": { "victoryPointsState": { "0": 1 } } },
+            "mechanicSettlementState": { "2": { "bankSettlementAmount": 4 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.8 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "39": { "type": 1, "owner": 2 } }
+            },
+            "currentState": {
+              "startTime": 1764443051611,
+              "actionState": 1,
+              "allocatedTime": 60,
+              "completedTurns": 1,
+              "currentTurnPlayerColor": 5
+            },
+            "gameLogState": {
+              "3": {
+                "from": 2,
+                "text": { "type": 4, "pieceEnum": 0, "playerColor": 2 }
+              },
+              "4": { "text": { "type": 44 } }
+            },
+            "mechanicRoadState": { "2": { "bankRoadAmount": 14 } },
+            "mechanicLongestRoadState": { "2": { "longestRoad": 1 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.1 },
+          "stateChange": {
+            "gameChatState": {
+              "3": {
+                "text": {
+                  "from": 1,
+                  "type": 0,
+                  "message": "is this right rules"
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 6 },
+          "stateChange": {
+            "gameChatState": {
+              "4": {
+                "text": {
+                  "from": 1,
+                  "type": 0,
+                  "message": "why only 1 minute?"
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 0.1 },
+          "stateChange": {
+            "gameChatState": {
+              "5": { "text": { "from": 5, "type": 0, "message": "remake?" } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 3.6 },
+          "stateChange": {
+            "gameChatState": {
+              "6": {
+                "text": { "from": 5, "type": 0, "message": "it&#39;s too fast" }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 4.6 },
+          "stateChange": {
+            "gameChatState": {
+              "7": {
+                "text": {
+                  "from": 1,
+                  "type": 0,
+                  "message": "idk if its 3 player or something"
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 41.4 },
+          "stateChange": {
+            "mapState": {
+              "tileCornerStates": { "22": { "owner": 5, "buildingType": 1 } }
+            },
+            "currentState": {
+              "startTime": 1764443108476,
+              "actionState": 3,
+              "allocatedTime": 15
+            },
+            "gameLogState": {
+              "5": {
+                "from": 5,
+                "text": { "type": 4, "pieceEnum": 2, "playerColor": 5 }
+              }
+            },
+            "playerStates": { "5": { "victoryPointsState": { "0": 1 } } },
+            "mechanicSettlementState": { "5": { "bankSettlementAmount": 4 } }
+          }
+        },
+        {
+          "input": { "deltaS": 1.4 },
+          "stateChange": {
+            "mapState": {
+              "tileEdgeStates": { "26": { "type": 1, "owner": 5 } }
+            },
+            "currentState": {
+              "startTime": 1764443109899,
+              "actionState": 1,
+              "allocatedTime": 60,
+              "completedTurns": 2,
+              "currentTurnPlayerColor": 1
+            },
+            "gameLogState": {
+              "6": {
+                "from": 5,
+                "text": { "type": 4, "pieceEnum": 0, "playerColor": 5 }
+              },
+              "7": { "text": { "type": 44 } }
+            },
+            "mechanicRoadState": { "5": { "bankRoadAmount": 14 } },
+            "mechanicLongestRoadState": { "5": { "longestRoad": 1 } }
+          }
+        },
+        {
+          "input": { "deltaS": 7.7 },
+          "stateChange": {
+            "gameChatState": {
+              "8": {
+                "text": {
+                  "from": 5,
+                  "type": 0,
+                  "message": "i&#39;m down to remake"
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.4 },
+          "stateChange": {
+            "gameChatState": {
+              "9": {
+                "text": {
+                  "from": 5,
+                  "type": 0,
+                  "message": "the timer is too quick"
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 7.1 },
+          "stateChange": {
+            "gameLogState": {
+              "8": { "text": { "type": 124, "playerColor": 5 } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 2.1 },
+          "stateChange": {
+            "gameLogState": {
+              "9": {
+                "from": 5,
+                "text": { "type": 122 },
+                "toSpectators": false,
+                "specificRecipients": [5]
+              },
+              "10": {
+                "from": 1,
+                "text": { "type": 122 },
+                "toSpectators": false,
+                "specificRecipients": [1]
+              },
+              "11": {
+                "from": 2,
+                "text": { "type": 122 },
+                "toSpectators": false,
+                "specificRecipients": [2]
+              },
+              "12": { "text": { "type": 126 } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 5.1 },
+          "stateChange": {
+            "currentState": { "startTime": 1764443114108 },
+            "gameLogState": {
+              "13": { "text": { "type": 125, "playerColor": 2 } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 5.3 },
+          "stateChange": { "currentState": { "startTime": 1764443120133 } }
+        },
+        {
+          "input": { "deltaS": 0.1 },
+          "stateChange": {
+            "gameChatState": {
+              "10": { "text": { "from": 1, "type": 0, "message": "sry blue" } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 8.1 },
+          "stateChange": { "currentState": { "startTime": 1764443128149 } }
+        },
+        {
+          "input": { "deltaS": 0.1 },
+          "stateChange": {
+            "gameChatState": {
+              "11": {
+                "text": {
+                  "from": 1,
+                  "type": 0,
+                  "message": "gonna check with admin what to do here"
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 7.7 },
+          "stateChange": { "currentState": { "startTime": 1764443135874 } }
+        },
+        {
+          "input": { "deltaS": 0.1 },
+          "stateChange": {
+            "gameChatState": {
+              "12": {
+                "text": {
+                  "from": 1,
+                  "type": 0,
+                  "message": "thing we may have incorrect setting?"
+                }
+              }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 28 },
+          "stateChange": { "currentState": { "startTime": 1764443163794 } }
+        },
+        {
+          "input": { "deltaS": 0.1 },
+          "stateChange": {
+            "currentState": { "startTime": 1764443164794 },
+            "gameChatState": {
+              "13": { "text": { "from": 5, "type": 0, "message": "new room" } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 4.9 },
+          "stateChange": {
+            "currentState": { "startTime": 1764443168821 },
+            "gameLogState": {
+              "14": {
+                "from": 2,
+                "text": {
+                  "type": 24,
+                  "playerColor": 2,
+                  "is10SecondRuleDisabled": true
+                }
+              }
+            },
+            "playerStates": { "2": { "isConnected": false } }
+          }
+        },
+        {
+          "input": { "deltaS": 11.8 },
+          "stateChange": {
+            "currentState": { "startTime": 1764443181119 },
+            "gameLogState": { "15": { "text": { "type": 129 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 0 },
+          "stateChange": {
+            "gameLogState": {
+              "16": { "text": { "type": 36, "playerColor": 5 } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 4.2 },
+          "stateChange": {
+            "currentState": { "startTime": 1764443185129 },
+            "gameLogState": {
+              "17": {
+                "from": 5,
+                "text": { "type": 26 },
+                "toSpectators": false,
+                "specificRecipients": [5]
+              },
+              "18": {
+                "from": 1,
+                "text": { "type": 26 },
+                "toSpectators": false,
+                "specificRecipients": [1]
+              },
+              "19": { "text": { "type": 33 } }
+            }
+          }
+        },
+        {
+          "input": { "deltaS": 6.2 },
+          "stateChange": { "currentState": { "startTime": 1764443191135 } }
+        },
+        {
+          "input": { "deltaS": 0 },
+          "stateChange": {
+            "gameLogState": { "20": { "text": { "type": 29 } } }
+          }
+        },
+        {
+          "input": { "deltaS": 2.5 },
+          "stateChange": {
+            "currentState": { "startTime": 1764443194143 },
+            "gameLogState": {
+              "21": {
+                "from": 1,
+                "text": {
+                  "type": 24,
+                  "playerColor": 1,
+                  "is10SecondRuleDisabled": true
+                }
+              }
+            },
+            "playerStates": { "1": { "isConnected": false } }
+          }
+        },
+        {
+          "input": { "deltaS": 2.5 },
+          "stateChange": {
+            "currentState": { "startTime": 1764443196159 },
+            "gameLogState": {
+              "22": {
+                "from": 5,
+                "text": {
+                  "type": 24,
+                  "playerColor": 5,
+                  "is10SecondRuleDisabled": true
+                }
+              }
+            },
+            "playerStates": { "5": { "isConnected": false } }
+          }
+        }
+      ],
+      "version": 0,
+      "startTime": "2025-11-29T19:03:39.141Z",
+      "botUserNames": [],
+      "endGameState": {
+        "players": {
+          "1": {
+            "rank": 3,
+            "color": 1,
+            "victoryPoints": {},
+            "winningPlayer": false
+          },
+          "2": {
+            "rank": 2,
+            "color": 2,
+            "victoryPoints": { "0": 1 },
+            "winningPlayer": false
+          },
+          "5": {
+            "rank": 1,
+            "color": 5,
+            "victoryPoints": { "0": 1 },
+            "winningPlayer": false
+          }
+        },
+        "diceStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        "activityStats": {
+          "1": {
+            "color": 1,
+            "devCardsUsed": 0,
+            "resourcesUsed": 0,
+            "devCardsBought": 0,
+            "proposedTrades": 0,
+            "successfulTrades": 0,
+            "resourceIncomeBlocked": 0
+          },
+          "2": {
+            "color": 2,
+            "devCardsUsed": 0,
+            "resourcesUsed": 0,
+            "devCardsBought": 0,
+            "proposedTrades": 0,
+            "successfulTrades": 0,
+            "resourceIncomeBlocked": 0
+          },
+          "5": {
+            "color": 5,
+            "devCardsUsed": 0,
+            "resourcesUsed": 0,
+            "devCardsBought": 0,
+            "proposedTrades": 0,
+            "successfulTrades": 0,
+            "resourceIncomeBlocked": 0
+          }
+        },
+        "resourceStats": {
+          "1": {
+            "color": 1,
+            "tradeLoss": 0,
+            "goldIncome": 0,
+            "devCardLoss": 0,
+            "robbingLoss": 0,
+            "rollingLoss": 0,
+            "tradeIncome": 0,
+            "devCardIncome": 0,
+            "robbingIncome": 0,
+            "rollingIncome": 0,
+            "totalResourceLoss": 0,
+            "totalResourceScore": 0,
+            "totalResourceIncome": 0
+          },
+          "2": {
+            "color": 2,
+            "tradeLoss": 0,
+            "goldIncome": 0,
+            "devCardLoss": 0,
+            "robbingLoss": 0,
+            "rollingLoss": 0,
+            "tradeIncome": 0,
+            "devCardIncome": 0,
+            "robbingIncome": 0,
+            "rollingIncome": 0,
+            "totalResourceLoss": 0,
+            "totalResourceScore": 0,
+            "totalResourceIncome": 0
+          },
+          "5": {
+            "color": 5,
+            "tradeLoss": 0,
+            "goldIncome": 0,
+            "devCardLoss": 0,
+            "robbingLoss": 0,
+            "rollingLoss": 0,
+            "tradeIncome": 0,
+            "devCardIncome": 0,
+            "robbingIncome": 0,
+            "rollingIncome": 0,
+            "totalResourceLoss": 0,
+            "totalResourceScore": 0,
+            "totalResourceIncome": 0
+          }
+        },
+        "totalTurnCount": 3,
+        "gameDurationInMS": 110020,
+        "resourceCardsStats": [],
+        "developmentCardStats": []
+      },
+      "initialState": {
+        "mapState": {
+          "tileHexStates": {
+            "0": { "x": 0, "y": -2, "type": 0, "diceNumber": 0 },
+            "1": { "x": -1, "y": -1, "type": 1, "diceNumber": 5 },
+            "2": { "x": -2, "y": 0, "type": 1, "diceNumber": 2 },
+            "3": { "x": -2, "y": 1, "type": 3, "diceNumber": 6 },
+            "4": { "x": -2, "y": 2, "type": 2, "diceNumber": 3 },
+            "5": { "x": -1, "y": 2, "type": 2, "diceNumber": 8 },
+            "6": { "x": 0, "y": 2, "type": 4, "diceNumber": 10 },
+            "7": { "x": 1, "y": 1, "type": 2, "diceNumber": 9 },
+            "8": { "x": 2, "y": 0, "type": 3, "diceNumber": 12 },
+            "9": { "x": 2, "y": -1, "type": 1, "diceNumber": 11 },
+            "10": { "x": 2, "y": -2, "type": 5, "diceNumber": 4 },
+            "11": { "x": 1, "y": -2, "type": 4, "diceNumber": 8 },
+            "12": { "x": 0, "y": -1, "type": 5, "diceNumber": 10 },
+            "13": { "x": -1, "y": 0, "type": 4, "diceNumber": 9 },
+            "14": { "x": -1, "y": 1, "type": 3, "diceNumber": 4 },
+            "15": { "x": 0, "y": 1, "type": 5, "diceNumber": 5 },
+            "16": { "x": 1, "y": 0, "type": 1, "diceNumber": 6 },
+            "17": { "x": 1, "y": -1, "type": 3, "diceNumber": 3 },
+            "18": { "x": 0, "y": 0, "type": 4, "diceNumber": 11 }
+          },
+          "portEdgeStates": {
+            "0": { "x": 0, "y": -2, "z": 0, "type": 1 },
+            "1": { "x": -2, "y": 2, "z": 2, "type": 4 },
+            "2": { "x": -1, "y": 3, "z": 0, "type": 2 },
+            "3": { "x": 3, "y": 0, "z": 1, "type": 6 },
+            "4": { "x": -1, "y": -1, "z": 1, "type": 5 },
+            "5": { "x": -2, "y": 1, "z": 1, "type": 1 },
+            "6": { "x": 1, "y": 2, "z": 0, "type": 3 },
+            "7": { "x": 2, "y": -3, "z": 2, "type": 1 },
+            "8": { "x": 3, "y": -2, "z": 2, "type": 1 }
+          },
+          "tileEdgeStates": {
+            "0": { "x": 1, "y": -3, "z": 2 },
+            "1": { "x": 1, "y": -2, "z": 1 },
+            "2": { "x": 0, "y": -1, "z": 0 },
+            "3": { "x": 0, "y": -2, "z": 2 },
+            "4": { "x": 0, "y": -2, "z": 1 },
+            "5": { "x": 0, "y": -2, "z": 0 },
+            "6": { "x": 0, "y": -1, "z": 1 },
+            "7": { "x": -1, "y": 0, "z": 0 },
+            "8": { "x": -1, "y": -1, "z": 2 },
+            "9": { "x": -1, "y": -1, "z": 1 },
+            "10": { "x": -1, "y": -1, "z": 0 },
+            "11": { "x": -1, "y": 0, "z": 1 },
+            "12": { "x": -2, "y": 1, "z": 0 },
+            "13": { "x": -2, "y": 0, "z": 2 },
+            "14": { "x": -2, "y": 0, "z": 1 },
+            "15": { "x": -2, "y": 0, "z": 0 },
+            "16": { "x": -1, "y": 0, "z": 2 },
+            "17": { "x": -1, "y": 1, "z": 1 },
+            "18": { "x": -2, "y": 2, "z": 0 },
+            "19": { "x": -2, "y": 1, "z": 2 },
+            "20": { "x": -2, "y": 1, "z": 1 },
+            "21": { "x": -1, "y": 1, "z": 2 },
+            "22": { "x": -1, "y": 2, "z": 1 },
+            "23": { "x": -2, "y": 3, "z": 0 },
+            "24": { "x": -2, "y": 2, "z": 2 },
+            "25": { "x": -2, "y": 2, "z": 1 },
+            "26": { "x": 0, "y": 1, "z": 2 },
+            "27": { "x": 0, "y": 2, "z": 1 },
+            "28": { "x": -1, "y": 3, "z": 0 },
+            "29": { "x": -1, "y": 2, "z": 2 },
+            "30": { "x": -1, "y": 2, "z": 0 },
+            "31": { "x": 1, "y": 1, "z": 2 },
+            "32": { "x": 1, "y": 2, "z": 1 },
+            "33": { "x": 0, "y": 3, "z": 0 },
+            "34": { "x": 0, "y": 2, "z": 2 },
+            "35": { "x": 0, "y": 2, "z": 0 },
+            "36": { "x": 2, "y": 0, "z": 2 },
+            "37": { "x": 2, "y": 1, "z": 1 },
+            "38": { "x": 1, "y": 2, "z": 0 },
+            "39": { "x": 1, "y": 1, "z": 1 },
+            "40": { "x": 1, "y": 1, "z": 0 },
+            "41": { "x": 3, "y": -1, "z": 2 },
+            "42": { "x": 3, "y": 0, "z": 1 },
+            "43": { "x": 2, "y": 1, "z": 0 },
+            "44": { "x": 2, "y": 0, "z": 1 },
+            "45": { "x": 2, "y": 0, "z": 0 },
+            "46": { "x": 3, "y": -2, "z": 2 },
+            "47": { "x": 3, "y": -1, "z": 1 },
+            "48": { "x": 2, "y": -1, "z": 2 },
+            "49": { "x": 2, "y": -1, "z": 1 },
+            "50": { "x": 2, "y": -1, "z": 0 },
+            "51": { "x": 3, "y": -3, "z": 2 },
+            "52": { "x": 3, "y": -2, "z": 1 },
+            "53": { "x": 2, "y": -2, "z": 2 },
+            "54": { "x": 2, "y": -2, "z": 1 },
+            "55": { "x": 2, "y": -2, "z": 0 },
+            "56": { "x": 2, "y": -3, "z": 2 },
+            "57": { "x": 1, "y": -1, "z": 0 },
+            "58": { "x": 1, "y": -2, "z": 2 },
+            "59": { "x": 1, "y": -2, "z": 0 },
+            "60": { "x": 1, "y": -1, "z": 1 },
+            "61": { "x": 0, "y": 0, "z": 0 },
+            "62": { "x": 0, "y": -1, "z": 2 },
+            "63": { "x": 0, "y": 0, "z": 1 },
+            "64": { "x": -1, "y": 1, "z": 0 },
+            "65": { "x": 0, "y": 0, "z": 2 },
+            "66": { "x": 0, "y": 1, "z": 1 },
+            "67": { "x": 1, "y": 0, "z": 2 },
+            "68": { "x": 0, "y": 1, "z": 0 },
+            "69": { "x": 1, "y": 0, "z": 1 },
+            "70": { "x": 1, "y": 0, "z": 0 },
+            "71": { "x": 1, "y": -1, "z": 2 }
+          },
+          "tileCornerStates": {
+            "0": { "x": 0, "y": -2, "z": 0 },
+            "1": { "x": 1, "y": -3, "z": 1 },
+            "2": { "x": 0, "y": -1, "z": 0 },
+            "3": { "x": 0, "y": -2, "z": 1 },
+            "4": { "x": -1, "y": -1, "z": 0 },
+            "5": { "x": 0, "y": -3, "z": 1 },
+            "6": { "x": -1, "y": 0, "z": 0 },
+            "7": { "x": -1, "y": -1, "z": 1 },
+            "8": { "x": -2, "y": 0, "z": 0 },
+            "9": { "x": -1, "y": -2, "z": 1 },
+            "10": { "x": -2, "y": 1, "z": 0 },
+            "11": { "x": -2, "y": 0, "z": 1 },
+            "12": { "x": -3, "y": 1, "z": 0 },
+            "13": { "x": -2, "y": -1, "z": 1 },
+            "14": { "x": -1, "y": 0, "z": 1 },
+            "15": { "x": -2, "y": 2, "z": 0 },
+            "16": { "x": -2, "y": 1, "z": 1 },
+            "17": { "x": -3, "y": 2, "z": 0 },
+            "18": { "x": -1, "y": 1, "z": 1 },
+            "19": { "x": -2, "y": 3, "z": 0 },
+            "20": { "x": -2, "y": 2, "z": 1 },
+            "21": { "x": -3, "y": 3, "z": 0 },
+            "22": { "x": -1, "y": 2, "z": 0 },
+            "23": { "x": 0, "y": 1, "z": 1 },
+            "24": { "x": -1, "y": 3, "z": 0 },
+            "25": { "x": -1, "y": 2, "z": 1 },
+            "26": { "x": 0, "y": 2, "z": 0 },
+            "27": { "x": 1, "y": 1, "z": 1 },
+            "28": { "x": 0, "y": 3, "z": 0 },
+            "29": { "x": 0, "y": 2, "z": 1 },
+            "30": { "x": 1, "y": 1, "z": 0 },
+            "31": { "x": 2, "y": 0, "z": 1 },
+            "32": { "x": 1, "y": 2, "z": 0 },
+            "33": { "x": 1, "y": 0, "z": 1 },
+            "34": { "x": 2, "y": 0, "z": 0 },
+            "35": { "x": 3, "y": -1, "z": 1 },
+            "36": { "x": 2, "y": 1, "z": 0 },
+            "37": { "x": 2, "y": -1, "z": 1 },
+            "38": { "x": 2, "y": -1, "z": 0 },
+            "39": { "x": 3, "y": -2, "z": 1 },
+            "40": { "x": 1, "y": 0, "z": 0 },
+            "41": { "x": 2, "y": -2, "z": 1 },
+            "42": { "x": 2, "y": -2, "z": 0 },
+            "43": { "x": 3, "y": -3, "z": 1 },
+            "44": { "x": 1, "y": -1, "z": 0 },
+            "45": { "x": 2, "y": -3, "z": 1 },
+            "46": { "x": 1, "y": -2, "z": 0 },
+            "47": { "x": 1, "y": -2, "z": 1 },
+            "48": { "x": 0, "y": 0, "z": 0 },
+            "49": { "x": 0, "y": -1, "z": 1 },
+            "50": { "x": -1, "y": 1, "z": 0 },
+            "51": { "x": 0, "y": 0, "z": 1 },
+            "52": { "x": 0, "y": 1, "z": 0 },
+            "53": { "x": 1, "y": -1, "z": 1 }
+          }
+        },
+        "bankState": {
+          "hideBankCards": true,
+          "resourceCards": { "1": 19, "2": 19, "3": 19, "4": 19, "5": 19 }
+        },
+        "diceState": { "dice1": 1, "dice2": 1, "diceThrown": false },
+        "tradeState": {
+          "activeOffers": {},
+          "closedOffers": {},
+          "embargoState": {
+            "1": { "activeEmbargosAgainst": [] },
+            "2": { "activeEmbargosAgainst": [] },
+            "5": { "activeEmbargosAgainst": [] }
+          }
+        },
+        "currentState": {
+          "startTime": 1764443019139,
+          "turnState": 0,
+          "actionState": 1,
+          "allocatedTime": 60,
+          "completedTurns": 0,
+          "currentTurnPlayerColor": 2
+        },
+        "gameLogState": {
+          "0": { "text": { "type": 2, "isDiscord": false } },
+          "1": { "text": { "type": 44 } }
+        },
+        "playerStates": {
+          "1": {
+            "color": 1,
+            "isConnected": true,
+            "resourceCards": { "cards": [] },
+            "isTakingAction": false,
+            "cardDiscardLimit": 7,
+            "victoryPointsState": {},
+            "bankTradeRatiosState": { "1": 4, "2": 4, "3": 4, "4": 4, "5": 4 }
+          },
+          "2": {
+            "color": 2,
+            "isConnected": true,
+            "resourceCards": { "cards": [] },
+            "isTakingAction": false,
+            "cardDiscardLimit": 7,
+            "victoryPointsState": {},
+            "bankTradeRatiosState": { "1": 4, "2": 4, "3": 4, "4": 4, "5": 4 }
+          },
+          "5": {
+            "color": 5,
+            "isConnected": true,
+            "resourceCards": { "cards": [] },
+            "isTakingAction": false,
+            "cardDiscardLimit": 7,
+            "victoryPointsState": {},
+            "bankTradeRatiosState": { "1": 4, "2": 4, "3": 4, "4": 4, "5": 4 }
+          }
+        },
+        "gameChatState": {},
+        "mechanicCityState": {
+          "1": { "bankCityAmount": 4 },
+          "2": { "bankCityAmount": 4 },
+          "5": { "bankCityAmount": 4 }
+        },
+        "mechanicRoadState": {
+          "1": { "bankRoadAmount": 15 },
+          "2": { "bankRoadAmount": 15 },
+          "5": { "bankRoadAmount": 15 }
+        },
+        "mechanicRobberState": { "isActive": true, "locationTileIndex": 0 },
+        "mechanicSettlementState": {
+          "1": { "bankSettlementAmount": 5 },
+          "2": { "bankSettlementAmount": 5 },
+          "5": { "bankSettlementAmount": 5 }
+        },
+        "mechanicLargestArmyState": { "1": {}, "2": {}, "5": {} },
+        "mechanicLongestRoadState": {
+          "1": { "longestRoad": 0 },
+          "2": { "longestRoad": 0 },
+          "5": { "longestRoad": 0 }
+        },
+        "mechanicDevelopmentCardsState": {
+          "players": {
+            "1": {
+              "developmentCards": { "cards": [] },
+              "developmentCardsUsed": []
+            },
+            "2": {
+              "developmentCards": { "cards": [] },
+              "developmentCardsUsed": []
+            },
+            "5": {
+              "developmentCards": { "cards": [] },
+              "developmentCardsUsed": []
+            }
+          },
+          "bankDevelopmentCards": {
+            "cards": [
+              10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+              10, 10, 10, 10, 10, 10, 10, 10, 10
+            ]
+          }
+        }
+      },
+      "eventsPerspectives": [5, 1, 2]
+    },
+    "playerUserStates": [
+      {
+        "databaseIcon": 11,
+        "isBot": false,
+        "selectedColor": 5,
+        "playerId": "player_1"
+      },
+      {
+        "databaseIcon": 11,
+        "isBot": false,
+        "selectedColor": 1,
+        "playerId": "player_2"
+      },
+      {
+        "databaseIcon": 11,
+        "isBot": false,
+        "membership": 1,
+        "selectedColor": 2,
+        "playerId": "player_3"
+      }
+    ],
+    "playOrder": [2, 5, 1],
+    "gameDetails": { "isDiscord": false, "isRanked": false },
+    "gameSettings": {
+      "id": "tourney22",
+      "gameType": 8,
+      "privateGame": true,
+      "playOrderSelectionActive": false,
+      "minimumKarma": 0,
+      "eloType": 0,
+      "modeSetting": 0,
+      "extensionSetting": 0,
+      "scenarioSetting": 0,
+      "mapSetting": 0,
+      "diceSetting": 0,
+      "victoryPointsToWin": 10,
+      "karmaActive": true,
+      "cardDiscardLimit": 7,
+      "maxPlayers": 4,
+      "gameSpeed": 0,
+      "botSpeed": 0,
+      "hideBankCards": true,
+      "friendlyRobber": false
+    },
+    "databaseGameId": "191046590",
+    "playerPerspective": 2
+  }
+}
