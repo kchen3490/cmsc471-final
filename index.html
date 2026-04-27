@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catan Board</title>
-    <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catan Board Visualizer</title>
+  <meta name="description" content="Debug visualizer for Catan game boards using Colonist.io game data">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
-  <body>
-    <svg
-      id="catanBoard"
-      width="600"
-      height="600"
-      viewBox="-300 -300 600 600"
-    ></svg>
-    <script src="js/script.js"></script> 
-  </body>
+<body>
+  <div id="controls">
+    <label for="gameSelector">Game:</label>
+    <select id="gameSelector">
+      <option disabled selected>Loading…</option>
+    </select>
+    <span id="gameCount" style="font-size:11px;color:#888;display:block;margin-top:4px;"></span>
+  </div>
+  <svg
+    id="catanBoard"
+    width="700"
+    height="700"
+    viewBox="-350 -350 700 700"
+  ></svg>
+  <script src="js/script.js"></script>
+</body>
 </html>

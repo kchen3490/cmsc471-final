@@ -1,42 +1,226 @@
+/* ─── LAYOUT ─────────────────────────────────────────────────────────────── */
 body {
-  background: #222;
+  background: #1a2035;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0;
+  font-family: 'Segoe UI', sans-serif;
 }
-svg {
-  background: #1a4a6e;
+
+svg#catanBoard {
+  background: #4790bd;
   border-radius: 50%;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
 }
+
+/* ─── CONTROLS ───────────────────────────────────────────────────────────── */
+#controls {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(20, 30, 60, 0.92);
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  z-index: 10;
+  color: #cdd6f4;
+}
+
+#controls label {
+  font-size: 13px;
+  margin-right: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+#gameSelector {
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  cursor: pointer;
+  max-width: 200px;
+}
+
+#gameSelector option {
+  background: #1a2035;
+  color: #fff;
+}
+
+/* ─── HEX TILES ──────────────────────────────────────────────────────────── */
+/* Hex type fill colors */
 .hex {
-  stroke: #fff;
+  stroke: rgba(0, 0, 0, 0.4);
   stroke-width: 2px;
 }
-.label {
-  fill: black;
-  font-family: sans-serif;
+
+/* Desert - sandy tan */
+.hex-type-0 {
+  fill: #c9a96e;
+}
+
+/* Wood - dark green */
+.hex-type-1 {
+  fill: #2d7a22;
+}
+
+/* Brick - terracotta */
+.hex-type-2 {
+  fill: #a0451a;
+}
+
+/* Sheep - light green */
+.hex-type-3 {
+  fill: #7ec850;
+}
+
+/* Wheat - golden yellow */
+.hex-type-4 {
+  fill: #f5c518;
+}
+
+/* Ore - slate gray */
+.hex-type-5 {
+  fill: #7a8494;
+}
+
+/* ─── DICE NUMBER LABELS ─────────────────────────────────────────────────── */
+.dice-bg {
+  fill: rgba(255, 255, 255, 0.85);
+  stroke: rgba(0, 0, 0, 0.2);
+  stroke-width: 1px;
+}
+
+.dice-label {
+  fill: #1a1a1a;
+  font-family: 'Georgia', serif;
+  font-size: 13px;
   font-weight: bold;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+/* Red for 6 and 8 */
+.dice-label.hot {
+  fill: #c0392b;
+}
+
+/* ─── HEX TEXT LABELS ────────────────────────────────────────────────────── */
+.type-label {
+  fill: rgba(255, 255, 255, 0.75);
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 8px;
+  font-weight: 600;
+  text-anchor: middle;
+  pointer-events: none;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.coord-label {
+  fill: rgba(0, 0, 0, 1);
+  font-family: monospace;
+  font-size: 8px;
   text-anchor: middle;
   pointer-events: none;
 }
-/* Resource Colors */
-.type-0 {
-  fill: #d2b48c;
-} /* Desert */
-.type-1 {
-  fill: #228b22;
-} /* Wood */
-.type-2 {
-  fill: #8b4513;
-} /* Brick */
-.type-3 {
-  fill: #90ee90;
-} /* Sheep */
-.type-4 {
-  fill: #ffd700;
-} /* Wheat */
-.type-5 {
-  fill: #808080;
-} /* Ore */
+
+/* ─── VERTICES (CORNERS) ─────────────────────────────────────────────────── */
+.vertex-point {
+  fill: #89b4fa;
+  stroke: #1e3a5f;
+  stroke-width: 1.5px;
+}
+
+.vertex-label {
+  fill: #154696;
+  font-family: monospace;
+  font-size: 6px;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+/* ─── EDGES ──────────────────────────────────────────────────────────────── */
+.edge-point {
+  fill: #ff731c;
+  stroke: #7f3a0f;
+  stroke-width: 1.5px;
+}
+
+.edge-label {
+  fill: #ff731c;
+  font-family: monospace;
+  font-size: 6px;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+/* ─── PORTS ──────────────────────────────────────────────────────────────── */
+.port-line {
+  stroke: rgba(255, 255, 255, 0.5);
+  stroke-width: 1.5px;
+  stroke-dasharray: 3, 2;
+}
+
+.port {
+  stroke: rgba(0, 0, 0, 0.5);
+  stroke-width: 2px;
+  cursor: pointer;
+}
+
+.port-label {
+  fill: white;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 8px;
+  font-weight: bold;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+/* Port type fill colors (types 1–6) */
+.port-type-1 {
+  fill: #daa520;
+}
+
+/* 3:1 Generic - gold */
+.port-type-2 {
+  fill: #2d7a22;
+}
+
+/* Wood 2:1 - dark green */
+.port-type-3 {
+  fill: #a0451a;
+}
+
+/* Brick 2:1 - terracotta */
+.port-type-4 {
+  fill: #7ec850;
+}
+
+/* Sheep 2:1 - light green */
+.port-type-5 {
+  fill: #f5c518;
+}
+
+/* Wheat 2:1 - golden yellow */
+.port-type-6 {
+  fill: #7a8494;
+}
+
+/* Ore 2:1 - slate gray */
+
+/* ─── ERROR ──────────────────────────────────────────────────────────────── */
+.error-label {
+  fill: #f38ba8;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
