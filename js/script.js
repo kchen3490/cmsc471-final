@@ -52,7 +52,7 @@ const PORT_TYPES = {
 
 // ── COORDINATE HELPERS ──────────────────────────────────────────────────────
 function axialToPixel(x, y) {
-  return { px: SIZE * 1.5 * x, py: SIZE * Math.sqrt(3) * (y + x / 2) };
+  return { px: SIZE * 1.5 * x, py: -SIZE * Math.sqrt(3) * (y + x / 2) };
 }
 
 // Vertex index mapped to angle: North=270°, South=90°, plus remaining 4
@@ -94,7 +94,8 @@ const EDGE_Z_TO_IDX = [4, 3, 2];
 
 function hexVertex(cx, cy, vIdx) {
   const a = (Math.PI / 180) * (60 * vIdx);
-  return { x: cx + SIZE * Math.cos(a), y: cy + SIZE * Math.sin(a) };
+  // Keep local geometry aligned with mirrored x / inverted y world transform.
+  return { x: cx + SIZE * Math.cos(a), y: cy - SIZE * Math.sin(a) };
 }
 function edgeMidByIdx(cx, cy, eIdx) {
   const v0 = hexVertex(cx, cy, eIdx);
@@ -113,7 +114,7 @@ function svgText(attrs, text) {
 function hexPolyPoints(cx, cy) {
   return Array.from({ length: 6 }, (_, i) => {
     const a = (Math.PI / 180) * (60 * i);
-    return `${cx + SIZE * Math.cos(a)},${cy + SIZE * Math.sin(a)}`;
+    return `${cx + SIZE * Math.cos(a)},${cy - SIZE * Math.sin(a)}`;
   }).join(" ");
 }
 
