@@ -25,12 +25,18 @@
 137100217.json | victoryPointsToWin is 15, expected 10
 137101244.json | victoryPointsToWin is 15, expected 10
 137102166.json | victoryPointsToWin is 15, expected 10
+156865899.json | hasBots is true, expected false
 160822593.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 161461878.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 161946114.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+162693848.json | hasBots is true, expected false
+162816998.json | hasBots is true, expected false
+162853342.json | hasBots is true, expected false
+163702690.json | hasBots is true, expected false
 164168080.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 165263715.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 165992053.json | victoryPointsToWin is 15, expected 10
+166937834.json | hasBots is true, expected false
 167530788.json | victoryPointsToWin is 15, expected 10
 167531499.json | victoryPointsToWin is 15, expected 10
 167532042.json | victoryPointsToWin is 15, expected 10
@@ -59,10 +65,54 @@
 167996201.json | victoryPointsToWin is 15, expected 10
 168005339.json | victoryPointsToWin is 15, expected 10
 168103496.json | mapSetting is 2, expected 0
+170431675.json | hasBots is true, expected false
+170472448.json | hasBots is true, expected false
+170881005.json | hasBots is true, expected false
+170882449.json | hasBots is true, expected false
 171754875.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+172006253.json | hasBots is true, expected false
+172007257.json | hasBots is true, expected false
+172126898.json | hasBots is true, expected false
+172498862.json | hasBots is true, expected false
 173194927.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+173338603.json | hasBots is true, expected false
+173358538.json | hasBots is true, expected false
+173673961.json | hasBots is true, expected false
+173673963.json | hasBots is true, expected false
+173673964.json | hasBots is true, expected false
+173673965.json | hasBots is true, expected false
+173673966.json | hasBots is true, expected false
+173673967.json | hasBots is true, expected false
+173673968.json | hasBots is true, expected false
+173673969.json | hasBots is true, expected false
+173673970.json | hasBots is true, expected false
+173673971.json | hasBots is true, expected false
+173673972.json | hasBots is true, expected false
+173673973.json | hasBots is true, expected false
+173673974.json | hasBots is true, expected false
+173673975.json | hasBots is true, expected false
+173673979.json | hasBots is true, expected false
+173673983.json | hasBots is true, expected false
+173673984.json | hasBots is true, expected false
+173673988.json | hasBots is true, expected false
+173889788.json | hasBots is true, expected false
+174070902.json | hasBots is true, expected false
+174071002.json | hasBots is true, expected false
+174072058.json | hasBots is true, expected false
+174073145.json | hasBots is true, expected false
 174082670.json | victoryPointsToWin is 15, expected 10
+174213954.json | hasBots is true, expected false
+174401579.json | hasBots is true, expected false
+174402955.json | hasBots is true, expected false
+174403476.json | hasBots is true, expected false
+174506045.json | hasBots is true, expected false
+174509399.json | hasBots is true, expected false
+174511867.json | hasBots is true, expected false
+174541861.json | hasBots is true, expected false
+174876650.json | hasBots is true, expected false
 174935745.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+174946871.json | hasBots is true, expected false
+175667482.json | hasBots is true, expected false
 175730055.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 175731673.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 175795685.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -73,21 +123,34 @@
 176022678.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 176185426.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 176216229.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+176709121.json | hasBots is true, expected false
+176713177.json | hasBots is true, expected false
 177657083.json | victoryPointsToWin is 13, expected 10
 177663567.json | victoryPointsToWin is 13, expected 10
 177685904.json | victoryPointsToWin is 13, expected 10
+177812581.json | hasBots is true, expected false
+177815632.json | hasBots is true, expected false
+177817220.json | hasBots is true, expected false
+177881251.json | hasBots is true, expected false
 178009258.json | victoryPointsToWin is 13, expected 10
 178245610.json | victoryPointsToWin is 13, expected 10
 178452204.json | victoryPointsToWin is 15, expected 10
 178520768.json | victoryPointsToWin is 15, expected 10
+178901220.json | hasBots is true, expected false
+178903150.json | hasBots is true, expected false
 180678238.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 180895445.json | mapSetting is 2, expected 0
 181024115.json | victoryPointsToWin is 15, expected 10
+181137267.json | hasBots is true, expected false
 181679436.json | victoryPointsToWin is 15, expected 10
 181779491.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 181973173.json | victoryPointsToWin is 12, expected 10
 181977229.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 182107295.json | victoryPointsToWin is 15, expected 10
+182279376.json | hasBots is true, expected false
+182297670.json | hasBots is true, expected false
+182306158.json | hasBots is true, expected false
+182307963.json | hasBots is true, expected false
 182398113.json | victoryPointsToWin is 15, expected 10
 182399653.json | victoryPointsToWin is 15, expected 10
 182430909.json | victoryPointsToWin is 15, expected 10
@@ -102,12 +165,19 @@
 182949670.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 182954920.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 182958390.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+183221580.json | hasBots is true, expected false
+183222268.json | hasBots is true, expected false
+183222298.json | hasBots is true, expected false
+183223773.json | hasBots is true, expected false
+183412707.json | hasBots is true, expected false
 183448383.json | victoryPointsToWin is 15, expected 10
 183457541.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 183460102.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 183463268.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 183553305.json | victoryPointsToWin is 15, expected 10
 183662072.json | victoryPointsToWin is 15, expected 10
+183799494.json | hasBots is true, expected false
+183862213.json | hasBots is true, expected false
 184038032.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 184042469.json | victoryPointsToWin is 13, expected 10
 184072932.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -115,11 +185,27 @@
 184174295.json | victoryPointsToWin is 15, expected 10
 184214423.json | victoryPointsToWin is 15, expected 10
 184449156.json | victoryPointsToWin is 15, expected 10
+184550658.json | hasBots is true, expected false
+184550752.json | hasBots is true, expected false
+184576428.json | hasBots is true, expected false
+184580497.json | hasBots is true, expected false
+184584485.json | hasBots is true, expected false
+184584686.json | hasBots is true, expected false
+184587176.json | hasBots is true, expected false
+184591116.json | hasBots is true, expected false
 184646752.json | victoryPointsToWin is 12, expected 10
 184657938.json | victoryPointsToWin is 15, expected 10
+184691085.json | hasBots is true, expected false
+184692316.json | hasBots is true, expected false
 184695226.json | victoryPointsToWin is 15, expected 10
 184835250.json | victoryPointsToWin is 15, expected 10
+184868635.json | hasBots is true, expected false
+184873340.json | hasBots is true, expected false
 184873582.json | victoryPointsToWin is 15, expected 10
+184874788.json | hasBots is true, expected false
+184876236.json | hasBots is true, expected false
+184932998.json | hasBots is true, expected false
+184964951.json | hasBots is true, expected false
 184980713.json | victoryPointsToWin is 15, expected 10
 184984131.json | victoryPointsToWin is 15, expected 10
 184998037.json | victoryPointsToWin is 15, expected 10
@@ -130,22 +216,30 @@
 185005633.json | victoryPointsToWin is 15, expected 10
 185006548.json | victoryPointsToWin is 15, expected 10
 185011260.json | victoryPointsToWin is 15, expected 10
+185018795.json | hasBots is true, expected false
 185024937.json | victoryPointsToWin is 13, expected 10
+185024984.json | hasBots is true, expected false
 185030796.json | victoryPointsToWin is 13, expected 10
 185034485.json | victoryPointsToWin is 13, expected 10
+185058814.json | hasBots is true, expected false
 185066856.json | victoryPointsToWin is 15, expected 10
 185093214.json | victoryPointsToWin is 15, expected 10
 185103310.json | victoryPointsToWin is 15, expected 10
 185106993.json | victoryPointsToWin is 15, expected 10
 185143451.json | victoryPointsToWin is 15, expected 10
 185180531.json | victoryPointsToWin is 13, expected 10
+185180624.json | hasBots is true, expected false
 185246979.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 185311454.json | victoryPointsToWin is 15, expected 10
 185319721.json | victoryPointsToWin is 15, expected 10
 185322195.json | victoryPointsToWin is 15, expected 10
+185438732.json | hasBots is true, expected false
 185480264.json | victoryPointsToWin is 15, expected 10
 185498818.json | victoryPointsToWin is 15, expected 10
+185505694.json | hasBots is true, expected false
+185518933.json | hasBots is true, expected false
 185530826.json | victoryPointsToWin is 11, expected 10
+185584681.json | hasBots is true, expected false
 185678005.json | victoryPointsToWin is 15, expected 10
 185690903.json | victoryPointsToWin is 15, expected 10
 185692046.json | victoryPointsToWin is 15, expected 10
@@ -153,8 +247,16 @@
 185696105.json | victoryPointsToWin is 15, expected 10
 185718953.json | victoryPointsToWin is 15, expected 10
 185729444.json | victoryPointsToWin is 15, expected 10
+185740642.json | hasBots is true, expected false
+185745704.json | hasBots is true, expected false
+185771695.json | hasBots is true, expected false
+185773557.json | hasBots is true, expected false
+185774914.json | hasBots is true, expected false
+185774933.json | hasBots is true, expected false
 185776659.json | victoryPointsToWin is 15, expected 10
 185776691.json | victoryPointsToWin is 15, expected 10
+185778624.json | hasBots is true, expected false
+185795680.json | hasBots is true, expected false
 185840153.json | victoryPointsToWin is 15, expected 10
 185842088.json | victoryPointsToWin is 15, expected 10
 185853702.json | victoryPointsToWin is 15, expected 10
@@ -162,7 +264,10 @@
 185855633.json | victoryPointsToWin is 15, expected 10
 185901219.json | victoryPointsToWin is 15, expected 10
 185943623.json | victoryPointsToWin is 15, expected 10
+185963075.json | hasBots is true, expected false
+185990804.json | maxPlayers is 3, expected 4
 186018428.json | victoryPointsToWin is 15, expected 10
+186027134.json | hasBots is true, expected false
 186102965.json | victoryPointsToWin is 15, expected 10
 186105218.json | victoryPointsToWin is 15, expected 10
 186128385.json | victoryPointsToWin is 15, expected 10
@@ -177,6 +282,7 @@
 186148396.json | victoryPointsToWin is 15, expected 10
 186149239.json | mapSetting is 2, expected 0
 186153015.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+186153275.json | hasBots is true, expected false
 186166703.json | victoryPointsToWin is 15, expected 10
 186169001.json | victoryPointsToWin is 15, expected 10
 186172893.json | victoryPointsToWin is 15, expected 10
@@ -202,6 +308,8 @@
 186334503.json | victoryPointsToWin is 15, expected 10
 186338425.json | victoryPointsToWin is 15, expected 10
 186338890.json | victoryPointsToWin is 15, expected 10
+186340774.json | hasBots is true, expected false
+186345309.json | hasBots is true, expected false
 186346361.json | victoryPointsToWin is 15, expected 10
 186364496.json | victoryPointsToWin is 13, expected 10
 186377389.json | victoryPointsToWin is 13, expected 10
@@ -216,6 +324,7 @@
 186442200.json | victoryPointsToWin is 15, expected 10
 186443247.json | victoryPointsToWin is 15, expected 10
 186444643.json | victoryPointsToWin is 15, expected 10
+186445896.json | hasBots is true, expected false
 186445942.json | victoryPointsToWin is 15, expected 10
 186447319.json | victoryPointsToWin is 15, expected 10
 186448499.json | victoryPointsToWin is 15, expected 10
@@ -238,6 +347,7 @@
 186511670.json | victoryPointsToWin is 15, expected 10
 186512270.json | victoryPointsToWin is 15, expected 10
 186513473.json | victoryPointsToWin is 15, expected 10
+186615257.json | hasBots is true, expected false
 186615529.json | victoryPointsToWin is 15, expected 10
 186623761.json | victoryPointsToWin is 15, expected 10
 186625960.json | victoryPointsToWin is 15, expected 10
@@ -250,11 +360,16 @@
 186706368.json | victoryPointsToWin is 15, expected 10
 186726643.json | victoryPointsToWin is 15, expected 10
 186745297.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+186917118.json | hasBots is true, expected false
 186932466.json | victoryPointsToWin is 13, expected 10
 186933051.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+186939929.json | hasBots is true, expected false
+186942601.json | hasBots is true, expected false
+186967952.json | hasBots is true, expected false
 186971360.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 186972418.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 186975032.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+186978283.json | hasBots is true, expected false
 186982373.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 186984470.json | victoryPointsToWin is 15, expected 10
 186986131.json | victoryPointsToWin is 15, expected 10
@@ -262,6 +377,7 @@
 186990335.json | victoryPointsToWin is 15, expected 10
 186991919.json | victoryPointsToWin is 15, expected 10
 187019597.json | mapSetting is 2, expected 0
+187032111.json | hasBots is true, expected false
 187033413.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 187082247.json | victoryPointsToWin is 15, expected 10
 187101924.json | victoryPointsToWin is 15, expected 10
@@ -272,9 +388,14 @@
 187163163.json | victoryPointsToWin is 13, expected 10
 187169185.json | victoryPointsToWin is 15, expected 10
 187174063.json | victoryPointsToWin is 15, expected 10
+187178464.json | hasBots is true, expected false
 187229021.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+187253037.json | hasBots is true, expected false
 187284171.json | victoryPointsToWin is 15, expected 10
 187288818.json | victoryPointsToWin is 13, expected 10
+187295827.json | hasBots is true, expected false
+187318959.json | hasBots is true, expected false
+187320073.json | hasBots is true, expected false
 187320421.json | victoryPointsToWin is 15, expected 10
 187331918.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 187341592.json | victoryPointsToWin is 15, expected 10
@@ -283,6 +404,7 @@
 187377721.json | cardDiscardLimit is 9, expected 7
 187431602.json | victoryPointsToWin is 15, expected 10
 187435029.json | victoryPointsToWin is 15, expected 10
+187444358.json | hasBots is true, expected false
 187460357.json | victoryPointsToWin is 15, expected 10
 187461853.json | victoryPointsToWin is 15, expected 10
 187480339.json | victoryPointsToWin is 13, expected 10
@@ -291,6 +413,8 @@
 187486867.json | victoryPointsToWin is 15, expected 10
 187490510.json | victoryPointsToWin is 15, expected 10
 187493299.json | victoryPointsToWin is 15, expected 10
+187495388.json | hasBots is true, expected false
+187511678.json | hasBots is true, expected false
 187533297.json | victoryPointsToWin is 15, expected 10
 187579189.json | victoryPointsToWin is 15, expected 10
 187579474.json | victoryPointsToWin is 15, expected 10
@@ -305,12 +429,14 @@
 187636690.json | victoryPointsToWin is 15, expected 10
 187638384.json | victoryPointsToWin is 15, expected 10
 187639325.json | victoryPointsToWin is 15, expected 10
+187655433.json | maxPlayers is 3, expected 4
 187665403.json | victoryPointsToWin is 15, expected 10
 187669236.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 187672788.json | victoryPointsToWin is 15, expected 10
 187674176.json | victoryPointsToWin is 15, expected 10
 187724323.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 187730625.json | victoryPointsToWin is 15, expected 10
+187742180.json | hasBots is true, expected false
 187750916.json | victoryPointsToWin is 15, expected 10
 187752038.json | victoryPointsToWin is 15, expected 10
 187753267.json | victoryPointsToWin is 15, expected 10
@@ -318,6 +444,9 @@
 187764769.json | victoryPointsToWin is 15, expected 10
 187767566.json | victoryPointsToWin is 13, expected 10
 187767734.json | victoryPointsToWin is 15, expected 10
+187771354.json | hasBots is true, expected false
+187771426.json | hasBots is true, expected false
+187771455.json | hasBots is true, expected false
 187773381.json | victoryPointsToWin is 15, expected 10
 187783991.json | mapSetting is 2, expected 0
 187803303.json | victoryPointsToWin is 15, expected 10
@@ -325,6 +454,7 @@
 187829031.json | victoryPointsToWin is 15, expected 10
 187830888.json | victoryPointsToWin is 15, expected 10
 187831669.json | victoryPointsToWin is 15, expected 10
+187833105.json | hasBots is true, expected false
 187839987.json | victoryPointsToWin is 15, expected 10
 187841492.json | victoryPointsToWin is 15, expected 10
 187841741.json | cardDiscardLimit is 8, expected 7
@@ -334,10 +464,15 @@
 187846979.json | victoryPointsToWin is 15, expected 10
 187862402.json | mapSetting is 2, expected 0
 187866370.json | victoryPointsToWin is 15, expected 10
+187893274.json | hasBots is true, expected false
+187894963.json | hasBots is true, expected false
 187900679.json | victoryPointsToWin is 15, expected 10
+187904345.json | hasBots is true, expected false
+187913949.json | hasBots is true, expected false
 187915011.json | victoryPointsToWin is 15, expected 10
 187915459.json | victoryPointsToWin is 15, expected 10
 187930305.json | victoryPointsToWin is 15, expected 10
+187939113.json | hasBots is true, expected false
 187942186.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 187942452.json | victoryPointsToWin is 15, expected 10
 187943028.json | victoryPointsToWin is 15, expected 10
@@ -351,6 +486,7 @@
 188018832.json | victoryPointsToWin is 15, expected 10
 188024070.json | victoryPointsToWin is 15, expected 10
 188028215.json | victoryPointsToWin is 15, expected 10
+188031319.json | hasBots is true, expected false
 188033169.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188035553.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188040583.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -378,13 +514,17 @@
 188150611.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188165038.json | victoryPointsToWin is 15, expected 10
 188166481.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+188170002.json | hasBots is true, expected false
 188170049.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+188173431.json | hasBots is true, expected false
+188175052.json | hasBots is true, expected false
 188183328.json | victoryPointsToWin is 15, expected 10
 188190345.json | victoryPointsToWin is 15, expected 10
 188194272.json | victoryPointsToWin is 15, expected 10
 188194934.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188204348.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188210564.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+188222487.json | hasBots is true, expected false
 188223148.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188233520.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188234587.json | victoryPointsToWin is 15, expected 10
@@ -403,9 +543,11 @@
 188288541.json | victoryPointsToWin is 15, expected 10
 188291595.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188292112.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+188294827.json | hasBots is true, expected false
 188297981.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188302553.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188303926.json | victoryPointsToWin is 15, expected 10
+188310775.json | hasBots is true, expected false
 188311499.json | victoryPointsToWin is 15, expected 10
 188312529.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188312942.json | victoryPointsToWin is 15, expected 10
@@ -413,6 +555,7 @@
 188316233.json | victoryPointsToWin is 15, expected 10
 188322886.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188327391.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+188328372.json | hasBots is true, expected false
 188332079.json | victoryPointsToWin is 15, expected 10
 188334940.json | victoryPointsToWin is 15, expected 10
 188336502.json | cardDiscardLimit is 9, expected 7
@@ -438,37 +581,56 @@
 188464436.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188464996.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188472156.json | victoryPointsToWin is 13, expected 10
+188478387.json | hasBots is true, expected false
 188480332.json | victoryPointsToWin is 13, expected 10
 188482131.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188485022.json | mapSetting is 2, expected 0
 188485083.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+188496665.json | hasBots is true, expected false
 188497158.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+188498143.json | hasBots is true, expected false
 188509743.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188515668.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188517198.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188521047.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188524241.json | victoryPointsToWin is 15, expected 10
 188526933.json | victoryPointsToWin is 15, expected 10
+188533197.json | hasBots is true, expected false
+188534078.json | hasBots is true, expected false
 188536505.json | victoryPointsToWin is 15, expected 10
+188539256.json | hasBots is true, expected false
 188541134.json | victoryPointsToWin is 15, expected 10
 188547373.json | victoryPointsToWin is 15, expected 10
+188550604.json | hasBots is true, expected false
+188551928.json | hasBots is true, expected false
+188553045.json | hasBots is true, expected false
 188561479.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188577137.json | victoryPointsToWin is 15, expected 10
 188602030.json | victoryPointsToWin is 15, expected 10
 188604966.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+188610545.json | hasBots is true, expected false
 188614471.json | victoryPointsToWin is 15, expected 10
 188618466.json | victoryPointsToWin is 13, expected 10
 188618945.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+188630067.json | hasBots is true, expected false
 188630659.json | victoryPointsToWin is 15, expected 10
 188632880.json | victoryPointsToWin is 15, expected 10
 188649202.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188655055.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+188655327.json | hasBots is true, expected false
 188659987.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+188666605.json | hasBots is true, expected false
+188668340.json | hasBots is true, expected false
+188670024.json | hasBots is true, expected false
 188671679.json | victoryPointsToWin is 15, expected 10
+188672212.json | hasBots is true, expected false
 188673070.json | victoryPointsToWin is 15, expected 10
+188682794.json | hasBots is true, expected false
 188691526.json | victoryPointsToWin is 15, expected 10
 188707590.json | victoryPointsToWin is 15, expected 10
 188718365.json | victoryPointsToWin is 15, expected 10
+188731875.json | hasBots is true, expected false
+188733937.json | hasBots is true, expected false
 188739809.json | victoryPointsToWin is 15, expected 10
 188743127.json | victoryPointsToWin is 15, expected 10
 188746141.json | victoryPointsToWin is 15, expected 10
@@ -484,6 +646,7 @@
 188804853.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188806694.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 188806756.json | victoryPointsToWin is 15, expected 10
+188807752.json | hasBots is true, expected false
 188823721.json | victoryPointsToWin is 15, expected 10
 188827563.json | victoryPointsToWin is 15, expected 10
 188830538.json | victoryPointsToWin is 15, expected 10
@@ -491,21 +654,35 @@
 188857126.json | victoryPointsToWin is 15, expected 10
 188860079.json | victoryPointsToWin is 15, expected 10
 188861790.json | victoryPointsToWin is 15, expected 10
+188863182.json | hasBots is true, expected false
+188864167.json | hasBots is true, expected false
+188865748.json | hasBots is true, expected false
+188868993.json | hasBots is true, expected false
 188873069.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+188874412.json | hasBots is true, expected false
+188875381.json | hasBots is true, expected false
+188876075.json | hasBots is true, expected false
+188876243.json | hasBots is true, expected false
 188903461.json | victoryPointsToWin is 15, expected 10
 188903974.json | victoryPointsToWin is 15, expected 10
 188921319.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+188922855.json | hasBots is true, expected false
 188925682.json | victoryPointsToWin is 15, expected 10
 188948520.json | victoryPointsToWin is 15, expected 10
+188953111.json | maxPlayers is 3, expected 4
+188956301.json | maxPlayers is 3, expected 4
 188956510.json | victoryPointsToWin is 15, expected 10
+188959698.json | maxPlayers is 3, expected 4
 188959946.json | victoryPointsToWin is 15, expected 10
 188960468.json | victoryPointsToWin is 15, expected 10
 188960922.json | mapSetting is 2, expected 0
 188961112.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+188962123.json | maxPlayers is 3, expected 4
 188963045.json | victoryPointsToWin is 15, expected 10
 188963153.json | victoryPointsToWin is 15, expected 10
 188965984.json | victoryPointsToWin is 15, expected 10
 188970090.json | victoryPointsToWin is 15, expected 10
+188971084.json | hasBots is true, expected false
 188971812.json | victoryPointsToWin is 15, expected 10
 188972689.json | victoryPointsToWin is 15, expected 10
 188975994.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -524,28 +701,40 @@
 188997454.json | victoryPointsToWin is 15, expected 10
 188998328.json | victoryPointsToWin is 15, expected 10
 188998694.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+189004084.json | hasBots is true, expected false
 189025765.json | victoryPointsToWin is 15, expected 10
 189027382.json | victoryPointsToWin is 15, expected 10
+189042107.json | hasBots is true, expected false
 189049248.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189049408.json | victoryPointsToWin is 15, expected 10
 189080811.json | victoryPointsToWin is 15, expected 10
 189082295.json | victoryPointsToWin is 15, expected 10
 189100562.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+189105868.json | hasBots is true, expected false
 189106722.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+189121995.json | hasBots is true, expected false
 189124628.json | victoryPointsToWin is 15, expected 10
+189141848.json | hasBots is true, expected false
+189147429.json | hasBots is true, expected false
 189148692.json | victoryPointsToWin is 15, expected 10
+189155776.json | hasBots is true, expected false
 189157286.json | victoryPointsToWin is 15, expected 10
 189159657.json | victoryPointsToWin is 15, expected 10
 189162012.json | victoryPointsToWin is 15, expected 10
+189162523.json | hasBots is true, expected false
 189164088.json | victoryPointsToWin is 15, expected 10
 189164513.json | victoryPointsToWin is 15, expected 10
+189165331.json | hasBots is true, expected false
 189167035.json | victoryPointsToWin is 13, expected 10
+189172497.json | hasBots is true, expected false
 189179607.json | victoryPointsToWin is 13, expected 10
 189182526.json | victoryPointsToWin is 13, expected 10
 189185936.json | victoryPointsToWin is 15, expected 10
 189191832.json | victoryPointsToWin is 15, expected 10
 189192012.json | victoryPointsToWin is 15, expected 10
 189194204.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+189198811.json | hasBots is true, expected false
+189201185.json | hasBots is true, expected false
 189203681.json | victoryPointsToWin is 15, expected 10
 189208239.json | victoryPointsToWin is 15, expected 10
 189210249.json | victoryPointsToWin is 15, expected 10
@@ -554,6 +743,7 @@
 189223486.json | victoryPointsToWin is 15, expected 10
 189224535.json | victoryPointsToWin is 15, expected 10
 189225383.json | victoryPointsToWin is 15, expected 10
+189226188.json | hasBots is true, expected false
 189232659.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189235678.json | victoryPointsToWin is 15, expected 10
 189236219.json | victoryPointsToWin is 15, expected 10
@@ -564,8 +754,10 @@
 189275181.json | victoryPointsToWin is 15, expected 10
 189276282.json | victoryPointsToWin is 15, expected 10
 189278273.json | victoryPointsToWin is 15, expected 10
+189281909.json | hasBots is true, expected false
 189291332.json | victoryPointsToWin is 15, expected 10
 189293164.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+189298956.json | hasBots is true, expected false
 189301357.json | victoryPointsToWin is 15, expected 10
 189302895.json | victoryPointsToWin is 15, expected 10
 189310568.json | victoryPointsToWin is 13, expected 10
@@ -574,14 +766,18 @@
 189317925.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189333910.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189339895.json | victoryPointsToWin is 13, expected 10
+189339920.json | hasBots is true, expected false
 189343855.json | victoryPointsToWin is 15, expected 10
 189343981.json | victoryPointsToWin is 15, expected 10
 189348686.json | victoryPointsToWin is 15, expected 10
 189349061.json | victoryPointsToWin is 15, expected 10
 189350327.json | victoryPointsToWin is 15, expected 10
 189351259.json | victoryPointsToWin is 15, expected 10
+189355292.json | hasBots is true, expected false
 189356072.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189359049.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+189361227.json | hasBots is true, expected false
+189364259.json | hasBots is true, expected false
 189370477.json | victoryPointsToWin is 15, expected 10
 189371347.json | victoryPointsToWin is 15, expected 10
 189371902.json | victoryPointsToWin is 15, expected 10
@@ -589,10 +785,17 @@
 189374538.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189377471.json | victoryPointsToWin is 15, expected 10
 189377853.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+189384522.json | hasBots is true, expected false
+189387876.json | maxPlayers is 3, expected 4
 189388375.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+189388897.json | hasBots is true, expected false
+189395253.json | hasBots is true, expected false
 189398732.json | victoryPointsToWin is 15, expected 10
 189414782.json | victoryPointsToWin is 13, expected 10
 189430183.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+189455571.json | hasBots is true, expected false
+189455604.json | hasBots is true, expected false
+189456381.json | hasBots is true, expected false
 189464473.json | victoryPointsToWin is 15, expected 10
 189467787.json | victoryPointsToWin is 15, expected 10
 189469605.json | victoryPointsToWin is 15, expected 10
@@ -630,7 +833,10 @@
 189574445.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189580935.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189586012.json | victoryPointsToWin is 15, expected 10
+189587248.json | hasBots is true, expected false
 189587254.json | victoryPointsToWin is 15, expected 10
+189587955.json | hasBots is true, expected false
+189587961.json | hasBots is true, expected false
 189593978.json | victoryPointsToWin is 15, expected 10
 189601034.json | victoryPointsToWin is 15, expected 10
 189621787.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -641,6 +847,7 @@
 189657943.json | victoryPointsToWin is 15, expected 10
 189660147.json | victoryPointsToWin is 15, expected 10
 189661480.json | victoryPointsToWin is 15, expected 10
+189662847.json | hasBots is true, expected false
 189664969.json | victoryPointsToWin is 15, expected 10
 189665560.json | victoryPointsToWin is 15, expected 10
 189669902.json | victoryPointsToWin is 15, expected 10
@@ -649,6 +856,8 @@
 189676107.json | victoryPointsToWin is 15, expected 10
 189679955.json | victoryPointsToWin is 15, expected 10
 189680255.json | victoryPointsToWin is 15, expected 10
+189680266.json | hasBots is true, expected false
+189692835.json | hasBots is true, expected false
 189693583.json | victoryPointsToWin is 15, expected 10
 189693818.json | victoryPointsToWin is 15, expected 10
 189694608.json | victoryPointsToWin is 15, expected 10
@@ -668,11 +877,19 @@
 189713390.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189719060.json | victoryPointsToWin is 15, expected 10
 189719109.json | victoryPointsToWin is 15, expected 10
+189723152.json | hasBots is true, expected false
 189726402.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189730002.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189732703.json | victoryPointsToWin is 15, expected 10
 189735280.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189736206.json | victoryPointsToWin is 15, expected 10
+189741719.json | hasBots is true, expected false
+189744751.json | hasBots is true, expected false
+189745418.json | hasBots is true, expected false
+189762366.json | hasBots is true, expected false
+189764032.json | hasBots is true, expected false
+189773780.json | hasBots is true, expected false
+189777149.json | hasBots is true, expected false
 189785484.json | victoryPointsToWin is 15, expected 10
 189788228.json | victoryPointsToWin is 15, expected 10
 189788862.json | victoryPointsToWin is 15, expected 10
@@ -687,8 +904,12 @@
 189802582.json | victoryPointsToWin is 15, expected 10
 189803288.json | victoryPointsToWin is 15, expected 10
 189809617.json | victoryPointsToWin is 15, expected 10
+189815678.json | hasBots is true, expected false
 189817070.json | victoryPointsToWin is 15, expected 10
 189818865.json | victoryPointsToWin is 15, expected 10
+189819150.json | hasBots is true, expected false
+189820283.json | hasBots is true, expected false
+189820304.json | hasBots is true, expected false
 189820906.json | victoryPointsToWin is 15, expected 10
 189822153.json | victoryPointsToWin is 15, expected 10
 189822158.json | victoryPointsToWin is 15, expected 10
@@ -696,6 +917,8 @@
 189824125.json | victoryPointsToWin is 13, expected 10
 189827928.json | victoryPointsToWin is 13, expected 10
 189836850.json | victoryPointsToWin is 15, expected 10
+189838242.json | hasBots is true, expected false
+189838243.json | hasBots is true, expected false
 189838295.json | victoryPointsToWin is 15, expected 10
 189839135.json | victoryPointsToWin is 15, expected 10
 189840804.json | victoryPointsToWin is 15, expected 10
@@ -706,42 +929,67 @@
 189855089.json | victoryPointsToWin is 15, expected 10
 189856041.json | victoryPointsToWin is 15, expected 10
 189856578.json | victoryPointsToWin is 15, expected 10
+189859104.json | hasBots is true, expected false
 189860491.json | victoryPointsToWin is 15, expected 10
+189860855.json | hasBots is true, expected false
 189865601.json | victoryPointsToWin is 15, expected 10
 189867482.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189869093.json | victoryPointsToWin is 15, expected 10
+189873105.json | hasBots is true, expected false
+189875089.json | hasBots is true, expected false
+189875429.json | hasBots is true, expected false
+189876341.json | hasBots is true, expected false
 189876769.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+189876857.json | hasBots is true, expected false
+189877839.json | hasBots is true, expected false
 189878386.json | victoryPointsToWin is 15, expected 10
 189883621.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189885295.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189885486.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+189886560.json | hasBots is true, expected false
+189887215.json | hasBots is true, expected false
 189887411.json | victoryPointsToWin is 15, expected 10
 189887727.json | victoryPointsToWin is 15, expected 10
 189889061.json | victoryPointsToWin is 15, expected 10
 189890566.json | victoryPointsToWin is 15, expected 10
 189892729.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189904575.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+189904958.json | hasBots is true, expected false
 189906281.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+189906585.json | hasBots is true, expected false
 189907079.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189907989.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189909903.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+189912186.json | hasBots is true, expected false
+189913414.json | hasBots is true, expected false
 189913536.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+189914342.json | hasBots is true, expected false
+189915336.json | hasBots is true, expected false
+189915413.json | hasBots is true, expected false
 189916434.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189916792.json | victoryPointsToWin is 13, expected 10
 189923633.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189925129.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189948480.json | victoryPointsToWin is 15, expected 10
 189953055.json | mapSetting is 2, expected 0
+189957303.json | hasBots is true, expected false
 189959752.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+189961485.json | hasBots is true, expected false
 189961615.json | victoryPointsToWin is 15, expected 10
+189962837.json | hasBots is true, expected false
 189963920.json | victoryPointsToWin is 15, expected 10
 189964037.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189971677.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+189977203.json | hasBots is true, expected false
 189977597.json | victoryPointsToWin is 15, expected 10
+189977864.json | hasBots is true, expected false
 189980579.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189983847.json | victoryPointsToWin is 15, expected 10
+189985522.json | hasBots is true, expected false
+189985675.json | hasBots is true, expected false
 189986485.json | victoryPointsToWin is 15, expected 10
 189987122.json | victoryPointsToWin is 15, expected 10
+189987460.json | hasBots is true, expected false
 189989242.json | victoryPointsToWin is 15, expected 10
 189989416.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 189996824.json | victoryPointsToWin is 15, expected 10
@@ -764,6 +1012,7 @@
 190044951.json | victoryPointsToWin is 15, expected 10
 190051112.json | victoryPointsToWin is 15, expected 10
 190053039.json | victoryPointsToWin is 15, expected 10
+190058415.json | hasBots is true, expected false
 190063828.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 190065227.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 190069385.json | victoryPointsToWin is 15, expected 10
@@ -771,6 +1020,7 @@
 190070276.json | victoryPointsToWin is 15, expected 10
 190078306.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 190080896.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+190082461.json | hasBots is true, expected false
 190086227.json | victoryPointsToWin is 15, expected 10
 190099251.json | victoryPointsToWin is 15, expected 10
 190099806.json | victoryPointsToWin is 15, expected 10
@@ -796,8 +1046,10 @@
 190162318.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 190163650.json | victoryPointsToWin is 15, expected 10
 190163735.json | victoryPointsToWin is 15, expected 10
+190166636.json | hasBots is true, expected false
 190168381.json | victoryPointsToWin is 15, expected 10
 190168659.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+190171634.json | hasBots is true, expected false
 190172052.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 190174562.json | victoryPointsToWin is 15, expected 10
 190174837.json | victoryPointsToWin is 15, expected 10
@@ -810,11 +1062,15 @@
 190190168.json | victoryPointsToWin is 15, expected 10
 190191343.json | victoryPointsToWin is 15, expected 10
 190191965.json | victoryPointsToWin is 15, expected 10
+190192376.json | hasBots is true, expected false
+190195528.json | hasBots is true, expected false
 190195752.json | victoryPointsToWin is 15, expected 10
 190198455.json | victoryPointsToWin is 15, expected 10
 190207467.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 190208288.json | victoryPointsToWin is 15, expected 10
 190210946.json | victoryPointsToWin is 15, expected 10
+190214996.json | hasBots is true, expected false
+190215134.json | hasBots is true, expected false
 190215572.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 190217516.json | victoryPointsToWin is 15, expected 10
 190220167.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -829,6 +1085,8 @@
 190244788.json | victoryPointsToWin is 15, expected 10
 190246263.json | victoryPointsToWin is 15, expected 10
 190247539.json | victoryPointsToWin is 15, expected 10
+190252186.json | hasBots is true, expected false
+190253464.json | hasBots is true, expected false
 190258209.json | victoryPointsToWin is 15, expected 10
 190258620.json | victoryPointsToWin is 15, expected 10
 190261937.json | victoryPointsToWin is 15, expected 10
@@ -859,6 +1117,8 @@
 190350163.json | victoryPointsToWin is 15, expected 10
 190351634.json | victoryPointsToWin is 15, expected 10
 190352747.json | victoryPointsToWin is 15, expected 10
+190352854.json | hasBots is true, expected false
+190354527.json | hasBots is true, expected false
 190354800.json | victoryPointsToWin is 15, expected 10
 190357730.json | victoryPointsToWin is 15, expected 10
 190360323.json | victoryPointsToWin is 15, expected 10
@@ -869,6 +1129,7 @@
 190375676.json | victoryPointsToWin is 15, expected 10
 190377234.json | victoryPointsToWin is 13, expected 10
 190378496.json | victoryPointsToWin is 15, expected 10
+190383152.json | hasBots is true, expected false
 190383709.json | victoryPointsToWin is 15, expected 10
 190384816.json | victoryPointsToWin is 15, expected 10
 190387162.json | victoryPointsToWin is 15, expected 10
@@ -888,12 +1149,15 @@
 190411699.json | victoryPointsToWin is 15, expected 10
 190411840.json | victoryPointsToWin is 15, expected 10
 190412699.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+190413033.json | hasBots is true, expected false
 190414988.json | mapSetting is 2, expected 0
 190415032.json | victoryPointsToWin is 15, expected 10
 190418878.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 190423581.json | victoryPointsToWin is 15, expected 10
 190427416.json | victoryPointsToWin is 15, expected 10
 190431524.json | victoryPointsToWin is 15, expected 10
+190434182.json | hasBots is true, expected false
+190444257.json | hasBots is true, expected false
 190446793.json | victoryPointsToWin is 15, expected 10
 190448118.json | victoryPointsToWin is 15, expected 10
 190449048.json | victoryPointsToWin is 15, expected 10
@@ -903,6 +1167,7 @@
 190461074.json | victoryPointsToWin is 15, expected 10
 190462423.json | victoryPointsToWin is 15, expected 10
 190462963.json | victoryPointsToWin is 15, expected 10
+190470922.json | hasBots is true, expected false
 190489340.json | victoryPointsToWin is 15, expected 10
 190489667.json | victoryPointsToWin is 15, expected 10
 190496524.json | victoryPointsToWin is 15, expected 10
@@ -911,6 +1176,8 @@
 190500643.json | victoryPointsToWin is 15, expected 10
 190502283.json | victoryPointsToWin is 15, expected 10
 190502992.json | victoryPointsToWin is 15, expected 10
+190503133.json | hasBots is true, expected false
+190503930.json | hasBots is true, expected false
 190510781.json | victoryPointsToWin is 15, expected 10
 190511142.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 190512241.json | victoryPointsToWin is 15, expected 10
@@ -922,6 +1189,7 @@
 190538314.json | victoryPointsToWin is 15, expected 10
 190540842.json | victoryPointsToWin is 15, expected 10
 190541518.json | victoryPointsToWin is 15, expected 10
+190546831.json | hasBots is true, expected false
 190547339.json | victoryPointsToWin is 15, expected 10
 190547431.json | victoryPointsToWin is 15, expected 10
 190548400.json | victoryPointsToWin is 13, expected 10
@@ -932,24 +1200,30 @@
 190555145.json | victoryPointsToWin is 15, expected 10
 190556664.json | victoryPointsToWin is 15, expected 10
 190558418.json | victoryPointsToWin is 15, expected 10
+190558870.json | hasBots is true, expected false
 190559935.json | victoryPointsToWin is 15, expected 10
 190561936.json | victoryPointsToWin is 15, expected 10
 190563091.json | victoryPointsToWin is 15, expected 10
 190564700.json | victoryPointsToWin is 15, expected 10
 190565850.json | victoryPointsToWin is 15, expected 10
+190566697.json | hasBots is true, expected false
 190568666.json | victoryPointsToWin is 15, expected 10
 190571397.json | victoryPointsToWin is 15, expected 10
 190571568.json | victoryPointsToWin is 15, expected 10
 190572013.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 190577671.json | mapSetting is 2, expected 0
+190578638.json | hasBots is true, expected false
 190579426.json | victoryPointsToWin is 15, expected 10
 190593020.json | victoryPointsToWin is 15, expected 10
 190594814.json | victoryPointsToWin is 15, expected 10
 190595262.json | victoryPointsToWin is 15, expected 10
+190596656.json | hasBots is true, expected false
 190603835.json | victoryPointsToWin is 15, expected 10
 190604676.json | victoryPointsToWin is 15, expected 10
 190604859.json | victoryPointsToWin is 15, expected 10
+190606123.json | hasBots is true, expected false
 190613033.json | victoryPointsToWin is 15, expected 10
+190614135.json | maxPlayers is 3, expected 4
 190614216.json | victoryPointsToWin is 15, expected 10
 190619633.json | victoryPointsToWin is 15, expected 10
 190632784.json | victoryPointsToWin is 15, expected 10
@@ -966,7 +1240,9 @@
 190667854.json | victoryPointsToWin is 15, expected 10
 190674748.json | victoryPointsToWin is 15, expected 10
 190690965.json | victoryPointsToWin is 15, expected 10
+190694667.json | hasBots is true, expected false
 190695377.json | victoryPointsToWin is 15, expected 10
+190697198.json | hasBots is true, expected false
 190703402.json | victoryPointsToWin is 15, expected 10
 190705352.json | victoryPointsToWin is 15, expected 10
 190705678.json | mapSetting is 2, expected 0
@@ -974,16 +1250,19 @@
 190707357.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 190708387.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 190712244.json | victoryPointsToWin is 15, expected 10
+190717769.json | hasBots is true, expected false
 190720323.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 190728659.json | victoryPointsToWin is 15, expected 10
 190729104.json | victoryPointsToWin is 15, expected 10
 190729373.json | victoryPointsToWin is 15, expected 10
+190729849.json | hasBots is true, expected false
 190730638.json | victoryPointsToWin is 15, expected 10
 190734903.json | victoryPointsToWin is 15, expected 10
 190734922.json | victoryPointsToWin is 15, expected 10
 190736586.json | victoryPointsToWin is 15, expected 10
 190740028.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 190740034.json | victoryPointsToWin is 15, expected 10
+190740711.json | hasBots is true, expected false
 190744826.json | victoryPointsToWin is 13, expected 10
 190745007.json | victoryPointsToWin is 15, expected 10
 190747657.json | victoryPointsToWin is 15, expected 10
@@ -997,11 +1276,17 @@
 190756640.json | victoryPointsToWin is 15, expected 10
 190768410.json | victoryPointsToWin is 15, expected 10
 190768785.json | victoryPointsToWin is 15, expected 10
+190769683.json | hasBots is true, expected false
 190771881.json | victoryPointsToWin is 15, expected 10
+190779964.json | hasBots is true, expected false
 190780353.json | victoryPointsToWin is 15, expected 10
 190786104.json | victoryPointsToWin is 15, expected 10
+190790110.json | hasBots is true, expected false
 190794907.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+190796600.json | hasBots is true, expected false
+190799506.json | hasBots is true, expected false
 190803082.json | victoryPointsToWin is 13, expected 10
+190805821.json | hasBots is true, expected false
 190811166.json | victoryPointsToWin is 15, expected 10
 190811457.json | victoryPointsToWin is 15, expected 10
 190811816.json | victoryPointsToWin is 15, expected 10
@@ -1015,6 +1300,9 @@
 190844237.json | victoryPointsToWin is 15, expected 10
 190847242.json | victoryPointsToWin is 15, expected 10
 190847932.json | victoryPointsToWin is 15, expected 10
+190850019.json | hasBots is true, expected false
+190854471.json | hasBots is true, expected false
+190854656.json | hasBots is true, expected false
 190855592.json | victoryPointsToWin is 15, expected 10
 190863869.json | mapSetting is 2, expected 0
 190864099.json | victoryPointsToWin is 13, expected 10
@@ -1023,36 +1311,61 @@
 190870637.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 190878098.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 190883486.json | victoryPointsToWin is 15, expected 10
+190885978.json | hasBots is true, expected false
 190887806.json | victoryPointsToWin is 13, expected 10
 190890766.json | victoryPointsToWin is 15, expected 10
+190892037.json | hasBots is true, expected false
 190892733.json | victoryPointsToWin is 15, expected 10
 190897589.json | mapSetting is 2, expected 0
 190901134.json | victoryPointsToWin is 15, expected 10
+190904813.json | hasBots is true, expected false
 190904862.json | victoryPointsToWin is 15, expected 10
 190906379.json | victoryPointsToWin is 15, expected 10
+190909050.json | hasBots is true, expected false
 190910578.json | victoryPointsToWin is 13, expected 10
+190910744.json | hasBots is true, expected false
+190914140.json | hasBots is true, expected false
 190915359.json | victoryPointsToWin is 13, expected 10
+190921503.json | hasBots is true, expected false
 190926416.json | victoryPointsToWin is 15, expected 10
 190928766.json | victoryPointsToWin is 15, expected 10
 190930278.json | victoryPointsToWin is 15, expected 10
+190932718.json | hasBots is true, expected false
 190933121.json | victoryPointsToWin is 15, expected 10
+190933892.json | hasBots is true, expected false
 190934983.json | victoryPointsToWin is 15, expected 10
+190935527.json | hasBots is true, expected false
 190937373.json | cardDiscardLimit is 10, expected 7
+190937458.json | hasBots is true, expected false
+190938763.json | hasBots is true, expected false
 190939756.json | victoryPointsToWin is 15, expected 10
 190940942.json | victoryPointsToWin is 15, expected 10
 190946846.json | victoryPointsToWin is 13, expected 10
+190951583.json | hasBots is true, expected false
+190952105.json | hasBots is true, expected false
 190954861.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+190961693.json | hasBots is true, expected false
 190963857.json | victoryPointsToWin is 15, expected 10
+190964422.json | hasBots is true, expected false
+190965111.json | hasBots is true, expected false
+190967347.json | hasBots is true, expected false
+190967641.json | hasBots is true, expected false
 190979490.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 190990138.json | victoryPointsToWin is 15, expected 10
 190991217.json | victoryPointsToWin is 15, expected 10
 190992142.json | victoryPointsToWin is 15, expected 10
 190994437.json | victoryPointsToWin is 15, expected 10
+190994677.json | hasBots is true, expected false
+191003007.json | hasBots is true, expected false
 191004295.json | victoryPointsToWin is 15, expected 10
 191004610.json | victoryPointsToWin is 15, expected 10
 191007707.json | victoryPointsToWin is 15, expected 10
+191009213.json | hasBots is true, expected false
 191013885.json | victoryPointsToWin is 15, expected 10
+191014114.json | hasBots is true, expected false
+191014238.json | hasBots is true, expected false
 191015003.json | victoryPointsToWin is 15, expected 10
+191015031.json | hasBots is true, expected false
 191017310.json | victoryPointsToWin is 15, expected 10
 191018177.json | victoryPointsToWin is 15, expected 10
 191019129.json | victoryPointsToWin is 15, expected 10
@@ -1062,35 +1375,59 @@
 191022048.json | victoryPointsToWin is 15, expected 10
 191023307.json | victoryPointsToWin is 15, expected 10
 191023801.json | victoryPointsToWin is 15, expected 10
+191025372.json | hasBots is true, expected false
 191025743.json | victoryPointsToWin is 15, expected 10
 191035299.json | victoryPointsToWin is 15, expected 10
+191036665.json | hasBots is true, expected false
+191036808.json | hasBots is true, expected false
+191039159.json | hasBots is true, expected false
 191042302.json | victoryPointsToWin is 15, expected 10
 191050870.json | victoryPointsToWin is 15, expected 10
+191061859.json | hasBots is true, expected false
 191064354.json | victoryPointsToWin is 15, expected 10
 191065364.json | victoryPointsToWin is 13, expected 10
 191066181.json | victoryPointsToWin is 15, expected 10
+191067392.json | hasBots is true, expected false
+191071551.json | hasBots is true, expected false
+191071964.json | hasBots is true, expected false
+191076474.json | hasBots is true, expected false
 191078085.json | victoryPointsToWin is 15, expected 10
 191079711.json | victoryPointsToWin is 15, expected 10
+191080059.json | hasBots is true, expected false
+191084546.json | hasBots is true, expected false
 191089334.json | victoryPointsToWin is 15, expected 10
 191090464.json | victoryPointsToWin is 13, expected 10
 191100048.json | victoryPointsToWin is 15, expected 10
+191104432.json | hasBots is true, expected false
 191106487.json | victoryPointsToWin is 15, expected 10
 191107642.json | victoryPointsToWin is 15, expected 10
 191109293.json | victoryPointsToWin is 15, expected 10
 191111334.json | victoryPointsToWin is 15, expected 10
 191113870.json | victoryPointsToWin is 15, expected 10
+191114842.json | hasBots is true, expected false
+191116030.json | hasBots is true, expected false
+191116034.json | hasBots is true, expected false
+191116824.json | hasBots is true, expected false
+191116865.json | hasBots is true, expected false
 191117301.json | victoryPointsToWin is 15, expected 10
+191118302.json | hasBots is true, expected false
+191120678.json | hasBots is true, expected false
+191126521.json | hasBots is true, expected false
 191128166.json | victoryPointsToWin is 15, expected 10
+191136373.json | hasBots is true, expected false
+191137441.json | hasBots is true, expected false
 191163377.json | victoryPointsToWin is 13, expected 10
 191166780.json | victoryPointsToWin is 13, expected 10
 191167190.json | victoryPointsToWin is 13, expected 10
 191170843.json | victoryPointsToWin is 15, expected 10
+191171341.json | hasBots is true, expected false
 191174084.json | victoryPointsToWin is 13, expected 10
 191179937.json | victoryPointsToWin is 15, expected 10
 191181464.json | victoryPointsToWin is 15, expected 10
 191185289.json | victoryPointsToWin is 13, expected 10
 191185810.json | victoryPointsToWin is 15, expected 10
 191187846.json | victoryPointsToWin is 15, expected 10
+191188510.json | hasBots is true, expected false
 191188519.json | victoryPointsToWin is 15, expected 10
 191188900.json | victoryPointsToWin is 15, expected 10
 191190432.json | victoryPointsToWin is 15, expected 10
@@ -1105,15 +1442,19 @@
 191216782.json | victoryPointsToWin is 15, expected 10
 191219534.json | victoryPointsToWin is 13, expected 10
 191221142.json | victoryPointsToWin is 13, expected 10
+191228519.json | hasBots is true, expected false
 191229436.json | victoryPointsToWin is 15, expected 10
 191229654.json | victoryPointsToWin is 13, expected 10
 191235884.json | victoryPointsToWin is 15, expected 10
 191237176.json | victoryPointsToWin is 15, expected 10
 191238511.json | victoryPointsToWin is 15, expected 10
+191240657.json | hasBots is true, expected false
 191242267.json | victoryPointsToWin is 15, expected 10
+191242426.json | hasBots is true, expected false
 191242702.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 191243080.json | victoryPointsToWin is 15, expected 10
 191243981.json | victoryPointsToWin is 15, expected 10
+191245309.json | hasBots is true, expected false
 191245892.json | victoryPointsToWin is 15, expected 10
 191246694.json | victoryPointsToWin is 15, expected 10
 191247827.json | victoryPointsToWin is 15, expected 10
@@ -1141,9 +1482,11 @@
 191345933.json | victoryPointsToWin is 15, expected 10
 191347637.json | victoryPointsToWin is 15, expected 10
 191348999.json | victoryPointsToWin is 15, expected 10
+191351285.json | hasBots is true, expected false
 191351487.json | victoryPointsToWin is 15, expected 10
 191356449.json | victoryPointsToWin is 15, expected 10
 191357842.json | victoryPointsToWin is 15, expected 10
+191357878.json | hasBots is true, expected false
 191357901.json | victoryPointsToWin is 15, expected 10
 191363127.json | victoryPointsToWin is 15, expected 10
 191363837.json | victoryPointsToWin is 15, expected 10
@@ -1171,12 +1514,16 @@
 191417926.json | victoryPointsToWin is 15, expected 10
 191419889.json | victoryPointsToWin is 15, expected 10
 191420096.json | victoryPointsToWin is 15, expected 10
+191420925.json | hasBots is true, expected false
 191421883.json | victoryPointsToWin is 15, expected 10
+191422268.json | hasBots is true, expected false
 191424970.json | victoryPointsToWin is 15, expected 10
 191428597.json | victoryPointsToWin is 15, expected 10
 191434865.json | victoryPointsToWin is 12, expected 10
 191440383.json | victoryPointsToWin is 15, expected 10
 191474300.json | victoryPointsToWin is 15, expected 10
+191474357.json | hasBots is true, expected false
+191475929.json | hasBots is true, expected false
 191479463.json | victoryPointsToWin is 13, expected 10
 191481798.json | victoryPointsToWin is 15, expected 10
 191510585.json | victoryPointsToWin is 15, expected 10
@@ -1211,11 +1558,13 @@
 191600033.json | victoryPointsToWin is 15, expected 10
 191602352.json | victoryPointsToWin is 15, expected 10
 191604675.json | victoryPointsToWin is 15, expected 10
+191606238.json | maxPlayers is 3, expected 4
 191610274.json | victoryPointsToWin is 15, expected 10
 191611581.json | victoryPointsToWin is 15, expected 10
 191613715.json | victoryPointsToWin is 15, expected 10
 191615524.json | victoryPointsToWin is 15, expected 10
 191619616.json | victoryPointsToWin is 15, expected 10
+191626673.json | hasBots is true, expected false
 191630681.json | victoryPointsToWin is 13, expected 10
 191632816.json | victoryPointsToWin is 15, expected 10
 191634658.json | victoryPointsToWin is 15, expected 10
@@ -1234,8 +1583,11 @@
 191666412.json | victoryPointsToWin is 15, expected 10
 191674263.json | victoryPointsToWin is 15, expected 10
 191678489.json | victoryPointsToWin is 15, expected 10
+191684673.json | hasBots is true, expected false
 191687810.json | victoryPointsToWin is 15, expected 10
 191695339.json | victoryPointsToWin is 15, expected 10
+191696976.json | hasBots is true, expected false
+191699531.json | hasBots is true, expected false
 191699801.json | victoryPointsToWin is 15, expected 10
 191705507.json | victoryPointsToWin is 15, expected 10
 191714013.json | victoryPointsToWin is 15, expected 10
@@ -1263,17 +1615,32 @@
 191755820.json | victoryPointsToWin is 15, expected 10
 191759912.json | victoryPointsToWin is 13, expected 10
 191760244.json | victoryPointsToWin is 15, expected 10
+191761998.json | hasBots is true, expected false
 191762412.json | victoryPointsToWin is 13, expected 10
+191763515.json | hasBots is true, expected false
 191763807.json | victoryPointsToWin is 15, expected 10
+191765549.json | hasBots is true, expected false
 191767476.json | victoryPointsToWin is 15, expected 10
 191771222.json | victoryPointsToWin is 15, expected 10
+191775602.json | hasBots is true, expected false
 191776734.json | victoryPointsToWin is 15, expected 10
+191778228.json | hasBots is true, expected false
+191778871.json | hasBots is true, expected false
+191780280.json | hasBots is true, expected false
 191780950.json | victoryPointsToWin is 15, expected 10
+191784322.json | hasBots is true, expected false
+191786351.json | hasBots is true, expected false
+191786706.json | hasBots is true, expected false
+191789726.json | hasBots is true, expected false
 191791507.json | victoryPointsToWin is 13, expected 10
+191791867.json | hasBots is true, expected false
+191791973.json | maxPlayers is 3, expected 4
+191795216.json | hasBots is true, expected false
 191799321.json | victoryPointsToWin is 13, expected 10
 191799630.json | victoryPointsToWin is 15, expected 10
 191799649.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 191800982.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+191803961.json | hasBots is true, expected false
 191810205.json | victoryPointsToWin is 15, expected 10
 191812560.json | victoryPointsToWin is 13, expected 10
 191813877.json | victoryPointsToWin is 15, expected 10
@@ -1308,6 +1675,7 @@
 191903426.json | victoryPointsToWin is 15, expected 10
 191904244.json | victoryPointsToWin is 15, expected 10
 191906059.json | victoryPointsToWin is 15, expected 10
+191914404.json | hasBots is true, expected false
 191914799.json | victoryPointsToWin is 15, expected 10
 191915499.json | victoryPointsToWin is 14, expected 10
 191916321.json | victoryPointsToWin is 15, expected 10
@@ -1323,11 +1691,14 @@
 191941259.json | victoryPointsToWin is 15, expected 10
 191941628.json | victoryPointsToWin is 15, expected 10
 191949234.json | victoryPointsToWin is 15, expected 10
+191950135.json | hasBots is true, expected false
 191951347.json | victoryPointsToWin is 15, expected 10
 191951614.json | victoryPointsToWin is 15, expected 10
 191951786.json | victoryPointsToWin is 15, expected 10
+191952988.json | hasBots is true, expected false
 191953645.json | victoryPointsToWin is 15, expected 10
 191954236.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+191954776.json | hasBots is true, expected false
 191956456.json | victoryPointsToWin is 15, expected 10
 191961622.json | victoryPointsToWin is 13, expected 10
 191961627.json | victoryPointsToWin is 15, expected 10
@@ -1337,18 +1708,24 @@
 191966338.json | victoryPointsToWin is 13, expected 10
 191966595.json | victoryPointsToWin is 15, expected 10
 191966670.json | victoryPointsToWin is 15, expected 10
+191967337.json | hasBots is true, expected false
 191968932.json | victoryPointsToWin is 15, expected 10
 191973839.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+191978764.json | hasBots is true, expected false
 191986459.json | victoryPointsToWin is 15, expected 10
 191988858.json | victoryPointsToWin is 15, expected 10
+191991818.json | hasBots is true, expected false
 191992170.json | victoryPointsToWin is 15, expected 10
 191994568.json | victoryPointsToWin is 15, expected 10
 191997331.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192004467.json | victoryPointsToWin is 15, expected 10
+192006739.json | hasBots is true, expected false
 192007687.json | victoryPointsToWin is 15, expected 10
 192008268.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+192015081.json | hasBots is true, expected false
 192015984.json | victoryPointsToWin is 15, expected 10
 192016450.json | victoryPointsToWin is 13, expected 10
+192030314.json | hasBots is true, expected false
 192030569.json | mapSetting is 2, expected 0
 192031465.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192038662.json | victoryPointsToWin is 15, expected 10
@@ -1368,7 +1745,9 @@
 192063560.json | victoryPointsToWin is 15, expected 10
 192065693.json | victoryPointsToWin is 15, expected 10
 192066402.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+192071119.json | hasBots is true, expected false
 192072588.json | victoryPointsToWin is 15, expected 10
+192074469.json | hasBots is true, expected false
 192077779.json | victoryPointsToWin is 15, expected 10
 192080803.json | victoryPointsToWin is 15, expected 10
 192085082.json | victoryPointsToWin is 13, expected 10
@@ -1376,7 +1755,13 @@
 192090038.json | victoryPointsToWin is 15, expected 10
 192100539.json | victoryPointsToWin is 15, expected 10
 192101345.json | victoryPointsToWin is 15, expected 10
+192104020.json | hasBots is true, expected false
+192115790.json | hasBots is true, expected false
+192116328.json | hasBots is true, expected false
+192117662.json | hasBots is true, expected false
+192117669.json | hasBots is true, expected false
 192119210.json | victoryPointsToWin is 15, expected 10
+192119939.json | hasBots is true, expected false
 192126644.json | victoryPointsToWin is 15, expected 10
 192128762.json | victoryPointsToWin is 15, expected 10
 192129151.json | victoryPointsToWin is 15, expected 10
@@ -1407,47 +1792,67 @@
 192173592.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192173676.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192178365.json | victoryPointsToWin is 15, expected 10
+192180283.json | hasBots is true, expected false
 192182037.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192183467.json | victoryPointsToWin is 15, expected 10
+192184143.json | hasBots is true, expected false
 192184238.json | victoryPointsToWin is 15, expected 10
 192185667.json | victoryPointsToWin is 15, expected 10
 192186020.json | victoryPointsToWin is 15, expected 10
 192187614.json | victoryPointsToWin is 15, expected 10
+192188793.json | hasBots is true, expected false
+192189560.json | hasBots is true, expected false
+192190345.json | hasBots is true, expected false
 192193138.json | victoryPointsToWin is 15, expected 10
 192195188.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192197698.json | victoryPointsToWin is 15, expected 10
 192198850.json | victoryPointsToWin is 15, expected 10
 192199296.json | victoryPointsToWin is 15, expected 10
+192200315.json | hasBots is true, expected false
 192204033.json | victoryPointsToWin is 15, expected 10
 192210047.json | victoryPointsToWin is 15, expected 10
+192212410.json | hasBots is true, expected false
 192212520.json | victoryPointsToWin is 15, expected 10
 192214494.json | victoryPointsToWin is 15, expected 10
 192217094.json | victoryPointsToWin is 15, expected 10
 192226939.json | victoryPointsToWin is 15, expected 10
+192236108.json | hasBots is true, expected false
 192236421.json | victoryPointsToWin is 15, expected 10
 192238800.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+192239629.json | hasBots is true, expected false
+192242752.json | hasBots is true, expected false
 192243304.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192243712.json | victoryPointsToWin is 15, expected 10
+192244368.json | hasBots is true, expected false
 192248218.json | victoryPointsToWin is 15, expected 10
+192252659.json | hasBots is true, expected false
+192252842.json | hasBots is true, expected false
 192258918.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192261637.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192262662.json | victoryPointsToWin is 15, expected 10
+192262683.json | hasBots is true, expected false
 192263335.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192264082.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192267798.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192269073.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192269547.json | victoryPointsToWin is 15, expected 10
 192270242.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+192272554.json | hasBots is true, expected false
 192273487.json | victoryPointsToWin is 15, expected 10
 192276089.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192285423.json | victoryPointsToWin is 13, expected 10
 192288477.json | victoryPointsToWin is 15, expected 10
 192290092.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192295629.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+192295835.json | hasBots is true, expected false
+192296007.json | hasBots is true, expected false
 192300541.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+192306136.json | hasBots is true, expected false
+192307428.json | hasBots is true, expected false
 192311428.json | victoryPointsToWin is 15, expected 10
 192311693.json | victoryPointsToWin is 15, expected 10
 192311781.json | victoryPointsToWin is 13, expected 10
+192313898.json | hasBots is true, expected false
 192314044.json | victoryPointsToWin is 15, expected 10
 192314922.json | victoryPointsToWin is 15, expected 10
 192317244.json | victoryPointsToWin is 15, expected 10
@@ -1467,12 +1872,19 @@
 192332675.json | victoryPointsToWin is 15, expected 10
 192333369.json | victoryPointsToWin is 15, expected 10
 192338372.json | victoryPointsToWin is 13, expected 10
+192342178.json | hasBots is true, expected false
+192344773.json | hasBots is true, expected false
+192346702.json | hasBots is true, expected false
 192351609.json | victoryPointsToWin is 15, expected 10
+192353570.json | hasBots is true, expected false
+192354738.json | hasBots is true, expected false
 192357657.json | victoryPointsToWin is 13, expected 10
 192359179.json | victoryPointsToWin is 15, expected 10
 192359666.json | victoryPointsToWin is 15, expected 10
+192366618.json | hasBots is true, expected false
 192370122.json | victoryPointsToWin is 15, expected 10
 192371469.json | victoryPointsToWin is 15, expected 10
+192371923.json | hasBots is true, expected false
 192380652.json | victoryPointsToWin is 13, expected 10
 192386441.json | victoryPointsToWin is 15, expected 10
 192387541.json | victoryPointsToWin is 15, expected 10
@@ -1485,14 +1897,18 @@
 192403560.json | victoryPointsToWin is 15, expected 10
 192406735.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192406851.json | victoryPointsToWin is 13, expected 10
+192412053.json | hasBots is true, expected false
 192412905.json | victoryPointsToWin is 15, expected 10
+192413005.json | hasBots is true, expected false
 192413056.json | victoryPointsToWin is 15, expected 10
 192413722.json | victoryPointsToWin is 15, expected 10
 192414421.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+192417496.json | hasBots is true, expected false
 192417711.json | victoryPointsToWin is 15, expected 10
 192417899.json | victoryPointsToWin is 13, expected 10
 192419071.json | victoryPointsToWin is 13, expected 10
 192419855.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+192420745.json | hasBots is true, expected false
 192424639.json | victoryPointsToWin is 15, expected 10
 192425686.json | victoryPointsToWin is 15, expected 10
 192425898.json | victoryPointsToWin is 15, expected 10
@@ -1501,6 +1917,7 @@
 192428634.json | victoryPointsToWin is 15, expected 10
 192433653.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192434013.json | victoryPointsToWin is 15, expected 10
+192434350.json | hasBots is true, expected false
 192435701.json | victoryPointsToWin is 15, expected 10
 192445446.json | victoryPointsToWin is 15, expected 10
 192446844.json | victoryPointsToWin is 15, expected 10
@@ -1509,6 +1926,7 @@
 192455684.json | victoryPointsToWin is 13, expected 10
 192457661.json | victoryPointsToWin is 15, expected 10
 192458979.json | victoryPointsToWin is 15, expected 10
+192459146.json | hasBots is true, expected false
 192459728.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192460797.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192461156.json | victoryPointsToWin is 15, expected 10
@@ -1525,9 +1943,11 @@
 192483481.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192483968.json | victoryPointsToWin is 15, expected 10
 192486371.json | victoryPointsToWin is 15, expected 10
+192488252.json | hasBots is true, expected false
 192488764.json | victoryPointsToWin is 15, expected 10
 192490855.json | victoryPointsToWin is 15, expected 10
 192491320.json | victoryPointsToWin is 15, expected 10
+192492087.json | hasBots is true, expected false
 192492242.json | victoryPointsToWin is 15, expected 10
 192495559.json | victoryPointsToWin is 15, expected 10
 192496266.json | victoryPointsToWin is 15, expected 10
@@ -1536,12 +1956,16 @@
 192499010.json | victoryPointsToWin is 15, expected 10
 192501199.json | victoryPointsToWin is 15, expected 10
 192504587.json | victoryPointsToWin is 13, expected 10
+192513480.json | hasBots is true, expected false
 192518754.json | victoryPointsToWin is 15, expected 10
 192519820.json | victoryPointsToWin is 15, expected 10
 192520582.json | victoryPointsToWin is 15, expected 10
 192520967.json | victoryPointsToWin is 15, expected 10
 192521358.json | victoryPointsToWin is 15, expected 10
+192525223.json | hasBots is true, expected false
+192530633.json | hasBots is true, expected false
 192532368.json | victoryPointsToWin is 15, expected 10
+192537197.json | hasBots is true, expected false
 192543231.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192544482.json | victoryPointsToWin is 13, expected 10
 192546911.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -1549,12 +1973,17 @@
 192548718.json | victoryPointsToWin is 15, expected 10
 192550551.json | victoryPointsToWin is 15, expected 10
 192551751.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+192552172.json | hasBots is true, expected false
+192559432.json | hasBots is true, expected false
+192562429.json | maxPlayers is 3, expected 4
+192565728.json | hasBots is true, expected false
 192566048.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192567402.json | victoryPointsToWin is 15, expected 10
 192580471.json | victoryPointsToWin is 15, expected 10
 192581033.json | victoryPointsToWin is 15, expected 10
 192584405.json | victoryPointsToWin is 15, expected 10
 192594085.json | victoryPointsToWin is 15, expected 10
+192594707.json | hasBots is true, expected false
 192596116.json | victoryPointsToWin is 15, expected 10
 192597449.json | victoryPointsToWin is 15, expected 10
 192598579.json | victoryPointsToWin is 15, expected 10
@@ -1564,14 +1993,20 @@
 192610046.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192612362.json | victoryPointsToWin is 15, expected 10
 192613446.json | victoryPointsToWin is 15, expected 10
+192614138.json | hasBots is true, expected false
 192614507.json | victoryPointsToWin is 15, expected 10
 192614858.json | victoryPointsToWin is 15, expected 10
+192618051.json | hasBots is true, expected false
 192618099.json | victoryPointsToWin is 15, expected 10
 192618266.json | victoryPointsToWin is 15, expected 10
 192619624.json | victoryPointsToWin is 15, expected 10
 192623003.json | victoryPointsToWin is 15, expected 10
+192623806.json | hasBots is true, expected false
 192623830.json | victoryPointsToWin is 15, expected 10
 192624285.json | victoryPointsToWin is 15, expected 10
+192625111.json | hasBots is true, expected false
+192626093.json | hasBots is true, expected false
+192626464.json | hasBots is true, expected false
 192627415.json | victoryPointsToWin is 15, expected 10
 192631955.json | victoryPointsToWin is 15, expected 10
 192635096.json | victoryPointsToWin is 15, expected 10
@@ -1589,17 +2024,27 @@
 192655187.json | victoryPointsToWin is 15, expected 10
 192658870.json | victoryPointsToWin is 15, expected 10
 192658954.json | victoryPointsToWin is 15, expected 10
+192659460.json | hasBots is true, expected false
 192659487.json | victoryPointsToWin is 15, expected 10
+192666408.json | hasBots is true, expected false
 192667554.json | victoryPointsToWin is 15, expected 10
 192667762.json | victoryPointsToWin is 15, expected 10
 192668159.json | victoryPointsToWin is 15, expected 10
+192670142.json | hasBots is true, expected false
 192672640.json | victoryPointsToWin is 15, expected 10
+192673080.json | hasBots is true, expected false
 192673873.json | victoryPointsToWin is 13, expected 10
+192675416.json | hasBots is true, expected false
+192675629.json | hasBots is true, expected false
+192676211.json | hasBots is true, expected false
+192676246.json | hasBots is true, expected false
 192676983.json | victoryPointsToWin is 15, expected 10
 192677703.json | victoryPointsToWin is 15, expected 10
+192678550.json | hasBots is true, expected false
 192678552.json | victoryPointsToWin is 13, expected 10
 192680604.json | victoryPointsToWin is 15, expected 10
 192681129.json | victoryPointsToWin is 13, expected 10
+192681190.json | hasBots is true, expected false
 192683325.json | victoryPointsToWin is 15, expected 10
 192684825.json | victoryPointsToWin is 15, expected 10
 192687015.json | victoryPointsToWin is 15, expected 10
@@ -1619,18 +2064,28 @@
 192703351.json | victoryPointsToWin is 15, expected 10
 192703706.json | victoryPointsToWin is 15, expected 10
 192703886.json | victoryPointsToWin is 15, expected 10
+192705847.json | hasBots is true, expected false
 192705913.json | victoryPointsToWin is 15, expected 10
 192707235.json | victoryPointsToWin is 15, expected 10
+192707569.json | hasBots is true, expected false
+192708695.json | hasBots is true, expected false
 192710499.json | victoryPointsToWin is 14, expected 10
+192712629.json | hasBots is true, expected false
 192713703.json | victoryPointsToWin is 15, expected 10
 192718273.json | victoryPointsToWin is 15, expected 10
 192719349.json | victoryPointsToWin is 15, expected 10
 192720116.json | victoryPointsToWin is 15, expected 10
 192722650.json | victoryPointsToWin is 15, expected 10
 192723410.json | victoryPointsToWin is 15, expected 10
+192732340.json | hasBots is true, expected false
+192732611.json | hasBots is true, expected false
 192734533.json | victoryPointsToWin is 13, expected 10
 192742103.json | victoryPointsToWin is 13, expected 10
 192744276.json | victoryPointsToWin is 15, expected 10
+192745958.json | hasBots is true, expected false
+192747688.json | hasBots is true, expected false
+192749644.json | hasBots is true, expected false
+192751356.json | hasBots is true, expected false
 192751546.json | victoryPointsToWin is 15, expected 10
 192754571.json | victoryPointsToWin is 15, expected 10
 192760365.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -1640,18 +2095,25 @@
 192768634.json | victoryPointsToWin is 15, expected 10
 192771906.json | victoryPointsToWin is 15, expected 10
 192771927.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+192772516.json | hasBots is true, expected false
 192773315.json | victoryPointsToWin is 15, expected 10
+192774269.json | hasBots is true, expected false
 192774373.json | victoryPointsToWin is 15, expected 10
+192777024.json | hasBots is true, expected false
 192777579.json | victoryPointsToWin is 15, expected 10
 192778129.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192781420.json | victoryPointsToWin is 15, expected 10
+192789929.json | hasBots is true, expected false
 192790867.json | victoryPointsToWin is 12, expected 10
+192791117.json | hasBots is true, expected false
+192792693.json | hasBots is true, expected false
 192792922.json | victoryPointsToWin is 15, expected 10
 192792959.json | victoryPointsToWin is 13, expected 10
 192793777.json | victoryPointsToWin is 15, expected 10
 192794219.json | victoryPointsToWin is 15, expected 10
 192794493.json | victoryPointsToWin is 13, expected 10
 192794573.json | victoryPointsToWin is 15, expected 10
+192794821.json | hasBots is true, expected false
 192795027.json | victoryPointsToWin is 13, expected 10
 192795358.json | victoryPointsToWin is 15, expected 10
 192796208.json | victoryPointsToWin is 15, expected 10
@@ -1660,30 +2122,42 @@
 192805060.json | victoryPointsToWin is 15, expected 10
 192805119.json | victoryPointsToWin is 15, expected 10
 192806102.json | victoryPointsToWin is 15, expected 10
+192806997.json | hasBots is true, expected false
 192807926.json | victoryPointsToWin is 15, expected 10
 192809733.json | victoryPointsToWin is 13, expected 10
 192810415.json | victoryPointsToWin is 13, expected 10
 192811621.json | victoryPointsToWin is 15, expected 10
 192812788.json | victoryPointsToWin is 15, expected 10
+192813506.json | hasBots is true, expected false
 192813731.json | victoryPointsToWin is 13, expected 10
 192814899.json | victoryPointsToWin is 15, expected 10
+192815556.json | hasBots is true, expected false
+192815564.json | hasBots is true, expected false
+192815939.json | hasBots is true, expected false
 192816515.json | victoryPointsToWin is 20, expected 10
 192816698.json | victoryPointsToWin is 15, expected 10
+192817624.json | hasBots is true, expected false
+192818743.json | hasBots is true, expected false
 192819233.json | victoryPointsToWin is 15, expected 10
 192822762.json | victoryPointsToWin is 15, expected 10
 192823038.json | victoryPointsToWin is 20, expected 10
+192825265.json | hasBots is true, expected false
 192827001.json | victoryPointsToWin is 15, expected 10
 192829755.json | victoryPointsToWin is 15, expected 10
 192830683.json | victoryPointsToWin is 15, expected 10
 192832442.json | victoryPointsToWin is 15, expected 10
+192832791.json | hasBots is true, expected false
 192833940.json | victoryPointsToWin is 15, expected 10
 192835172.json | victoryPointsToWin is 15, expected 10
 192837131.json | victoryPointsToWin is 15, expected 10
 192837135.json | victoryPointsToWin is 15, expected 10
 192837626.json | victoryPointsToWin is 13, expected 10
 192837710.json | victoryPointsToWin is 15, expected 10
+192839479.json | hasBots is true, expected false
 192839852.json | victoryPointsToWin is 15, expected 10
 192840821.json | victoryPointsToWin is 15, expected 10
+192841534.json | hasBots is true, expected false
+192842816.json | hasBots is true, expected false
 192845639.json | victoryPointsToWin is 15, expected 10
 192846046.json | victoryPointsToWin is 15, expected 10
 192846095.json | victoryPointsToWin is 15, expected 10
@@ -1694,14 +2168,21 @@
 192850590.json | victoryPointsToWin is 20, expected 10
 192850944.json | victoryPointsToWin is 15, expected 10
 192853693.json | victoryPointsToWin is 13, expected 10
+192854272.json | hasBots is true, expected false
+192854363.json | hasBots is true, expected false
 192856775.json | victoryPointsToWin is 15, expected 10
 192858351.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192859191.json | victoryPointsToWin is 15, expected 10
 192860016.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+192864009.json | hasBots is true, expected false
+192867620.json | hasBots is true, expected false
 192867865.json | victoryPointsToWin is 13, expected 10
 192868412.json | victoryPointsToWin is 13, expected 10
+192868807.json | hasBots is true, expected false
 192869654.json | victoryPointsToWin is 15, expected 10
 192872340.json | victoryPointsToWin is 13, expected 10
+192873196.json | hasBots is true, expected false
+192874814.json | hasBots is true, expected false
 192875169.json | victoryPointsToWin is 13, expected 10
 192877586.json | victoryPointsToWin is 15, expected 10
 192879166.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -1716,14 +2197,17 @@
 192896718.json | victoryPointsToWin is 13, expected 10
 192907215.json | victoryPointsToWin is 15, expected 10
 192910401.json | victoryPointsToWin is 13, expected 10
+192912004.json | hasBots is true, expected false
 192913678.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192914513.json | victoryPointsToWin is 15, expected 10
 192915906.json | victoryPointsToWin is 15, expected 10
 192916326.json | victoryPointsToWin is 15, expected 10
 192917214.json | victoryPointsToWin is 15, expected 10
 192921697.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+192924546.json | hasBots is true, expected false
 192924622.json | victoryPointsToWin is 13, expected 10
 192932822.json | victoryPointsToWin is 13, expected 10
+192933044.json | hasBots is true, expected false
 192934330.json | victoryPointsToWin is 15, expected 10
 192935046.json | victoryPointsToWin is 15, expected 10
 192937850.json | victoryPointsToWin is 15, expected 10
@@ -1735,6 +2219,9 @@
 192955723.json | victoryPointsToWin is 15, expected 10
 192959663.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192960246.json | victoryPointsToWin is 15, expected 10
+192960668.json | hasBots is true, expected false
+192961635.json | hasBots is true, expected false
+192961706.json | hasBots is true, expected false
 192962303.json | victoryPointsToWin is 15, expected 10
 192964023.json | victoryPointsToWin is 15, expected 10
 192966125.json | victoryPointsToWin is 15, expected 10
@@ -1747,6 +2234,7 @@
 192976796.json | victoryPointsToWin is 13, expected 10
 192977278.json | victoryPointsToWin is 15, expected 10
 192977380.json | victoryPointsToWin is 15, expected 10
+192978156.json | hasBots is true, expected false
 192978440.json | victoryPointsToWin is 15, expected 10
 192978988.json | victoryPointsToWin is 15, expected 10
 192979661.json | victoryPointsToWin is 15, expected 10
@@ -1756,6 +2244,7 @@
 192982039.json | victoryPointsToWin is 13, expected 10
 192982849.json | victoryPointsToWin is 15, expected 10
 192983590.json | victoryPointsToWin is 15, expected 10
+192984062.json | hasBots is true, expected false
 192986171.json | victoryPointsToWin is 15, expected 10
 192986830.json | victoryPointsToWin is 15, expected 10
 192988719.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -1763,6 +2252,9 @@
 192996390.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 192999089.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193003375.json | victoryPointsToWin is 13, expected 10
+193004370.json | hasBots is true, expected false
+193006000.json | hasBots is true, expected false
+193006168.json | hasBots is true, expected false
 193007342.json | victoryPointsToWin is 15, expected 10
 193008010.json | victoryPointsToWin is 15, expected 10
 193008457.json | victoryPointsToWin is 13, expected 10
@@ -1770,17 +2262,24 @@
 193008926.json | victoryPointsToWin is 13, expected 10
 193009294.json | victoryPointsToWin is 15, expected 10
 193010283.json | victoryPointsToWin is 15, expected 10
+193011041.json | hasBots is true, expected false
+193011753.json | hasBots is true, expected false
+193011756.json | hasBots is true, expected false
+193011759.json | hasBots is true, expected false
 193012347.json | victoryPointsToWin is 13, expected 10
 193012992.json | victoryPointsToWin is 13, expected 10
 193013658.json | victoryPointsToWin is 15, expected 10
 193014950.json | victoryPointsToWin is 15, expected 10
 193015345.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+193017819.json | hasBots is true, expected false
+193019186.json | hasBots is true, expected false
 193021836.json | victoryPointsToWin is 15, expected 10
 193023124.json | victoryPointsToWin is 13, expected 10
 193028821.json | victoryPointsToWin is 15, expected 10
 193028837.json | victoryPointsToWin is 15, expected 10
 193029146.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193029258.json | victoryPointsToWin is 15, expected 10
+193031243.json | hasBots is true, expected false
 193031746.json | victoryPointsToWin is 15, expected 10
 193036642.json | victoryPointsToWin is 15, expected 10
 193038063.json | victoryPointsToWin is 15, expected 10
@@ -1789,11 +2288,14 @@
 193042903.json | victoryPointsToWin is 15, expected 10
 193045244.json | victoryPointsToWin is 15, expected 10
 193045374.json | victoryPointsToWin is 13, expected 10
+193046072.json | hasBots is true, expected false
+193047467.json | hasBots is true, expected false
 193051021.json | victoryPointsToWin is 15, expected 10
 193051845.json | victoryPointsToWin is 15, expected 10
 193053884.json | victoryPointsToWin is 15, expected 10
 193054162.json | victoryPointsToWin is 15, expected 10
 193056125.json | victoryPointsToWin is 15, expected 10
+193056439.json | hasBots is true, expected false
 193059237.json | victoryPointsToWin is 15, expected 10
 193062324.json | mapSetting is 2, expected 0
 193062801.json | victoryPointsToWin is 15, expected 10
@@ -1818,9 +2320,11 @@
 193095140.json | victoryPointsToWin is 15, expected 10
 193096155.json | victoryPointsToWin is 15, expected 10
 193097499.json | victoryPointsToWin is 15, expected 10
+193098494.json | hasBots is true, expected false
 193098530.json | victoryPointsToWin is 15, expected 10
 193099401.json | victoryPointsToWin is 15, expected 10
 193100359.json | victoryPointsToWin is 15, expected 10
+193101516.json | hasBots is true, expected false
 193101747.json | victoryPointsToWin is 15, expected 10
 193102354.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193103479.json | victoryPointsToWin is 15, expected 10
@@ -1829,13 +2333,20 @@
 193106983.json | victoryPointsToWin is 13, expected 10
 193108647.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193110092.json | victoryPointsToWin is 13, expected 10
+193110883.json | hasBots is true, expected false
 193115307.json | victoryPointsToWin is 15, expected 10
+193115829.json | hasBots is true, expected false
+193116740.json | hasBots is true, expected false
+193118593.json | hasBots is true, expected false
+193118603.json | hasBots is true, expected false
 193124170.json | victoryPointsToWin is 15, expected 10
 193126066.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193128826.json | victoryPointsToWin is 15, expected 10
 193129944.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+193132573.json | hasBots is true, expected false
 193134136.json | victoryPointsToWin is 15, expected 10
 193134432.json | victoryPointsToWin is 15, expected 10
+193134925.json | hasBots is true, expected false
 193139088.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193141498.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193145349.json | victoryPointsToWin is 15, expected 10
@@ -1846,13 +2357,20 @@
 193148447.json | victoryPointsToWin is 15, expected 10
 193148770.json | victoryPointsToWin is 15, expected 10
 193150504.json | victoryPointsToWin is 15, expected 10
+193150539.json | hasBots is true, expected false
 193152167.json | victoryPointsToWin is 13, expected 10
 193152400.json | victoryPointsToWin is 15, expected 10
 193153032.json | victoryPointsToWin is 15, expected 10
+193155398.json | hasBots is true, expected false
 193155962.json | victoryPointsToWin is 15, expected 10
+193157202.json | hasBots is true, expected false
 193157374.json | victoryPointsToWin is 13, expected 10
 193158293.json | victoryPointsToWin is 15, expected 10
+193158372.json | hasBots is true, expected false
 193160011.json | victoryPointsToWin is 15, expected 10
+193160121.json | hasBots is true, expected false
+193163127.json | hasBots is true, expected false
+193165328.json | hasBots is true, expected false
 193165538.json | victoryPointsToWin is 15, expected 10
 193166055.json | victoryPointsToWin is 15, expected 10
 193167693.json | victoryPointsToWin is 15, expected 10
@@ -1860,11 +2378,15 @@
 193170116.json | victoryPointsToWin is 15, expected 10
 193172032.json | victoryPointsToWin is 15, expected 10
 193174643.json | victoryPointsToWin is 15, expected 10
+193174661.json | hasBots is true, expected false
+193175636.json | hasBots is true, expected false
 193176211.json | victoryPointsToWin is 15, expected 10
 193176484.json | victoryPointsToWin is 15, expected 10
+193177098.json | hasBots is true, expected false
 193178141.json | victoryPointsToWin is 15, expected 10
 193178550.json | victoryPointsToWin is 15, expected 10
 193179113.json | victoryPointsToWin is 15, expected 10
+193179431.json | hasBots is true, expected false
 193180133.json | victoryPointsToWin is 15, expected 10
 193181089.json | victoryPointsToWin is 15, expected 10
 193181402.json | victoryPointsToWin is 15, expected 10
@@ -1877,16 +2399,23 @@
 193185002.json | victoryPointsToWin is 15, expected 10
 193185466.json | victoryPointsToWin is 15, expected 10
 193189403.json | victoryPointsToWin is 15, expected 10
+193191361.json | hasBots is true, expected false
 193194549.json | victoryPointsToWin is 13, expected 10
 193195159.json | victoryPointsToWin is 13, expected 10
 193197237.json | victoryPointsToWin is 15, expected 10
+193198297.json | hasBots is true, expected false
 193198960.json | victoryPointsToWin is 13, expected 10
+193201096.json | hasBots is true, expected false
 193203300.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193205826.json | victoryPointsToWin is 15, expected 10
 193207244.json | victoryPointsToWin is 15, expected 10
 193209426.json | victoryPointsToWin is 13, expected 10
+193212969.json | hasBots is true, expected false
+193213088.json | hasBots is true, expected false
 193213563.json | victoryPointsToWin is 15, expected 10
+193214185.json | hasBots is true, expected false
 193216331.json | victoryPointsToWin is 13, expected 10
+193217944.json | hasBots is true, expected false
 193220437.json | victoryPointsToWin is 15, expected 10
 193222278.json | victoryPointsToWin is 15, expected 10
 193222992.json | victoryPointsToWin is 13, expected 10
@@ -1895,9 +2424,11 @@
 193226693.json | victoryPointsToWin is 15, expected 10
 193226923.json | victoryPointsToWin is 13, expected 10
 193227364.json | victoryPointsToWin is 15, expected 10
+193227470.json | hasBots is true, expected false
 193233562.json | victoryPointsToWin is 13, expected 10
 193234362.json | victoryPointsToWin is 13, expected 10
 193234920.json | victoryPointsToWin is 15, expected 10
+193235951.json | hasBots is true, expected false
 193236108.json | victoryPointsToWin is 13, expected 10
 193237766.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193237929.json | victoryPointsToWin is 20, expected 10
@@ -1911,11 +2442,16 @@
 193240221.json | victoryPointsToWin is 15, expected 10
 193240765.json | victoryPointsToWin is 15, expected 10
 193241373.json | victoryPointsToWin is 20, expected 10
+193241917.json | hasBots is true, expected false
 193242057.json | victoryPointsToWin is 15, expected 10
+193245620.json | hasBots is true, expected false
 193246919.json | victoryPointsToWin is 13, expected 10
 193247527.json | victoryPointsToWin is 15, expected 10
+193249601.json | hasBots is true, expected false
+193249964.json | hasBots is true, expected false
 193250479.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193251073.json | victoryPointsToWin is 15, expected 10
+193253017.json | hasBots is true, expected false
 193256798.json | victoryPointsToWin is 13, expected 10
 193260564.json | victoryPointsToWin is 13, expected 10
 193261580.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -1923,9 +2459,11 @@
 193264818.json | victoryPointsToWin is 15, expected 10
 193266208.json | victoryPointsToWin is 15, expected 10
 193266626.json | victoryPointsToWin is 15, expected 10
+193267587.json | hasBots is true, expected false
 193269849.json | mapSetting is 2, expected 0
 193273766.json | victoryPointsToWin is 15, expected 10
 193273829.json | mapSetting is 2, expected 0
+193275285.json | hasBots is true, expected false
 193275944.json | victoryPointsToWin is 15, expected 10
 193277100.json | victoryPointsToWin is 15, expected 10
 193278509.json | victoryPointsToWin is 15, expected 10
@@ -1936,8 +2474,11 @@
 193286772.json | victoryPointsToWin is 16, expected 10
 193287948.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193288970.json | victoryPointsToWin is 15, expected 10
+193289439.json | hasBots is true, expected false
+193290174.json | hasBots is true, expected false
 193291977.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193292479.json | victoryPointsToWin is 15, expected 10
+193293627.json | hasBots is true, expected false
 193294129.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193294137.json | victoryPointsToWin is 15, expected 10
 193295357.json | victoryPointsToWin is 13, expected 10
@@ -1958,6 +2499,7 @@
 193314310.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193316820.json | victoryPointsToWin is 15, expected 10
 193319411.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+193319416.json | hasBots is true, expected false
 193319451.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193321796.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193321974.json | victoryPointsToWin is 15, expected 10
@@ -1975,20 +2517,25 @@
 193334601.json | victoryPointsToWin is 15, expected 10
 193335529.json | victoryPointsToWin is 15, expected 10
 193336810.json | victoryPointsToWin is 15, expected 10
+193338013.json | hasBots is true, expected false
 193339061.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193340245.json | victoryPointsToWin is 15, expected 10
 193341477.json | victoryPointsToWin is 13, expected 10
 193342997.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193348114.json | victoryPointsToWin is 15, expected 10
 193350505.json | victoryPointsToWin is 15, expected 10
+193351607.json | hasBots is true, expected false
 193352613.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193353806.json | victoryPointsToWin is 15, expected 10
 193354629.json | victoryPointsToWin is 15, expected 10
 193354997.json | victoryPointsToWin is 15, expected 10
 193355027.json | victoryPointsToWin is 15, expected 10
+193355760.json | hasBots is true, expected false
 193356359.json | victoryPointsToWin is 15, expected 10
+193356736.json | hasBots is true, expected false
 193357313.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193358669.json | victoryPointsToWin is 15, expected 10
+193361069.json | hasBots is true, expected false
 193364437.json | victoryPointsToWin is 13, expected 10
 193365773.json | victoryPointsToWin is 15, expected 10
 193365919.json | victoryPointsToWin is 15, expected 10
@@ -2004,9 +2551,11 @@
 193378735.json | victoryPointsToWin is 15, expected 10
 193379069.json | victoryPointsToWin is 15, expected 10
 193379487.json | victoryPointsToWin is 15, expected 10
+193380847.json | hasBots is true, expected false
 193381711.json | victoryPointsToWin is 13, expected 10
 193382449.json | victoryPointsToWin is 15, expected 10
 193383783.json | victoryPointsToWin is 15, expected 10
+193384463.json | hasBots is true, expected false
 193385081.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193385097.json | victoryPointsToWin is 15, expected 10
 193385662.json | victoryPointsToWin is 15, expected 10
@@ -2022,22 +2571,30 @@
 193392868.json | victoryPointsToWin is 15, expected 10
 193393018.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193393606.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+193394973.json | hasBots is true, expected false
 193395121.json | victoryPointsToWin is 15, expected 10
 193395513.json | victoryPointsToWin is 15, expected 10
 193396133.json | victoryPointsToWin is 15, expected 10
+193396190.json | hasBots is true, expected false
 193397067.json | victoryPointsToWin is 15, expected 10
 193397310.json | victoryPointsToWin is 15, expected 10
+193397407.json | hasBots is true, expected false
+193398150.json | hasBots is true, expected false
 193400479.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193402459.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193402740.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193402776.json | victoryPointsToWin is 15, expected 10
 193404543.json | victoryPointsToWin is 15, expected 10
+193405018.json | hasBots is true, expected false
 193405437.json | victoryPointsToWin is 13, expected 10
 193406104.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193406571.json | victoryPointsToWin is 15, expected 10
+193406981.json | hasBots is true, expected false
 193407685.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+193408203.json | hasBots is true, expected false
 193408248.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193409917.json | victoryPointsToWin is 15, expected 10
+193410122.json | hasBots is true, expected false
 193411931.json | victoryPointsToWin is 15, expected 10
 193412421.json | victoryPointsToWin is 15, expected 10
 193412539.json | victoryPointsToWin is 15, expected 10
@@ -2045,8 +2602,12 @@
 193413695.json | victoryPointsToWin is 15, expected 10
 193416953.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193417511.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+193419335.json | hasBots is true, expected false
 193422772.json | victoryPointsToWin is 15, expected 10
+193424423.json | hasBots is true, expected false
 193425564.json | victoryPointsToWin is 15, expected 10
+193425580.json | hasBots is true, expected false
+193428312.json | hasBots is true, expected false
 193429368.json | victoryPointsToWin is 15, expected 10
 193432485.json | victoryPointsToWin is 15, expected 10
 193433270.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -2060,9 +2621,11 @@
 193442435.json | victoryPointsToWin is 15, expected 10
 193446757.json | victoryPointsToWin is 15, expected 10
 193450410.json | victoryPointsToWin is 15, expected 10
+193453508.json | hasBots is true, expected false
 193455412.json | victoryPointsToWin is 15, expected 10
 193463493.json | victoryPointsToWin is 13, expected 10
 193464540.json | victoryPointsToWin is 13, expected 10
+193466060.json | hasBots is true, expected false
 193466095.json | victoryPointsToWin is 15, expected 10
 193467203.json | victoryPointsToWin is 15, expected 10
 193468111.json | victoryPointsToWin is 15, expected 10
@@ -2071,8 +2634,10 @@
 193472068.json | victoryPointsToWin is 15, expected 10
 193473893.json | victoryPointsToWin is 15, expected 10
 193474455.json | victoryPointsToWin is 13, expected 10
+193476127.json | hasBots is true, expected false
 193476688.json | victoryPointsToWin is 15, expected 10
 193477156.json | victoryPointsToWin is 15, expected 10
+193479071.json | hasBots is true, expected false
 193479715.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193481128.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193481743.json | victoryPointsToWin is 15, expected 10
@@ -2103,6 +2668,7 @@
 193491235.json | victoryPointsToWin is 15, expected 10
 193491310.json | victoryPointsToWin is 15, expected 10
 193491556.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+193491668.json | hasBots is true, expected false
 193492197.json | victoryPointsToWin is 15, expected 10
 193492588.json | victoryPointsToWin is 15, expected 10
 193493672.json | victoryPointsToWin is 15, expected 10
@@ -2122,7 +2688,9 @@
 193498664.json | victoryPointsToWin is 15, expected 10
 193498848.json | victoryPointsToWin is 15, expected 10
 193499370.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+193499793.json | hasBots is true, expected false
 193499973.json | victoryPointsToWin is 15, expected 10
+193500019.json | hasBots is true, expected false
 193500428.json | victoryPointsToWin is 15, expected 10
 193500639.json | victoryPointsToWin is 15, expected 10
 193502135.json | victoryPointsToWin is 15, expected 10
@@ -2160,9 +2728,11 @@
 193526655.json | victoryPointsToWin is 15, expected 10
 193526667.json | victoryPointsToWin is 15, expected 10
 193527101.json | victoryPointsToWin is 15, expected 10
+193527223.json | hasBots is true, expected false
 193527513.json | victoryPointsToWin is 15, expected 10
 193529492.json | victoryPointsToWin is 15, expected 10
 193529759.json | victoryPointsToWin is 15, expected 10
+193530812.json | hasBots is true, expected false
 193530991.json | victoryPointsToWin is 15, expected 10
 193532000.json | victoryPointsToWin is 15, expected 10
 193532116.json | victoryPointsToWin is 15, expected 10
@@ -2172,7 +2742,9 @@
 193536363.json | victoryPointsToWin is 15, expected 10
 193536995.json | victoryPointsToWin is 15, expected 10
 193537210.json | victoryPointsToWin is 15, expected 10
+193537529.json | hasBots is true, expected false
 193537726.json | victoryPointsToWin is 15, expected 10
+193537952.json | hasBots is true, expected false
 193538328.json | victoryPointsToWin is 15, expected 10
 193538403.json | victoryPointsToWin is 15, expected 10
 193538592.json | victoryPointsToWin is 15, expected 10
@@ -2209,10 +2781,14 @@
 193554926.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193555951.json | victoryPointsToWin is 15, expected 10
 193557089.json | victoryPointsToWin is 15, expected 10
+193562058.json | hasBots is true, expected false
 193563146.json | victoryPointsToWin is 15, expected 10
+193563477.json | hasBots is true, expected false
 193563721.json | victoryPointsToWin is 15, expected 10
+193564538.json | hasBots is true, expected false
 193565136.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193565291.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+193566490.json | hasBots is true, expected false
 193567029.json | victoryPointsToWin is 15, expected 10
 193567433.json | victoryPointsToWin is 15, expected 10
 193568201.json | victoryPointsToWin is 15, expected 10
@@ -2225,6 +2801,7 @@
 193574462.json | victoryPointsToWin is 15, expected 10
 193575487.json | victoryPointsToWin is 15, expected 10
 193575663.json | victoryPointsToWin is 15, expected 10
+193575680.json | hasBots is true, expected false
 193575810.json | victoryPointsToWin is 15, expected 10
 193576599.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193578167.json | victoryPointsToWin is 15, expected 10
@@ -2249,6 +2826,7 @@
 193596398.json | victoryPointsToWin is 13, expected 10
 193598794.json | victoryPointsToWin is 15, expected 10
 193600315.json | victoryPointsToWin is 15, expected 10
+193602736.json | hasBots is true, expected false
 193605752.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193606963.json | victoryPointsToWin is 13, expected 10
 193608241.json | victoryPointsToWin is 15, expected 10
@@ -2257,6 +2835,7 @@
 193615846.json | victoryPointsToWin is 15, expected 10
 193616502.json | victoryPointsToWin is 15, expected 10
 193619122.json | victoryPointsToWin is 15, expected 10
+193620238.json | hasBots is true, expected false
 193620454.json | victoryPointsToWin is 15, expected 10
 193620767.json | victoryPointsToWin is 15, expected 10
 193620838.json | victoryPointsToWin is 15, expected 10
@@ -2269,6 +2848,8 @@
 193631372.json | victoryPointsToWin is 15, expected 10
 193631804.json | victoryPointsToWin is 15, expected 10
 193631807.json | victoryPointsToWin is 15, expected 10
+193632630.json | hasBots is true, expected false
+193633289.json | hasBots is true, expected false
 193633405.json | victoryPointsToWin is 15, expected 10
 193633662.json | victoryPointsToWin is 15, expected 10
 193633699.json | victoryPointsToWin is 15, expected 10
@@ -2281,6 +2862,8 @@
 193639270.json | victoryPointsToWin is 15, expected 10
 193639594.json | victoryPointsToWin is 15, expected 10
 193640454.json | victoryPointsToWin is 15, expected 10
+193641646.json | hasBots is true, expected false
+193643048.json | hasBots is true, expected false
 193643844.json | victoryPointsToWin is 15, expected 10
 193644833.json | victoryPointsToWin is 15, expected 10
 193645943.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -2290,8 +2873,10 @@
 193653314.json | victoryPointsToWin is 15, expected 10
 193653348.json | victoryPointsToWin is 15, expected 10
 193654626.json | victoryPointsToWin is 15, expected 10
+193655945.json | hasBots is true, expected false
 193656946.json | victoryPointsToWin is 15, expected 10
 193657347.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+193657801.json | hasBots is true, expected false
 193658528.json | victoryPointsToWin is 15, expected 10
 193658680.json | victoryPointsToWin is 15, expected 10
 193658756.json | victoryPointsToWin is 15, expected 10
@@ -2320,6 +2905,7 @@
 193676472.json | victoryPointsToWin is 15, expected 10
 193676743.json | victoryPointsToWin is 15, expected 10
 193677040.json | victoryPointsToWin is 15, expected 10
+193677802.json | hasBots is true, expected false
 193678039.json | victoryPointsToWin is 15, expected 10
 193680946.json | victoryPointsToWin is 15, expected 10
 193685877.json | victoryPointsToWin is 15, expected 10
@@ -2338,6 +2924,7 @@
 193698479.json | victoryPointsToWin is 15, expected 10
 193698492.json | victoryPointsToWin is 15, expected 10
 193698745.json | victoryPointsToWin is 15, expected 10
+193699101.json | hasBots is true, expected false
 193699650.json | victoryPointsToWin is 15, expected 10
 193700869.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193701113.json | victoryPointsToWin is 15, expected 10
@@ -2362,6 +2949,7 @@
 193710667.json | victoryPointsToWin is 15, expected 10
 193711803.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193712335.json | victoryPointsToWin is 15, expected 10
+193714915.json | hasBots is true, expected false
 193718865.json | victoryPointsToWin is 15, expected 10
 193719521.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193719862.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -2371,17 +2959,25 @@
 193725088.json | victoryPointsToWin is 15, expected 10
 193726985.json | victoryPointsToWin is 13, expected 10
 193732466.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+193732804.json | hasBots is true, expected false
+193733329.json | hasBots is true, expected false
 193733807.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+193735619.json | hasBots is true, expected false
 193736715.json | victoryPointsToWin is 15, expected 10
 193736738.json | victoryPointsToWin is 13, expected 10
+193736752.json | hasBots is true, expected false
 193738045.json | victoryPointsToWin is 15, expected 10
+193738181.json | hasBots is true, expected false
+193738238.json | hasBots is true, expected false
 193738806.json | victoryPointsToWin is 15, expected 10
 193739521.json | victoryPointsToWin is 15, expected 10
 193739626.json | victoryPointsToWin is 15, expected 10
 193740570.json | victoryPointsToWin is 15, expected 10
 193740600.json | victoryPointsToWin is 15, expected 10
 193741372.json | victoryPointsToWin is 13, expected 10
+193741700.json | hasBots is true, expected false
 193742164.json | victoryPointsToWin is 13, expected 10
+193742307.json | hasBots is true, expected false
 193743096.json | victoryPointsToWin is 15, expected 10
 193744307.json | victoryPointsToWin is 13, expected 10
 193745360.json | victoryPointsToWin is 15, expected 10
@@ -2395,29 +2991,44 @@
 193749543.json | victoryPointsToWin is 17, expected 10
 193752107.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193752120.json | victoryPointsToWin is 15, expected 10
+193752307.json | hasBots is true, expected false
 193753094.json | victoryPointsToWin is 13, expected 10
+193753792.json | hasBots is true, expected false
 193754825.json | victoryPointsToWin is 15, expected 10
 193755780.json | victoryPointsToWin is 15, expected 10
 193756142.json | victoryPointsToWin is 15, expected 10
+193756249.json | hasBots is true, expected false
 193756827.json | victoryPointsToWin is 15, expected 10
 193757450.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+193758613.json | hasBots is true, expected false
 193758792.json | victoryPointsToWin is 13, expected 10
+193759375.json | hasBots is true, expected false
 193761284.json | victoryPointsToWin is 15, expected 10
+193762288.json | hasBots is true, expected false
 193762746.json | victoryPointsToWin is 15, expected 10
 193763751.json | victoryPointsToWin is 15, expected 10
 193766217.json | victoryPointsToWin is 15, expected 10
 193766306.json | victoryPointsToWin is 15, expected 10
+193768772.json | hasBots is true, expected false
 193769574.json | victoryPointsToWin is 15, expected 10
 193770464.json | victoryPointsToWin is 15, expected 10
+193771409.json | hasBots is true, expected false
 193771843.json | victoryPointsToWin is 15, expected 10
+193772374.json | hasBots is true, expected false
+193774462.json | hasBots is true, expected false
+193775224.json | hasBots is true, expected false
+193776690.json | hasBots is true, expected false
 193777036.json | victoryPointsToWin is 20, expected 10
 193777083.json | victoryPointsToWin is 15, expected 10
 193777551.json | victoryPointsToWin is 15, expected 10
 193777858.json | victoryPointsToWin is 15, expected 10
 193782323.json | victoryPointsToWin is 15, expected 10
 193782726.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+193782900.json | hasBots is true, expected false
 193782960.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+193783151.json | hasBots is true, expected false
 193785569.json | victoryPointsToWin is 15, expected 10
+193785696.json | hasBots is true, expected false
 193791996.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193796539.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193796837.json | victoryPointsToWin is 15, expected 10
@@ -2428,12 +3039,15 @@
 193807321.json | victoryPointsToWin is 15, expected 10
 193807937.json | victoryPointsToWin is 15, expected 10
 193809053.json | victoryPointsToWin is 15, expected 10
+193810167.json | hasBots is true, expected false
 193811478.json | victoryPointsToWin is 15, expected 10
 193813470.json | victoryPointsToWin is 15, expected 10
 193814137.json | victoryPointsToWin is 13, expected 10
 193816828.json | victoryPointsToWin is 15, expected 10
 193816861.json | victoryPointsToWin is 15, expected 10
+193817874.json | hasBots is true, expected false
 193818807.json | victoryPointsToWin is 13, expected 10
+193818982.json | hasBots is true, expected false
 193819088.json | victoryPointsToWin is 15, expected 10
 193819269.json | victoryPointsToWin is 15, expected 10
 193823480.json | victoryPointsToWin is 13, expected 10
@@ -2478,6 +3092,8 @@
 193865933.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193866513.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193868443.json | victoryPointsToWin is 15, expected 10
+193869301.json | hasBots is true, expected false
+193870707.json | hasBots is true, expected false
 193870937.json | victoryPointsToWin is 15, expected 10
 193874365.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193875046.json | victoryPointsToWin is 15, expected 10
@@ -2489,18 +3105,23 @@
 193881897.json | victoryPointsToWin is 15, expected 10
 193882446.json | victoryPointsToWin is 15, expected 10
 193883169.json | victoryPointsToWin is 15, expected 10
+193883342.json | hasBots is true, expected false
 193883516.json | victoryPointsToWin is 13, expected 10
 193884846.json | victoryPointsToWin is 15, expected 10
 193885675.json | victoryPointsToWin is 15, expected 10
 193885956.json | victoryPointsToWin is 15, expected 10
+193886575.json | hasBots is true, expected false
 193887074.json | victoryPointsToWin is 15, expected 10
+193888596.json | hasBots is true, expected false
 193889038.json | victoryPointsToWin is 15, expected 10
 193889507.json | victoryPointsToWin is 13, expected 10
 193889557.json | victoryPointsToWin is 15, expected 10
+193889762.json | hasBots is true, expected false
 193889795.json | victoryPointsToWin is 15, expected 10
 193891096.json | victoryPointsToWin is 13, expected 10
 193891584.json | victoryPointsToWin is 14, expected 10
 193892979.json | victoryPointsToWin is 15, expected 10
+193893315.json | hasBots is true, expected false
 193894952.json | victoryPointsToWin is 15, expected 10
 193896053.json | victoryPointsToWin is 15, expected 10
 193897579.json | victoryPointsToWin is 15, expected 10
@@ -2508,6 +3129,7 @@
 193899756.json | victoryPointsToWin is 15, expected 10
 193899763.json | victoryPointsToWin is 13, expected 10
 193899813.json | victoryPointsToWin is 15, expected 10
+193899992.json | hasBots is true, expected false
 193900335.json | victoryPointsToWin is 15, expected 10
 193900342.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193900846.json | victoryPointsToWin is 15, expected 10
@@ -2518,6 +3140,7 @@
 193904487.json | victoryPointsToWin is 15, expected 10
 193907029.json | victoryPointsToWin is 15, expected 10
 193907868.json | victoryPointsToWin is 15, expected 10
+193908315.json | hasBots is true, expected false
 193908565.json | victoryPointsToWin is 15, expected 10
 193909405.json | victoryPointsToWin is 13, expected 10
 193909489.json | victoryPointsToWin is 15, expected 10
@@ -2528,6 +3151,7 @@
 193914955.json | victoryPointsToWin is 15, expected 10
 193919859.json | victoryPointsToWin is 15, expected 10
 193920010.json | victoryPointsToWin is 13, expected 10
+193920406.json | hasBots is true, expected false
 193920451.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193921435.json | victoryPointsToWin is 15, expected 10
 193921662.json | victoryPointsToWin is 15, expected 10
@@ -2545,9 +3169,11 @@
 193935228.json | victoryPointsToWin is 15, expected 10
 193936501.json | victoryPointsToWin is 13, expected 10
 193938299.json | victoryPointsToWin is 15, expected 10
+193940437.json | hasBots is true, expected false
 193940540.json | victoryPointsToWin is 13, expected 10
 193942250.json | victoryPointsToWin is 15, expected 10
 193942358.json | victoryPointsToWin is 15, expected 10
+193942593.json | hasBots is true, expected false
 193943348.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193944734.json | victoryPointsToWin is 15, expected 10
 193946339.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -2557,6 +3183,9 @@
 193947589.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193948200.json | victoryPointsToWin is 15, expected 10
 193948268.json | victoryPointsToWin is 15, expected 10
+193948484.json | hasBots is true, expected false
+193949149.json | hasBots is true, expected false
+193950174.json | hasBots is true, expected false
 193950410.json | victoryPointsToWin is 15, expected 10
 193952577.json | victoryPointsToWin is 15, expected 10
 193952922.json | victoryPointsToWin is 15, expected 10
@@ -2569,17 +3198,22 @@
 193967874.json | victoryPointsToWin is 15, expected 10
 193968738.json | victoryPointsToWin is 15, expected 10
 193969294.json | victoryPointsToWin is 15, expected 10
+193969660.json | hasBots is true, expected false
 193969878.json | victoryPointsToWin is 15, expected 10
 193970028.json | mapSetting is 2, expected 0
 193970951.json | victoryPointsToWin is 15, expected 10
+193972851.json | hasBots is true, expected false
 193972940.json | victoryPointsToWin is 15, expected 10
 193973064.json | victoryPointsToWin is 15, expected 10
 193973630.json | victoryPointsToWin is 13, expected 10
+193973928.json | hasBots is true, expected false
 193974356.json | victoryPointsToWin is 15, expected 10
+193975235.json | hasBots is true, expected false
 193975474.json | victoryPointsToWin is 15, expected 10
 193975767.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 193976158.json | victoryPointsToWin is 15, expected 10
 193976366.json | cardDiscardLimit is 8, expected 7
+193976577.json | hasBots is true, expected false
 193976596.json | victoryPointsToWin is 15, expected 10
 193979949.json | victoryPointsToWin is 15, expected 10
 193980523.json | victoryPointsToWin is 15, expected 10
@@ -2590,11 +3224,16 @@
 193991040.json | victoryPointsToWin is 13, expected 10
 193993053.json | victoryPointsToWin is 13, expected 10
 193994541.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+193994780.json | hasBots is true, expected false
 194001273.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 194001578.json | victoryPointsToWin is 13, expected 10
 194003012.json | victoryPointsToWin is 15, expected 10
 194005738.json | victoryPointsToWin is 15, expected 10
+194008935.json | hasBots is true, expected false
+194009979.json | hasBots is true, expected false
+194010345.json | hasBots is true, expected false
 194010873.json | victoryPointsToWin is 15, expected 10
+194010932.json | hasBots is true, expected false
 194011411.json | victoryPointsToWin is 15, expected 10
 194011962.json | victoryPointsToWin is 15, expected 10
 194012917.json | victoryPointsToWin is 15, expected 10
@@ -2648,9 +3287,13 @@
 194083522.json | victoryPointsToWin is 15, expected 10
 194085040.json | victoryPointsToWin is 15, expected 10
 194085554.json | victoryPointsToWin is 15, expected 10
+194085780.json | hasBots is true, expected false
+194092894.json | hasBots is true, expected false
 194093134.json | victoryPointsToWin is 15, expected 10
 194094723.json | victoryPointsToWin is 15, expected 10
 194095901.json | victoryPointsToWin is 15, expected 10
+194095962.json | hasBots is true, expected false
+194096002.json | hasBots is true, expected false
 194096075.json | victoryPointsToWin is 15, expected 10
 194096123.json | victoryPointsToWin is 15, expected 10
 194096249.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -2662,23 +3305,30 @@
 194100142.json | victoryPointsToWin is 15, expected 10
 194101551.json | victoryPointsToWin is 15, expected 10
 194102007.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+194102637.json | hasBots is true, expected false
+194103067.json | hasBots is true, expected false
 194103217.json | victoryPointsToWin is 13, expected 10
 194103938.json | victoryPointsToWin is 15, expected 10
+194105481.json | hasBots is true, expected false
 194105534.json | victoryPointsToWin is 15, expected 10
 194105669.json | victoryPointsToWin is 15, expected 10
 194106132.json | victoryPointsToWin is 15, expected 10
 194106296.json | victoryPointsToWin is 15, expected 10
+194107067.json | hasBots is true, expected false
 194107383.json | victoryPointsToWin is 15, expected 10
 194109195.json | victoryPointsToWin is 15, expected 10
 194110036.json | victoryPointsToWin is 15, expected 10
 194110155.json | victoryPointsToWin is 13, expected 10
+194110664.json | hasBots is true, expected false
 194112690.json | victoryPointsToWin is 15, expected 10
+194113908.json | hasBots is true, expected false
 194117326.json | victoryPointsToWin is 15, expected 10
 194121298.json | victoryPointsToWin is 15, expected 10
 194121585.json | victoryPointsToWin is 15, expected 10
 194121939.json | victoryPointsToWin is 15, expected 10
 194123093.json | victoryPointsToWin is 13, expected 10
 194124560.json | victoryPointsToWin is 15, expected 10
+194124900.json | hasBots is true, expected false
 194126528.json | victoryPointsToWin is 15, expected 10
 194126569.json | victoryPointsToWin is 15, expected 10
 194126576.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -2686,9 +3336,11 @@
 194128679.json | victoryPointsToWin is 15, expected 10
 194129207.json | victoryPointsToWin is 15, expected 10
 194130821.json | victoryPointsToWin is 13, expected 10
+194131541.json | hasBots is true, expected false
 194131944.json | victoryPointsToWin is 15, expected 10
 194132505.json | victoryPointsToWin is 15, expected 10
 194133672.json | victoryPointsToWin is 15, expected 10
+194134445.json | hasBots is true, expected false
 194135281.json | victoryPointsToWin is 15, expected 10
 194135940.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 194136567.json | victoryPointsToWin is 15, expected 10
@@ -2704,6 +3356,7 @@
 194144010.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 194147568.json | victoryPointsToWin is 15, expected 10
 194148608.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+194150511.json | hasBots is true, expected false
 194152791.json | victoryPointsToWin is 15, expected 10
 194155464.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 194155761.json | victoryPointsToWin is 15, expected 10
@@ -2714,25 +3367,40 @@
 194166612.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 194169464.json | victoryPointsToWin is 15, expected 10
 194169892.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+194179040.json | hasBots is true, expected false
 194181410.json | victoryPointsToWin is 15, expected 10
 194194892.json | victoryPointsToWin is 13, expected 10
+194196100.json | hasBots is true, expected false
+194198448.json | hasBots is true, expected false
 194201622.json | victoryPointsToWin is 13, expected 10
 194202337.json | victoryPointsToWin is 15, expected 10
 194203355.json | victoryPointsToWin is 15, expected 10
+194204106.json | hasBots is true, expected false
+194204180.json | hasBots is true, expected false
 194204885.json | mapSetting is 2, expected 0
 194205332.json | victoryPointsToWin is 13, expected 10
+194207673.json | hasBots is true, expected false
 194208447.json | victoryPointsToWin is 15, expected 10
 194208505.json | victoryPointsToWin is 15, expected 10
 194210058.json | victoryPointsToWin is 15, expected 10
+194210184.json | hasBots is true, expected false
+194210684.json | hasBots is true, expected false
 194212413.json | victoryPointsToWin is 13, expected 10
 194212874.json | victoryPointsToWin is 15, expected 10
 194213445.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+194215605.json | hasBots is true, expected false
 194217131.json | victoryPointsToWin is 15, expected 10
+194217153.json | hasBots is true, expected false
 194218165.json | victoryPointsToWin is 13, expected 10
+194218429.json | hasBots is true, expected false
+194219857.json | hasBots is true, expected false
+194220968.json | hasBots is true, expected false
 194221629.json | victoryPointsToWin is 13, expected 10
+194222382.json | hasBots is true, expected false
 194228067.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 194229712.json | victoryPointsToWin is 13, expected 10
 194231379.json | victoryPointsToWin is 13, expected 10
+194232456.json | hasBots is true, expected false
 194233847.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 194234851.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 194236223.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
@@ -2753,6 +3421,7 @@
 194252858.json | victoryPointsToWin is 15, expected 10
 194255585.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 194257494.json | victoryPointsToWin is 13, expected 10
+194257688.json | hasBots is true, expected false
 194260073.json | victoryPointsToWin is 15, expected 10
 194260847.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 194262153.json | victoryPointsToWin is 15, expected 10
@@ -2783,16 +3452,21 @@
 194275965.json | victoryPointsToWin is 15, expected 10
 194276115.json | victoryPointsToWin is 15, expected 10
 194276388.json | victoryPointsToWin is 15, expected 10
+194276958.json | hasBots is true, expected false
 194277300.json | victoryPointsToWin is 15, expected 10
 194277494.json | victoryPointsToWin is 15, expected 10
 194277816.json | victoryPointsToWin is 15, expected 10
 194278519.json | victoryPointsToWin is 13, expected 10
 194278968.json | victoryPointsToWin is 15, expected 10
+194279971.json | hasBots is true, expected false
 194281204.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 194281780.json | victoryPointsToWin is 15, expected 10
 194281930.json | victoryPointsToWin is 15, expected 10
+194282834.json | hasBots is true, expected false
+194284446.json | hasBots is true, expected false
 194284760.json | victoryPointsToWin is 15, expected 10
 194286976.json | victoryPointsToWin is 15, expected 10
+194287003.json | hasBots is true, expected false
 194288564.json | victoryPointsToWin is 13, expected 10
 194288599.json | victoryPointsToWin is 15, expected 10
 194290052.json | victoryPointsToWin is 15, expected 10
@@ -2804,7 +3478,9 @@
 194293135.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 194293258.json | victoryPointsToWin is 15, expected 10
 194293458.json | victoryPointsToWin is 15, expected 10
+194293469.json | hasBots is true, expected false
 194294291.json | victoryPointsToWin is 13, expected 10
+194294468.json | hasBots is true, expected false
 194294666.json | victoryPointsToWin is 15, expected 10
 194294897.json | victoryPointsToWin is 15, expected 10
 194296140.json | victoryPointsToWin is 15, expected 10
@@ -2830,6 +3506,7 @@
 194310454.json | victoryPointsToWin is 15, expected 10
 194311180.json | victoryPointsToWin is 15, expected 10
 194312216.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+194314051.json | hasBots is true, expected false
 194314121.json | victoryPointsToWin is 15, expected 10
 194315168.json | victoryPointsToWin is 15, expected 10
 194316447.json | victoryPointsToWin is 13, expected 10
@@ -2845,7 +3522,10 @@
 194330151.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
 194330356.json | victoryPointsToWin is 15, expected 10
 194330552.json | tileHexStates must contain exactly keys 0-18 (no missing or extra keys)
+194332953.json | hasBots is true, expected false
 194333487.json | victoryPointsToWin is 15, expected 10
+194336646.json | hasBots is true, expected false
+194338343.json | hasBots is true, expected false
 194338480.json | victoryPointsToWin is 13, expected 10
 194339913.json | victoryPointsToWin is 15, expected 10
 194339953.json | victoryPointsToWin is 15, expected 10

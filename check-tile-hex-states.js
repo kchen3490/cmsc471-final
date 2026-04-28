@@ -34,6 +34,8 @@ function validateGameFile(filePath) {
     const cardDiscardLimit = parsed?.data?.gameSettings?.cardDiscardLimit;
     const mapSetting = parsed?.data?.gameSettings?.mapSetting;
     const modeSetting = parsed?.data?.gameSettings?.modeSetting;
+    const maxPlayers = parsed?.data?.gameSettings?.maxPlayers;
+    const hasBots = parsed?.data?.playerUserStates?.some((player) => player.isBot);
 
     if (!hasRequiredTileEntries(tileHexStates)) {
       return {
@@ -68,6 +70,20 @@ function validateGameFile(filePath) {
       return {
         valid: false,
         reason: `modeSetting is ${modeSetting}, expected 0`,
+      };
+    }
+    
+    if (maxPlayers !== 4) {
+      return {
+        valid: false,
+        reason: `maxPlayers is ${maxPlayers}, expected 4`,
+      };
+    }
+
+    if (hasBots) {
+      return {
+        valid: false,
+        reason: `hasBots is true, expected false`,
       };
     }
 

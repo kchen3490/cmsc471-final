@@ -1,8 +1,8 @@
 {
   "scannedDirectory": "C:\\CMSC471Final\\cmsc471-final\\data\\games",
   "totalFiles": 43947,
-  "validCount": 41089,
-  "invalidCount": 2858,
+  "validCount": 40409,
+  "invalidCount": 3538,
   "validReportPath": "C:\\CMSC471Final\\cmsc471-final\\data\\tileHexStates-valid-files.txt",
   "invalidReportPath": "C:\\CMSC471Final\\cmsc471-final\\data\\tileHexStates-invalid-files.txt"
 }
