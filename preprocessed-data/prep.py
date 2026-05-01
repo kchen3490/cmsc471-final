@@ -2,27 +2,27 @@ import os, json
 # import shutil
 
 # constants
-DIRECTORY = "cmsc471-final/data/games/"
-PREPROCESSED_DIRECTORY = "cmsc471-final/preprocessed-data/"
+DIRECTORY = "./data/games/"
+PREPROCESSED_DIRECTORY = "./"
 
 # condition checks
 def c1(json):
     tile_hex_states = json['data']['eventHistory']["initialState"]["mapState"]["tileHexStates"]
-    return len(tile_hex_states) > 19
+    return len(tile_hex_states) == 19
 
 def c2(json):
-    return json['data']['gameSettings']['victoryPointsToWin'] > 10
+    return json['data']['gameSettings']['victoryPointsToWin'] == 10
 
 def c3(json):
-    return json['data']['gameSettings']['cardDiscardLimit'] > 7
+    return json['data']['gameSettings']['cardDiscardLimit'] == 7
 
 def c4(json):
     map_settings = json['data']['gameSettings']['mapSetting'] == 0
-    modes_settings = json['data']['gameSettings']['modeSetting'] == 0
+    mode_settings = json['data']['gameSettings']['modeSetting'] == 0
     return map_settings and mode_settings
 
 def c5(json):
-    players = json['playerUserStates']
+    players = json['data']['playerUserStates']
     
     count = 0
     player_count = len(players)
