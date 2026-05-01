@@ -39,6 +39,22 @@ const SIZE = 55;
 const svg = document.getElementById("catanBoard");
 const LABEL_MAX_DIST = 195; // px — hide EDGE labels beyond this (vertex labels always shown)
 const PLAYER_COLOR_NAMES = { 1: "red", 2: "blue", 3: "orange", 5: "white" };
+const RESOURCE_TYPES = ["wood", "brick", "sheep", "wheat", "ore"];
+const DEV_CARD_TYPES = ["knight", "victoryPoint", "roadBuilding", "yearOfPlenty", "monopoly"];
+const RESOURCE_IMAGES = {
+  wood: "./data/images/card_lumber.svg",
+  brick: "./data/images/card_brick.svg",
+  sheep: "./data/images/card_wool.svg",
+  wheat: "./data/images/card_grain.svg",
+  ore: "./data/images/card_ore.svg"
+};
+const DEV_CARD_IMAGES = {
+  knight: "./data/images/card_knight.svg",
+  victoryPoint: "./data/images/card_vp.svg",
+  roadBuilding: "./data/images/card_roadbuilding.svg",
+  yearOfPlenty: "./data/images/card_yearofplenty.svg",
+  monopoly: "./data/images/card_monopoly.svg"
+};
 
 // ── ENUMS ───────────────────────────────────────────────────────────────────
 const HEX_TYPES = { 0: "Desert", 1: "Wood", 2: "Brick", 3: "Sheep", 4: "Wheat", 5: "Ore" };
@@ -49,6 +65,13 @@ const PORT_TYPES = {
   4: { label: "2:1", name: "Sheep 2:1" },
   5: { label: "2:1", name: "Wheat 2:1" },
   6: { label: "2:1", name: "Ore 2:1" },
+};
+
+const playgroundState = {
+  players: [],
+  turnOrder: [],
+  currentTurnIndex: 0,
+  rollHistory: [],
 };
 
 // ── COORDINATE HELPERS ──────────────────────────────────────────────────────
@@ -375,6 +398,309 @@ function openingPlacementsFromEvents(gameData, mapState) {
   };
 }
 
+function titleCase(value) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function defaultCounts(keys) {
+  return Object.fromEntries(keys.map((key) => [key, 0]));
+}
+
+function createPlaygroundPlayers(playerCount) {
+  playgroundState.players = Array.from({ length: playerCount }, (_, idx) => ({
+    id: `P${idx + 1}`,
+    name: `Player ${idx + 1}`,
+    resources: defaultCounts(RESOURCE_TYPES),
+    devCards: defaultCounts(DEV_CARD_TYPES),
+    rolls: []
+  }));
+  playgroundState.turnOrder = playgroundState.players.map((player) => player.id);
+  playgroundState.currentTurnIndex = 0;
+  playgroundState.rollHistory = [];
+}
+
+function currentTurnPlayer() {
+  const currentId = playgroundState.turnOrder[playgroundState.currentTurnIndex];
+  return playgroundState.players.find((player) => player.id === currentId) ?? null;
+}
+
+function renderPlayerSelector() {
+  const selector = document.getElementById("playerSelector");
+  if (!selector) return;
+  selector.innerHTML = "";
+  playgroundState.players.forEach((player) => {
+    const option = document.createElement("option");
+    option.value = player.id;
+    option.textContent = player.name;
+    selector.appendChild(option);
+  });
+}
+
+function renderTurnOrder() {
+  const list = document.getElementById("turnOrderList");
+  const status = document.getElementById("turnStatus");
+  if (!list || !status) return;
+
+  if (!playgroundState.players.length) {
+    list.innerHTML = "No players yet.";
+    status.textContent = "No game initialized.";
+    return;
+  }
+
+  list.innerHTML = "";
+  playgroundState.turnOrder.forEach((playerId, index) => {
+    const player = playgroundState.players.find((p) => p.id === playerId);
+    if (!player) return;
+
+    const row = document.createElement("div");
+    row.className = `turn-row${index === playgroundState.currentTurnIndex ? " active-turn" : ""}`;
+
+    const label = document.createElement("span");
+    const playerIndex = playgroundState.players.indexOf(player);
+    const colorKey = [1, 2, 3, 5][playerIndex % 4] || 1;
+    const colorName = PLAYER_COLOR_NAMES[colorKey];
+    const settlementImage = colorName ? `./data/images/settlement_${colorName}.svg` : "";
+    
+    const labelContent = document.createElement("div");
+    labelContent.style.display = "flex";
+    labelContent.style.alignItems = "center";
+    labelContent.style.gap = "6px";
+    if (settlementImage) {
+      const img = document.createElement("img");
+      img.src = settlementImage;
+      img.alt = player.name;
+      img.style.width = "16px";
+      img.style.height = "16px";
+      labelContent.appendChild(img);
+    }
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = `${index + 1}. ${player.name}`;
+    labelContent.appendChild(nameSpan);
+    label.appendChild(labelContent);
+
+    const controls = document.createElement("div");
+    const upBtn = document.createElement("button");
+    upBtn.type = "button";
+    upBtn.textContent = "Up";
+    upBtn.disabled = index === 0;
+    upBtn.addEventListener("click", () => {
+      const tmp = playgroundState.turnOrder[index - 1];
+      playgroundState.turnOrder[index - 1] = playgroundState.turnOrder[index];
+      playgroundState.turnOrder[index] = tmp;
+      if (playgroundState.currentTurnIndex === index) playgroundState.currentTurnIndex = index - 1;
+      else if (playgroundState.currentTurnIndex === index - 1) playgroundState.currentTurnIndex = index;
+      renderTurnOrder();
+    });
+
+    const downBtn = document.createElement("button");
+    downBtn.type = "button";
+    downBtn.textContent = "Down";
+    downBtn.disabled = index === playgroundState.turnOrder.length - 1;
+    downBtn.addEventListener("click", () => {
+      const tmp = playgroundState.turnOrder[index + 1];
+      playgroundState.turnOrder[index + 1] = playgroundState.turnOrder[index];
+      playgroundState.turnOrder[index] = tmp;
+      if (playgroundState.currentTurnIndex === index) playgroundState.currentTurnIndex = index + 1;
+      else if (playgroundState.currentTurnIndex === index + 1) playgroundState.currentTurnIndex = index;
+      renderTurnOrder();
+    });
+    controls.appendChild(upBtn);
+    controls.appendChild(downBtn);
+
+    row.appendChild(label);
+    row.appendChild(controls);
+    list.appendChild(row);
+  });
+
+  const current = currentTurnPlayer();
+  status.textContent = current ? `Current turn: ${current.name}` : "Current turn unavailable.";
+}
+
+function renderRollHistory() {
+  const summary = document.getElementById("diceSummary");
+  const history = document.getElementById("rollHistory");
+  if (!summary || !history) return;
+
+  if (!playgroundState.rollHistory.length) {
+    summary.textContent = "No rolls recorded yet.";
+    history.innerHTML = "";
+    return;
+  }
+
+  const counts = playgroundState.rollHistory.reduce((acc, entry) => {
+    acc[entry.value] = (acc[entry.value] || 0) + 1;
+    return acc;
+  }, {});
+  summary.textContent = `Rolls tracked: ${playgroundState.rollHistory.length}. Latest: ${playgroundState.rollHistory[playgroundState.rollHistory.length - 1].value}`;
+  history.innerHTML = playgroundState.rollHistory
+    .slice()
+    .reverse()
+    .map((entry, idx) => {
+      const turnsAgo = idx === 0 ? "latest" : `${idx} ago`;
+      return `<div>${entry.playerName} rolled <strong>${entry.value}</strong> (${turnsAgo})</div>`;
+    })
+    .join("");
+  history.innerHTML += `<hr><div>${Object.entries(counts).map(([roll, count]) => `${roll}:${count}`).join(" | ")}</div>`;
+}
+
+function renderPlayerTracker() {
+  const tracker = document.getElementById("playerTracker");
+  if (!tracker) return;
+
+  if (!playgroundState.players.length) {
+    tracker.innerHTML = "No players yet.";
+    return;
+  }
+
+  tracker.innerHTML = playgroundState.players.map((player) => {
+    // Get player color for settlement icon
+    const playerIndex = playgroundState.players.indexOf(player);
+    const colorKey = [1, 2, 3, 5][playerIndex % 4] || 1;
+    const colorName = PLAYER_COLOR_NAMES[colorKey];
+    const settlementImage = colorName ? `./data/images/settlement_${colorName}.svg` : "";
+
+    // Build resource display with images
+    const resourcesHtml = RESOURCE_TYPES.map((type) => {
+      const count = player.resources[type];
+      const imagePath = RESOURCE_IMAGES[type];
+      return `
+        <div class="resource-item">
+          <img src="${imagePath}" alt="${type}" class="resource-icon" title="${titleCase(type)}">
+          <span class="resource-count">${count}</span>
+        </div>
+      `;
+    }).join("");
+
+    // Build dev cards display with images
+    const devCardsHtml = DEV_CARD_TYPES.map((type) => {
+      const count = player.devCards[type];
+      const imagePath = DEV_CARD_IMAGES[type];
+      return `
+        <div class="dev-card-item">
+          <img src="${imagePath}" alt="${type}" class="dev-card-icon" title="${titleCase(type)}">
+          <span class="dev-card-count">${count}</span>
+        </div>
+      `;
+    }).join("");
+
+    return `
+      <div class="player-card">
+        <div class="player-header">
+          ${settlementImage ? `<img src="${settlementImage}" alt="${player.name}" class="player-settlement-icon">` : ""}
+          <h3>${player.name}</h3>
+        </div>
+        <div class="resources-section">
+          <strong>Resources:</strong>
+          <div class="resources-grid">
+            ${resourcesHtml}
+          </div>
+        </div>
+        <div class="dev-cards-section">
+          <strong>Dev Cards:</strong>
+          <div class="dev-cards-grid">
+            ${devCardsHtml}
+          </div>
+        </div>
+        <div class="rolls-section">
+          <strong>Dice rolls made:</strong> ${player.rolls.length}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderPlayground() {
+  renderPlayerSelector();
+  renderTurnOrder();
+  renderRollHistory();
+  renderPlayerTracker();
+}
+
+function adjustPlayerInventory(kind, delta) {
+  const playerId = document.getElementById("playerSelector")?.value;
+  const amountId = kind === "resources" ? "resourceAmount" : "devCardAmount";
+  const typeId = kind === "resources" ? "resourceType" : "devCardType";
+  const amount = Number(document.getElementById(amountId)?.value ?? 1);
+  const cardType = document.getElementById(typeId)?.value;
+  if (!playerId || !cardType || !Number.isFinite(amount) || amount <= 0) return;
+  const player = playgroundState.players.find((p) => p.id === playerId);
+  if (!player) return;
+  const next = (player[kind][cardType] || 0) + delta * amount;
+  player[kind][cardType] = Math.max(0, next);
+  renderPlayerTracker();
+}
+
+function initPlayground() {
+  const createBtn = document.getElementById("createGameBtn");
+  const addRollBtn = document.getElementById("addRollBtn");
+  const nextTurnBtn = document.getElementById("nextTurnBtn");
+  const prevTurnBtn = document.getElementById("prevTurnBtn");
+  const addResourceBtn = document.getElementById("addResourceBtn");
+  const removeResourceBtn = document.getElementById("removeResourceBtn");
+  const addDevCardBtn = document.getElementById("addDevCardBtn");
+  const removeDevCardBtn = document.getElementById("removeDevCardBtn");
+  const countInput = document.getElementById("playerCount");
+  const diceInput = document.getElementById("diceValue");
+
+  createBtn?.addEventListener("click", () => {
+    const count = Number(countInput?.value ?? 4);
+    const safeCount = Math.min(8, Math.max(2, Number.isFinite(count) ? count : 4));
+    createPlaygroundPlayers(safeCount);
+    renderPlayground();
+  });
+
+  nextTurnBtn?.addEventListener("click", () => {
+    if (!playgroundState.turnOrder.length) return;
+    playgroundState.currentTurnIndex = (playgroundState.currentTurnIndex + 1) % playgroundState.turnOrder.length;
+    renderTurnOrder();
+  });
+
+  prevTurnBtn?.addEventListener("click", () => {
+    if (!playgroundState.turnOrder.length) return;
+    playgroundState.currentTurnIndex =
+      (playgroundState.currentTurnIndex - 1 + playgroundState.turnOrder.length) % playgroundState.turnOrder.length;
+    renderTurnOrder();
+  });
+
+  addRollBtn?.addEventListener("click", () => {
+    const roll = Number(diceInput?.value ?? 0);
+    if (!Number.isInteger(roll) || roll < 2 || roll > 12) return;
+    const player = currentTurnPlayer();
+    if (!player) return;
+    const entry = { value: roll, playerId: player.id, playerName: player.name };
+    player.rolls.push(roll);
+    playgroundState.rollHistory.push(entry);
+    renderRollHistory();
+    renderPlayerTracker();
+  });
+
+  addResourceBtn?.addEventListener("click", () => adjustPlayerInventory("resources", 1));
+  removeResourceBtn?.addEventListener("click", () => adjustPlayerInventory("resources", -1));
+  addDevCardBtn?.addEventListener("click", () => adjustPlayerInventory("devCards", 1));
+  removeDevCardBtn?.addEventListener("click", () => adjustPlayerInventory("devCards", -1));
+
+  createPlaygroundPlayers(4);
+  renderPlayground();
+}
+
+function initTabs() {
+  const analyticsBtn = document.getElementById("analyticsTabBtn");
+  const playgroundBtn = document.getElementById("playgroundTabBtn");
+  const analyticsPanel = document.getElementById("analyticsTab");
+  const playgroundPanel = document.getElementById("playgroundTab");
+
+  const activateTab = (tabName) => {
+    const analyticsActive = tabName === "analytics";
+    analyticsBtn?.classList.toggle("active", analyticsActive);
+    playgroundBtn?.classList.toggle("active", !analyticsActive);
+    analyticsPanel?.classList.toggle("active", analyticsActive);
+    playgroundPanel?.classList.toggle("active", !analyticsActive);
+  };
+
+  analyticsBtn?.addEventListener("click", () => activateTab("analytics"));
+  playgroundBtn?.addEventListener("click", () => activateTab("playground"));
+}
+
 // ── BOARD LOADING ────────────────────────────────────────────────────────────
 async function loadGameBoard(gameId) {
   try {
@@ -416,6 +742,7 @@ const MAX_GAMES = 500;
 
 async function initSelector() {
   const selector = document.getElementById("gameSelector");
+  if (!selector) return; // Game selector removed in playground mode
   try {
     const res = await fetch("./data/games-index.json");
     const allIds = await res.json();
@@ -433,4 +760,8 @@ async function initSelector() {
   } catch (err) { console.error("Index load failed:", err); }
 }
 
-window.addEventListener("DOMContentLoaded", initSelector);
+window.addEventListener("DOMContentLoaded", () => {
+  initTabs();
+  initSelector();
+  initPlayground();
+});

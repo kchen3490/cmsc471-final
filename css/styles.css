@@ -1,13 +1,52 @@
 /* ─── LAYOUT ─────────────────────────────────────────────────────────────── */
 body {
   background: #1a2035;
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  color: #e2e8f0;
+}
+
+.app-shell {
+  max-width: 1180px;
+  margin: 18px auto;
+  padding: 0 14px 14px;
+}
+
+.tab-bar {
   display: flex;
-  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.tab-btn {
+  padding: 9px 16px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.tab-btn.active {
+  background: #2563eb;
+  border-color: #60a5fa;
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+#analyticsTab {
+  position: relative;
+  min-height: 730px;
+  display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
 }
 
 svg#catanBoard {
@@ -19,8 +58,8 @@ svg#catanBoard {
 /* ─── CONTROLS ───────────────────────────────────────────────────────────── */
 #controls {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 16px;
+  left: 16px;
   background: rgba(20, 30, 60, 0.92);
   padding: 12px 16px;
   border-radius: 10px;
@@ -36,20 +75,214 @@ svg#catanBoard {
   letter-spacing: 0.5px;
 }
 
-#gameSelector {
+#gameSelector,
+#playerSelector,
+#resourceType,
+#devCardType,
+input[type="number"] {
   padding: 6px 10px;
   font-size: 13px;
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   color: #fff;
-  cursor: pointer;
-  max-width: 200px;
 }
 
-#gameSelector option {
+#gameSelector option,
+#playerSelector option,
+#resourceType option,
+#devCardType option {
   background: #1a2035;
   color: #fff;
+}
+
+#gameCount {
+  font-size: 11px;
+  color: #9ca3af;
+  display: block;
+  margin-top: 4px;
+}
+
+button {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(96, 165, 250, 0.2);
+  color: #e2e8f0;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: rgba(96, 165, 250, 0.32);
+}
+
+/* ─── PLAYGROUND ─────────────────────────────────────────────────────────── */
+.playground-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+.card {
+  background: rgba(20, 30, 60, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.card-wide {
+  grid-column: 1 / -1;
+}
+
+.card h2 {
+  margin: 0 0 10px;
+  font-size: 17px;
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.field-row label {
+  font-size: 13px;
+  min-width: 75px;
+}
+
+.muted {
+  color: #94a3b8;
+  margin: 6px 0 0;
+}
+
+.status-line {
+  margin: 8px 0 0;
+  color: #cbd5e1;
+}
+
+.history-box,
+#turnOrderList,
+#playerTracker {
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.turn-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.turn-row:last-child {
+  border-bottom: 0;
+}
+
+.turn-row.active-turn {
+  color: #93c5fd;
+  font-weight: 700;
+}
+
+.player-card {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.player-card h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+
+.player-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.player-settlement-icon {
+  width: 24px;
+  height: 24px;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+}
+
+.resources-section {
+  margin-bottom: 8px;
+}
+
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.resource-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.resource-icon {
+  width: 32px;
+  height: 32px;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+  cursor: pointer;
+}
+
+.resource-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fbbf24;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+}
+
+.dev-cards-section {
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.dev-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.dev-card-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.dev-card-icon {
+  width: 28px;
+  height: 40px;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+  cursor: pointer;
+}
+
+.dev-card-count {
+  font-size: 10px;
+  font-weight: 600;
+  color: #fbbf24;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+}
+
+.rolls-section {
+  font-size: 12px;
 }
 
 /* ─── HEX TILES ──────────────────────────────────────────────────────────── */
