@@ -248,6 +248,18 @@ button:hover {
   text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
 }
 
+.card-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #e2e8f0;
+  text-align: center;
+  width: 100%;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+
 .dev-cards-section {
   margin-bottom: 6px;
   font-size: 12px;
