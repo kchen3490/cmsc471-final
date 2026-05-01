@@ -139,7 +139,7 @@ svg#catanBoard {
 }
 
 .vertex-label {
-  fill: #154696;
+  fill: #002663;
   font-family: monospace;
   font-size: 6px;
   text-anchor: middle;
@@ -148,13 +148,13 @@ svg#catanBoard {
 
 /* ─── EDGES ──────────────────────────────────────────────────────────────── */
 .edge-point {
-  fill: #ff731c;
+  fill: #ff6200;
   stroke: #7f3a0f;
   stroke-width: 1.5px;
 }
 
 .edge-label {
-  fill: #ff731c;
+  fill: #ff6200;
   font-family: monospace;
   font-size: 6px;
   text-anchor: middle;
@@ -185,36 +185,37 @@ svg#catanBoard {
 }
 
 /* Port type fill colors (types 1–6) */
+
+
+/* 3:1 Generic - gold */
 .port-type-1 {
   fill: #daa520;
 }
 
-/* 3:1 Generic - gold */
+/* Wood 2:1 - dark green */
 .port-type-2 {
   fill: #2d7a22;
 }
 
-/* Wood 2:1 - dark green */
+/* Brick 2:1 - terracotta */
 .port-type-3 {
   fill: #a0451a;
 }
 
-/* Brick 2:1 - terracotta */
+/* Sheep 2:1 - light green */
 .port-type-4 {
   fill: #7ec850;
 }
 
-/* Sheep 2:1 - light green */
+/* Wheat 2:1 - golden yellow */
 .port-type-5 {
   fill: #f5c518;
 }
 
-/* Wheat 2:1 - golden yellow */
+/* Ore 2:1 - slate gray */
 .port-type-6 {
   fill: #7a8494;
 }
-
-/* Ore 2:1 - slate gray */
 
 /* ─── ERROR ──────────────────────────────────────────────────────────────── */
 .error-label {

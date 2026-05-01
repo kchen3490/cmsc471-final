@@ -38,6 +38,7 @@
 const SIZE = 55;
 const svg = document.getElementById("catanBoard");
 const LABEL_MAX_DIST = 195; // px — hide EDGE labels beyond this (vertex labels always shown)
+const PLAYER_COLOR_NAMES = { 1: "red", 2: "blue", 3: "orange", 5: "white" };
 
 // ── ENUMS ───────────────────────────────────────────────────────────────────
 const HEX_TYPES = { 0: "Desert", 1: "Wood", 2: "Brick", 3: "Sheep", 4: "Wheat", 5: "Ore" };
@@ -198,12 +199,16 @@ function renderEdge(edge) {
 
   // Draw the orange circle
   svg.appendChild(svgEl("circle", { cx: x, cy: y, r: 3, class: "edge-point" }));
+}
 
-  // Add the label (Logic mirrored from renderVertex)
+function renderEdgeLabel(edge) {
+  const { px: cx, py: cy } = axialToPixel(edge.x, edge.y);
+  const eIdx = EDGE_Z_TO_IDX[edge.z] ?? edge.z;
+  const { x, y } = edgeMidByIdx(cx, cy, eIdx);
   svg.appendChild(svgText(
     {
       x: x,
-      y: y + 10, // Positioned slightly below the dot
+      y: y + 10,
       class: "edge-label"
     },
     `E(${edge.x},${edge.y},${edge.z})`
@@ -215,9 +220,159 @@ function renderVertex(corner) {
   const vIdx = CORNER_Z_TO_VERTEX[corner.z] ?? corner.z;
   const { x, y } = hexVertex(cx, cy, vIdx);
   svg.appendChild(svgEl("circle", { cx: x, cy: y, r: 4, class: "vertex-point" }));
-  // Always show vertex labels (positions are confirmed correct)
+}
+
+function renderVertexLabel(corner) {
+  const { px: cx, py: cy } = axialToPixel(corner.x, corner.y);
+  const vIdx = CORNER_Z_TO_VERTEX[corner.z] ?? corner.z;
+  const { x, y } = hexVertex(cx, cy, vIdx);
   svg.appendChild(svgText({ x, y: y - 7, class: "vertex-label" },
     `V(${corner.x},${corner.y},${corner.z})`));
+}
+
+function edgeRotationDeg(cx, cy, eIdx) {
+  const v0 = hexVertex(cx, cy, eIdx);
+  const v1 = hexVertex(cx, cy, (eIdx + 1) % 6);
+  return Math.atan2(v1.y - v0.y, v1.x - v0.x) * (180 / Math.PI);
+}
+
+function appendSvgImageOrFallback(attrs, fallbackFactory) {
+  const img = svgEl("image", attrs);
+  img.addEventListener("error", () => {
+    img.remove();
+    svg.appendChild(fallbackFactory());
+  });
+  svg.appendChild(img);
+}
+
+function renderSettlementPiece(settlement) {
+  const { px: cx, py: cy } = axialToPixel(settlement.x, settlement.y);
+  const vIdx = CORNER_Z_TO_VERTEX[settlement.z] ?? settlement.z;
+  const p = hexVertex(cx, cy, vIdx);
+  const colorName = PLAYER_COLOR_NAMES[settlement.owner];
+  const href = colorName ? `./data/images/settlement_${colorName}.svg` : "";
+  const size = 32;
+
+  if (href) {
+    appendSvgImageOrFallback({
+      href,
+      x: p.x - size / 2,
+      y: p.y - size / 2,
+      width: size,
+      height: size,
+      class: "piece-settlement"
+    }, () => svgEl("circle", {
+      cx: p.x,
+      cy: p.y,
+      r: 8,
+      fill: "#fff",
+      stroke: "#111",
+      "stroke-width": 1.5
+    }));
+    return;
+  }
+
+  svg.appendChild(svgEl("circle", {
+    cx: p.x,
+    cy: p.y,
+    r: 8,
+    fill: "#fff",
+    stroke: "#111",
+    "stroke-width": 1.5
+  }));
+}
+
+function renderRoadPiece(road) {
+  const { px: cx, py: cy } = axialToPixel(road.x, road.y);
+  const eIdx = EDGE_Z_TO_IDX[road.z] ?? road.z;
+  const v0 = hexVertex(cx, cy, eIdx);
+  const v1 = hexVertex(cx, cy, (eIdx + 1) % 6);
+  const edgeLength = Math.hypot(v1.x - v0.x, v1.y - v0.y) || 1;
+  const p = { x: (v0.x + v1.x) / 2, y: (v0.y + v1.y) / 2 };
+  const colorName = PLAYER_COLOR_NAMES[road.owner];
+  const href = colorName ? `./data/images/road_${colorName}.svg` : "";
+  const width = Math.max(18, edgeLength - 16);
+  const height = 48;
+  const angle = edgeRotationDeg(cx, cy, eIdx) + 90;
+  const transform = `rotate(${angle} ${p.x} ${p.y})`;
+
+  if (href) {
+    appendSvgImageOrFallback({
+      href,
+      x: p.x - width / 2,
+      y: p.y - height / 2,
+      width,
+      height,
+      preserveAspectRatio: "none",
+      transform,
+      class: "piece-road"
+    }, () => svgEl("rect", {
+      x: p.x - width / 2,
+      y: p.y - height / 2,
+      width,
+      height,
+      rx: 3,
+      fill: "#fff",
+      stroke: "#111",
+      "stroke-width": 1,
+      transform
+    }));
+    return;
+  }
+
+  svg.appendChild(svgEl("rect", {
+    x: p.x - width / 2,
+    y: p.y - height / 2,
+    width,
+    height,
+    rx: 3,
+    fill: "#fff",
+    stroke: "#111",
+    "stroke-width": 1,
+    transform
+  }));
+}
+
+function openingPlacementsFromEvents(gameData, mapState) {
+  const events = gameData?.data?.eventHistory?.events ?? [];
+  const lookupCorners = mapState?.tileCornerStates ?? {};
+  const lookupEdges = mapState?.tileEdgeStates ?? {};
+  const settlementsByIndex = new Map();
+  const roadsByIndex = new Map();
+
+  for (const event of events) {
+    const stateChange = event?.stateChange ?? {};
+    const mapChange = stateChange?.mapState ?? {};
+
+    const changedCorners = mapChange?.tileCornerStates ?? {};
+    for (const [cornerIndex, cornerState] of Object.entries(changedCorners)) {
+      if (!cornerState?.owner || cornerState?.buildingType !== 1) continue;
+      const baseCorner = lookupCorners[cornerIndex];
+      if (!baseCorner) continue;
+      settlementsByIndex.set(cornerIndex, {
+        ...baseCorner,
+        owner: cornerState.owner
+      });
+    }
+
+    const changedEdges = mapChange?.tileEdgeStates ?? {};
+    for (const [edgeIndex, edgeState] of Object.entries(changedEdges)) {
+      if (!edgeState?.owner || edgeState?.type !== 1) continue;
+      const baseEdge = lookupEdges[edgeIndex];
+      if (!baseEdge) continue;
+      roadsByIndex.set(edgeIndex, {
+        ...baseEdge,
+        owner: edgeState.owner
+      });
+    }
+
+    if ((stateChange?.currentState?.completedTurns ?? 0) >= 8) break;
+  }
+
+  return {
+    settlements: [...settlementsByIndex.values()],
+    roads: [...roadsByIndex.values()]
+  };
 }
 
 // ── BOARD LOADING ────────────────────────────────────────────────────────────
@@ -235,6 +390,7 @@ async function loadGameBoard(gameId) {
     const ports = mapState.portEdgeStates ? Object.values(mapState.portEdgeStates) : [];
     const edges = mapState.tileEdgeStates ? Object.values(mapState.tileEdgeStates) : [];
     const corners = mapState.tileCornerStates ? Object.values(mapState.tileCornerStates) : [];
+    const openingPlacements = openingPlacementsFromEvents(gameData, mapState);
 
     // Draw in layers: polygons first, then everything on top
     hexes.forEach(renderHexPolygon);   // Pass 1: all hex fills
@@ -242,6 +398,10 @@ async function loadGameBoard(gameId) {
     edges.forEach(renderEdge);         // Pass 3: edge dots
     corners.forEach(renderVertex);     // Pass 4: vertex dots
     hexes.forEach(renderHexLabels);    // Pass 5: dice tokens + text (always on top)
+    openingPlacements.roads.forEach(renderRoadPiece);               // Pass 6: placed roads
+    openingPlacements.settlements.forEach(renderSettlementPiece);   // Pass 7: placed settlements
+    edges.forEach(renderEdgeLabel);    // Pass 8: edge labels (on top of pieces)
+    corners.forEach(renderVertexLabel); // Pass 9: vertex labels (on top of pieces)
 
     console.log(`Loaded: ${gameId}`);
   } catch (err) {
