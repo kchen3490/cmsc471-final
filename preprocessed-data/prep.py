@@ -1,9 +1,9 @@
 import os, json
-# import shutil
+import shutil
 
 # constants
-DIRECTORY = "./data/games/"
-PREPROCESSED_DIRECTORY = "./"
+DIRECTORY = "cmsc471-final/data/games/"
+PREPROCESSED_DIRECTORY = "cmsc471-final/preprocessed-data/"
 
 # condition checks
 def c1(json):
@@ -40,8 +40,8 @@ colonist_data = os.listdir(DIRECTORY)
 process_id = 1
 
 # comment this out when ready [HERE] start
-valid = 0
-invalid = 0
+# valid = 0
+# invalid = 0
 # end
 
 for data in colonist_data:
@@ -50,15 +50,15 @@ for data in colonist_data:
 
     if c1(cd) and c2(cd) and c3(cd) and c4(cd) and c5(cd):
         # comment this increment statement when ready [HERE]
-        valid += 1
-        #shutil.copy(DIRECTORY + data, PREPROCESSED_DIRECTORY + "valid")
+        # valid += 1
+        shutil.copy(DIRECTORY + data, PREPROCESSED_DIRECTORY + "valid")
     else:
         # comment this increment statement when ready [HERE]
-        invalid += 1
-        #shutil.copy(DIRECTORY + data, PREPROCESSED_DIRECTORY + "invalid")
+        # invalid += 1
+        shutil.copy(DIRECTORY + data, PREPROCESSED_DIRECTORY + "invalid")
     
     print(f"{process_id} - {data} processed")
     process_id += 1
 
-print(f"{valid} entries detected")
-print(f"{invalid} entries detected")
+# print(f"{valid} entries detected")
+# print(f"{invalid} entries detected")

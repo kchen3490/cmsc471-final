@@ -1,0 +1,750 @@
+{
+  "data": {
+    "eventHistory": {
+      "events": [
+        {
+          "input": { "deltaS": 20.8 },
+          "stateChange": {
+            "gameLogState": {
+              "2": {
+                "from": 5,
+                "text": {
+                  "type": 24,
+                  "playerColor": 5,
+                  "is10SecondRuleDisabled": true
+                }
+              }
+            },
+            "playerStates": { "5": { "isConnected": false } }
+          }
+        },
+        {
+          "input": { "deltaS": 4.5 },
+          "stateChange": {
+            "gameLogState": {
+              "3": {
+                "from": 2,
+                "text": {
+                  "type": 24,
+                  "playerColor": 2,
+                  "is10SecondRuleDisabled": true
+                }
+              }
+            },
+            "playerStates": { "2": { "isConnected": false } }
+          }
+        },
+        {
+          "input": { "deltaS": 5.5 },
+          "stateChange": {
+            "gameLogState": {
+              "4": {
+                "from": 3,
+                "text": {
+                  "type": 24,
+                  "playerColor": 3,
+                  "is10SecondRuleDisabled": true
+                }
+              }
+            },
+            "playerStates": { "3": { "isConnected": false } }
+          }
+        },
+        {
+          "input": { "deltaS": 0.4 },
+          "stateChange": {
+            "gameLogState": {
+              "5": {
+                "from": 1,
+                "text": {
+                  "type": 24,
+                  "playerColor": 1,
+                  "is10SecondRuleDisabled": true
+                }
+              }
+            },
+            "playerStates": { "1": { "isConnected": false } }
+          }
+        }
+      ],
+      "version": 0,
+      "startTime": "2025-12-14T23:48:17.033Z",
+      "botUserNames": [],
+      "endGameState": {
+        "players": {
+          "1": {
+            "rank": 2,
+            "color": 1,
+            "victoryPoints": {},
+            "winningPlayer": false
+          },
+          "2": {
+            "rank": 3,
+            "color": 2,
+            "victoryPoints": {},
+            "winningPlayer": false
+          },
+          "3": {
+            "rank": 4,
+            "color": 3,
+            "victoryPoints": {},
+            "winningPlayer": false
+          },
+          "5": {
+            "rank": 1,
+            "color": 5,
+            "victoryPoints": {},
+            "winningPlayer": false
+          }
+        },
+        "diceStats": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        "activityStats": {
+          "1": {
+            "color": 1,
+            "devCardsUsed": 0,
+            "resourcesUsed": 0,
+            "devCardsBought": 0,
+            "proposedTrades": 0,
+            "successfulTrades": 0,
+            "resourceIncomeBlocked": 0
+          },
+          "2": {
+            "color": 2,
+            "devCardsUsed": 0,
+            "resourcesUsed": 0,
+            "devCardsBought": 0,
+            "proposedTrades": 0,
+            "successfulTrades": 0,
+            "resourceIncomeBlocked": 0
+          },
+          "3": {
+            "color": 3,
+            "devCardsUsed": 0,
+            "resourcesUsed": 0,
+            "devCardsBought": 0,
+            "proposedTrades": 0,
+            "successfulTrades": 0,
+            "resourceIncomeBlocked": 0
+          },
+          "5": {
+            "color": 5,
+            "devCardsUsed": 0,
+            "resourcesUsed": 0,
+            "devCardsBought": 0,
+            "proposedTrades": 0,
+            "successfulTrades": 0,
+            "resourceIncomeBlocked": 0
+          }
+        },
+        "resourceStats": {
+          "1": {
+            "color": 1,
+            "tradeLoss": 0,
+            "goldIncome": 0,
+            "devCardLoss": 0,
+            "robbingLoss": 0,
+            "rollingLoss": 0,
+            "tradeIncome": 0,
+            "devCardIncome": 0,
+            "robbingIncome": 0,
+            "rollingIncome": 0,
+            "totalResourceLoss": 0,
+            "totalResourceScore": 0,
+            "totalResourceIncome": 0
+          },
+          "2": {
+            "color": 2,
+            "tradeLoss": 0,
+            "goldIncome": 0,
+            "devCardLoss": 0,
+            "robbingLoss": 0,
+            "rollingLoss": 0,
+            "tradeIncome": 0,
+            "devCardIncome": 0,
+            "robbingIncome": 0,
+            "rollingIncome": 0,
+            "totalResourceLoss": 0,
+            "totalResourceScore": 0,
+            "totalResourceIncome": 0
+          },
+          "3": {
+            "color": 3,
+            "tradeLoss": 0,
+            "goldIncome": 0,
+            "devCardLoss": 0,
+            "robbingLoss": 0,
+            "rollingLoss": 0,
+            "tradeIncome": 0,
+            "devCardIncome": 0,
+            "robbingIncome": 0,
+            "rollingIncome": 0,
+            "totalResourceLoss": 0,
+            "totalResourceScore": 0,
+            "totalResourceIncome": 0
+          },
+          "5": {
+            "color": 5,
+            "tradeLoss": 0,
+            "goldIncome": 0,
+            "devCardLoss": 0,
+            "robbingLoss": 0,
+            "rollingLoss": 0,
+            "tradeIncome": 0,
+            "devCardIncome": 0,
+            "robbingIncome": 0,
+            "rollingIncome": 0,
+            "totalResourceLoss": 0,
+            "totalResourceScore": 0,
+            "totalResourceIncome": 0
+          }
+        },
+        "totalTurnCount": 1,
+        "gameDurationInMS": 31413,
+        "resourceCardsStats": [],
+        "developmentCardStats": []
+      },
+      "initialState": {
+        "mapState": {
+          "tileHexStates": {
+            "0": { "x": 1, "y": -3, "type": 3, "diceNumber": 5 },
+            "1": { "x": 2, "y": -3, "type": 2, "diceNumber": 6 },
+            "2": { "x": 3, "y": -2, "type": 2, "diceNumber": 8 },
+            "3": { "x": -1, "y": -2, "type": 4, "diceNumber": 9 },
+            "4": { "x": -2, "y": -1, "type": 2, "diceNumber": 4 },
+            "5": { "x": 3, "y": -1, "type": 4, "diceNumber": 10 },
+            "6": { "x": -3, "y": 1, "type": 3, "diceNumber": 9 },
+            "7": { "x": 2, "y": 1, "type": 1, "diceNumber": 10 },
+            "8": { "x": -3, "y": 2, "type": 3, "diceNumber": 4 },
+            "9": { "x": 1, "y": 2, "type": 2, "diceNumber": 9 },
+            "10": { "x": -2, "y": 3, "type": 5, "diceNumber": 2 },
+            "11": { "x": -1, "y": 3, "type": 3, "diceNumber": 11 },
+            "12": { "x": 0, "y": -2, "type": 2, "diceNumber": 10 },
+            "13": { "x": 0, "y": 2, "type": 1, "diceNumber": 10 },
+            "14": { "x": 2, "y": -2, "type": 4, "diceNumber": 3 },
+            "15": { "x": 2, "y": 0, "type": 2, "diceNumber": 6 },
+            "16": { "x": -2, "y": 2, "type": 2, "diceNumber": 5 },
+            "17": { "x": -2, "y": 0, "type": 1, "diceNumber": 5 },
+            "18": { "x": 1, "y": -2, "type": 1, "diceNumber": 4 },
+            "19": { "x": -1, "y": -1, "type": 1, "diceNumber": 8 },
+            "20": { "x": 2, "y": -1, "type": 1, "diceNumber": 9 },
+            "21": { "x": 1, "y": 1, "type": 1, "diceNumber": 5 },
+            "22": { "x": -1, "y": 2, "type": 0, "diceNumber": 0 },
+            "23": { "x": -2, "y": 1, "type": 5, "diceNumber": 8 },
+            "24": { "x": -1, "y": 1, "type": 7, "diceNumber": 0 },
+            "25": { "x": 0, "y": -1, "type": 7, "diceNumber": 0 },
+            "26": { "x": 1, "y": 0, "type": 7, "diceNumber": 0 },
+            "27": { "x": 0, "y": 1, "type": 7, "diceNumber": 0 },
+            "28": { "x": 0, "y": 0, "type": 7, "diceNumber": 0 },
+            "29": { "x": -1, "y": 0, "type": 7, "diceNumber": 0 },
+            "30": { "x": 1, "y": -1, "type": 7, "diceNumber": 0 }
+          },
+          "portEdgeStates": {
+            "0": { "x": 0, "y": -2, "z": 0, "type": 1 },
+            "1": { "x": -2, "y": 0, "z": 1, "type": 4 },
+            "2": { "x": -2, "y": 2, "z": 2, "type": 1 },
+            "3": { "x": 0, "y": 3, "z": 0, "type": 6 },
+            "4": { "x": 3, "y": 0, "z": 1, "type": 1 },
+            "5": { "x": 3, "y": -3, "z": 2, "type": 2 }
+          },
+          "tileEdgeStates": {
+            "0": { "x": 2, "y": -4, "z": 2 },
+            "1": { "x": 2, "y": -3, "z": 1 },
+            "2": { "x": 1, "y": -2, "z": 0 },
+            "3": { "x": 1, "y": -3, "z": 2 },
+            "4": { "x": 1, "y": -3, "z": 1 },
+            "5": { "x": 1, "y": -3, "z": 0 },
+            "6": { "x": 3, "y": -4, "z": 2 },
+            "7": { "x": 3, "y": -3, "z": 1 },
+            "8": { "x": 2, "y": -2, "z": 0 },
+            "9": { "x": 2, "y": -3, "z": 2 },
+            "10": { "x": 2, "y": -3, "z": 0 },
+            "11": { "x": 4, "y": -3, "z": 2 },
+            "12": { "x": 4, "y": -2, "z": 1 },
+            "13": { "x": 3, "y": -1, "z": 0 },
+            "14": { "x": 3, "y": -2, "z": 2 },
+            "15": { "x": 3, "y": -2, "z": 1 },
+            "16": { "x": 3, "y": -2, "z": 0 },
+            "17": { "x": 0, "y": -3, "z": 2 },
+            "18": { "x": 0, "y": -2, "z": 1 },
+            "19": { "x": -1, "y": -1, "z": 0 },
+            "20": { "x": -1, "y": -2, "z": 2 },
+            "21": { "x": -1, "y": -2, "z": 1 },
+            "22": { "x": -1, "y": -2, "z": 0 },
+            "23": { "x": -1, "y": -1, "z": 1 },
+            "24": { "x": -2, "y": 0, "z": 0 },
+            "25": { "x": -2, "y": -1, "z": 2 },
+            "26": { "x": -2, "y": -1, "z": 1 },
+            "27": { "x": -2, "y": -1, "z": 0 },
+            "28": { "x": 4, "y": -2, "z": 2 },
+            "29": { "x": 4, "y": -1, "z": 1 },
+            "30": { "x": 3, "y": 0, "z": 0 },
+            "31": { "x": 3, "y": -1, "z": 2 },
+            "32": { "x": 3, "y": -1, "z": 1 },
+            "33": { "x": -2, "y": 0, "z": 2 },
+            "34": { "x": -2, "y": 1, "z": 1 },
+            "35": { "x": -3, "y": 2, "z": 0 },
+            "36": { "x": -3, "y": 1, "z": 2 },
+            "37": { "x": -3, "y": 1, "z": 1 },
+            "38": { "x": -3, "y": 1, "z": 0 },
+            "39": { "x": 3, "y": 0, "z": 2 },
+            "40": { "x": 3, "y": 1, "z": 1 },
+            "41": { "x": 2, "y": 2, "z": 0 },
+            "42": { "x": 2, "y": 1, "z": 2 },
+            "43": { "x": 2, "y": 1, "z": 1 },
+            "44": { "x": 2, "y": 1, "z": 0 },
+            "45": { "x": -2, "y": 1, "z": 2 },
+            "46": { "x": -2, "y": 2, "z": 1 },
+            "47": { "x": -3, "y": 3, "z": 0 },
+            "48": { "x": -3, "y": 2, "z": 2 },
+            "49": { "x": -3, "y": 2, "z": 1 },
+            "50": { "x": 2, "y": 2, "z": 1 },
+            "51": { "x": 1, "y": 3, "z": 0 },
+            "52": { "x": 1, "y": 2, "z": 2 },
+            "53": { "x": 1, "y": 2, "z": 1 },
+            "54": { "x": 1, "y": 2, "z": 0 },
+            "55": { "x": -1, "y": 2, "z": 2 },
+            "56": { "x": -1, "y": 3, "z": 1 },
+            "57": { "x": -2, "y": 4, "z": 0 },
+            "58": { "x": -2, "y": 3, "z": 2 },
+            "59": { "x": -2, "y": 3, "z": 1 },
+            "60": { "x": -2, "y": 3, "z": 0 },
+            "61": { "x": 0, "y": 2, "z": 2 },
+            "62": { "x": 0, "y": 3, "z": 1 },
+            "63": { "x": -1, "y": 4, "z": 0 },
+            "64": { "x": -1, "y": 3, "z": 2 },
+            "65": { "x": -1, "y": 3, "z": 0 },
+            "66": { "x": 1, "y": -2, "z": 1 },
+            "67": { "x": 0, "y": -1, "z": 0 },
+            "68": { "x": 0, "y": -2, "z": 2 },
+            "69": { "x": 0, "y": -2, "z": 0 },
+            "70": { "x": 1, "y": 1, "z": 2 },
+            "71": { "x": 0, "y": 3, "z": 0 },
+            "72": { "x": 0, "y": 2, "z": 1 },
+            "73": { "x": 0, "y": 2, "z": 0 },
+            "74": { "x": 3, "y": -3, "z": 2 },
+            "75": { "x": 2, "y": -1, "z": 0 },
+            "76": { "x": 2, "y": -2, "z": 2 },
+            "77": { "x": 2, "y": -2, "z": 1 },
+            "78": { "x": 3, "y": 0, "z": 1 },
+            "79": { "x": 2, "y": 0, "z": 2 },
+            "80": { "x": 2, "y": 0, "z": 1 },
+            "81": { "x": 2, "y": 0, "z": 0 },
+            "82": { "x": -1, "y": 1, "z": 2 },
+            "83": { "x": -1, "y": 2, "z": 1 },
+            "84": { "x": -2, "y": 2, "z": 2 },
+            "85": { "x": -2, "y": 2, "z": 0 },
+            "86": { "x": -1, "y": -1, "z": 2 },
+            "87": { "x": -1, "y": 0, "z": 1 },
+            "88": { "x": -2, "y": 1, "z": 0 },
+            "89": { "x": -2, "y": 0, "z": 1 },
+            "90": { "x": 1, "y": -1, "z": 0 },
+            "91": { "x": 1, "y": -2, "z": 2 },
+            "92": { "x": 0, "y": -1, "z": 1 },
+            "93": { "x": -1, "y": 0, "z": 0 },
+            "94": { "x": 2, "y": -1, "z": 2 },
+            "95": { "x": 2, "y": -1, "z": 1 },
+            "96": { "x": 1, "y": 1, "z": 1 },
+            "97": { "x": 1, "y": 1, "z": 0 },
+            "98": { "x": 0, "y": 1, "z": 2 },
+            "99": { "x": -1, "y": 2, "z": 0 },
+            "100": { "x": -1, "y": 0, "z": 2 },
+            "101": { "x": -1, "y": 1, "z": 1 },
+            "102": { "x": 0, "y": 0, "z": 2 },
+            "103": { "x": 0, "y": 1, "z": 1 },
+            "104": { "x": -1, "y": 1, "z": 0 },
+            "105": { "x": 1, "y": -1, "z": 1 },
+            "106": { "x": 0, "y": 0, "z": 0 },
+            "107": { "x": 0, "y": -1, "z": 2 },
+            "108": { "x": 1, "y": 0, "z": 2 },
+            "109": { "x": 1, "y": 0, "z": 1 },
+            "110": { "x": 1, "y": 0, "z": 0 },
+            "111": { "x": 0, "y": 1, "z": 0 },
+            "112": { "x": 1, "y": -1, "z": 2 },
+            "113": { "x": 0, "y": 0, "z": 1 }
+          },
+          "tileCornerStates": {
+            "0": { "x": 1, "y": -3, "z": 0 },
+            "1": { "x": 2, "y": -4, "z": 1 },
+            "2": { "x": 1, "y": -2, "z": 0 },
+            "3": { "x": 1, "y": -3, "z": 1 },
+            "4": { "x": 0, "y": -2, "z": 0 },
+            "5": { "x": 1, "y": -4, "z": 1 },
+            "6": { "x": 2, "y": -3, "z": 0 },
+            "7": { "x": 3, "y": -4, "z": 1 },
+            "8": { "x": 2, "y": -2, "z": 0 },
+            "9": { "x": 2, "y": -3, "z": 1 },
+            "10": { "x": 3, "y": -2, "z": 0 },
+            "11": { "x": 4, "y": -3, "z": 1 },
+            "12": { "x": 3, "y": -1, "z": 0 },
+            "13": { "x": 3, "y": -2, "z": 1 },
+            "14": { "x": 2, "y": -1, "z": 0 },
+            "15": { "x": 3, "y": -3, "z": 1 },
+            "16": { "x": -1, "y": -2, "z": 0 },
+            "17": { "x": 0, "y": -3, "z": 1 },
+            "18": { "x": -1, "y": -1, "z": 0 },
+            "19": { "x": -1, "y": -2, "z": 1 },
+            "20": { "x": -2, "y": -1, "z": 0 },
+            "21": { "x": -1, "y": -3, "z": 1 },
+            "22": { "x": -2, "y": 0, "z": 0 },
+            "23": { "x": -2, "y": -1, "z": 1 },
+            "24": { "x": -3, "y": 0, "z": 0 },
+            "25": { "x": -2, "y": -2, "z": 1 },
+            "26": { "x": 4, "y": -2, "z": 1 },
+            "27": { "x": 3, "y": 0, "z": 0 },
+            "28": { "x": 3, "y": -1, "z": 1 },
+            "29": { "x": 2, "y": 0, "z": 0 },
+            "30": { "x": -3, "y": 1, "z": 0 },
+            "31": { "x": -2, "y": 0, "z": 1 },
+            "32": { "x": -3, "y": 2, "z": 0 },
+            "33": { "x": -3, "y": 1, "z": 1 },
+            "34": { "x": -4, "y": 2, "z": 0 },
+            "35": { "x": -3, "y": 0, "z": 1 },
+            "36": { "x": 2, "y": 1, "z": 0 },
+            "37": { "x": 3, "y": 0, "z": 1 },
+            "38": { "x": 2, "y": 2, "z": 0 },
+            "39": { "x": 2, "y": 1, "z": 1 },
+            "40": { "x": 1, "y": 2, "z": 0 },
+            "41": { "x": 2, "y": 0, "z": 1 },
+            "42": { "x": -2, "y": 1, "z": 1 },
+            "43": { "x": -3, "y": 3, "z": 0 },
+            "44": { "x": -3, "y": 2, "z": 1 },
+            "45": { "x": -4, "y": 3, "z": 0 },
+            "46": { "x": 1, "y": 3, "z": 0 },
+            "47": { "x": 1, "y": 2, "z": 1 },
+            "48": { "x": 0, "y": 3, "z": 0 },
+            "49": { "x": 1, "y": 1, "z": 1 },
+            "50": { "x": -2, "y": 3, "z": 0 },
+            "51": { "x": -1, "y": 2, "z": 1 },
+            "52": { "x": -2, "y": 4, "z": 0 },
+            "53": { "x": -2, "y": 3, "z": 1 },
+            "54": { "x": -3, "y": 4, "z": 0 },
+            "55": { "x": -2, "y": 2, "z": 1 },
+            "56": { "x": -1, "y": 3, "z": 0 },
+            "57": { "x": 0, "y": 2, "z": 1 },
+            "58": { "x": -1, "y": 4, "z": 0 },
+            "59": { "x": -1, "y": 3, "z": 1 },
+            "60": {
+              "x": 0,
+              "y": -1,
+              "z": 0,
+              "restrictedStartingPlacement": true
+            },
+            "61": {
+              "x": 0,
+              "y": -2,
+              "z": 1,
+              "restrictedStartingPlacement": true
+            },
+            "62": {
+              "x": 0,
+              "y": 2,
+              "z": 0,
+              "restrictedStartingPlacement": true
+            },
+            "63": {
+              "x": 0,
+              "y": 1,
+              "z": 1,
+              "restrictedStartingPlacement": true
+            },
+            "64": {
+              "x": 2,
+              "y": -2,
+              "z": 1,
+              "restrictedStartingPlacement": true
+            },
+            "65": {
+              "x": 1,
+              "y": -1,
+              "z": 0,
+              "restrictedStartingPlacement": true
+            },
+            "66": {
+              "x": 1,
+              "y": 1,
+              "z": 0,
+              "restrictedStartingPlacement": true
+            },
+            "67": {
+              "x": 2,
+              "y": -1,
+              "z": 1,
+              "restrictedStartingPlacement": true
+            },
+            "68": {
+              "x": -2,
+              "y": 2,
+              "z": 0,
+              "restrictedStartingPlacement": true
+            },
+            "69": {
+              "x": -1,
+              "y": 1,
+              "z": 1,
+              "restrictedStartingPlacement": true
+            },
+            "70": {
+              "x": -1,
+              "y": -1,
+              "z": 1,
+              "restrictedStartingPlacement": true
+            },
+            "71": {
+              "x": -2,
+              "y": 1,
+              "z": 0,
+              "restrictedStartingPlacement": true
+            },
+            "72": {
+              "x": 1,
+              "y": -2,
+              "z": 1,
+              "restrictedStartingPlacement": true
+            },
+            "73": {
+              "x": -1,
+              "y": 0,
+              "z": 0,
+              "restrictedStartingPlacement": true
+            },
+            "74": {
+              "x": 1,
+              "y": 0,
+              "z": 0,
+              "restrictedStartingPlacement": true
+            },
+            "75": {
+              "x": 1,
+              "y": 0,
+              "z": 1,
+              "restrictedStartingPlacement": true
+            },
+            "76": {
+              "x": -1,
+              "y": 2,
+              "z": 0,
+              "restrictedStartingPlacement": true
+            },
+            "77": {
+              "x": -1,
+              "y": 0,
+              "z": 1,
+              "restrictedStartingPlacement": true
+            },
+            "78": {
+              "x": -1,
+              "y": 1,
+              "z": 0,
+              "restrictedStartingPlacement": true
+            },
+            "79": {
+              "x": 0,
+              "y": 0,
+              "z": 1,
+              "restrictedStartingPlacement": true
+            },
+            "80": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "restrictedStartingPlacement": true
+            },
+            "81": {
+              "x": 0,
+              "y": -1,
+              "z": 1,
+              "restrictedStartingPlacement": true
+            },
+            "82": {
+              "x": 0,
+              "y": 1,
+              "z": 0,
+              "restrictedStartingPlacement": true
+            },
+            "83": {
+              "x": 1,
+              "y": -1,
+              "z": 1,
+              "restrictedStartingPlacement": true
+            }
+          },
+          "fogTileGroupStates": {
+            "0": { "fogTileIndexes": [24] },
+            "1": { "fogTileIndexes": [25, 26, 27, 28, 29, 30] }
+          }
+        },
+        "bankState": {
+          "hideBankCards": true,
+          "resourceCards": { "1": 19, "2": 19, "3": 19, "4": 19, "5": 19 }
+        },
+        "diceState": { "dice1": 1, "dice2": 1, "diceThrown": false },
+        "tradeState": {
+          "activeOffers": {},
+          "closedOffers": {},
+          "embargoState": {
+            "1": { "activeEmbargosAgainst": [] },
+            "2": { "activeEmbargosAgainst": [] },
+            "3": { "activeEmbargosAgainst": [] },
+            "5": { "activeEmbargosAgainst": [] }
+          }
+        },
+        "currentState": {
+          "startTime": 1765756097022,
+          "turnState": 0,
+          "actionState": 1,
+          "allocatedTime": 180,
+          "completedTurns": 0,
+          "currentTurnPlayerColor": 1
+        },
+        "gameLogState": {
+          "0": { "text": { "type": 2, "isDiscord": false } },
+          "1": { "text": { "type": 44 } }
+        },
+        "playerStates": {
+          "1": {
+            "color": 1,
+            "isConnected": true,
+            "resourceCards": { "cards": [] },
+            "isTakingAction": false,
+            "cardDiscardLimit": 10,
+            "victoryPointsState": {},
+            "bankTradeRatiosState": { "1": 4, "2": 4, "3": 4, "4": 4, "5": 4 }
+          },
+          "2": {
+            "color": 2,
+            "isConnected": true,
+            "resourceCards": { "cards": [] },
+            "isTakingAction": false,
+            "cardDiscardLimit": 10,
+            "victoryPointsState": {},
+            "bankTradeRatiosState": { "1": 4, "2": 4, "3": 4, "4": 4, "5": 4 }
+          },
+          "3": {
+            "color": 3,
+            "isConnected": true,
+            "resourceCards": { "cards": [] },
+            "isTakingAction": false,
+            "cardDiscardLimit": 10,
+            "victoryPointsState": {},
+            "bankTradeRatiosState": { "1": 4, "2": 4, "3": 4, "4": 4, "5": 4 }
+          },
+          "5": {
+            "color": 5,
+            "isConnected": true,
+            "resourceCards": { "cards": [] },
+            "isTakingAction": false,
+            "cardDiscardLimit": 10,
+            "victoryPointsState": {},
+            "bankTradeRatiosState": { "1": 4, "2": 4, "3": 4, "4": 4, "5": 4 }
+          }
+        },
+        "gameChatState": {},
+        "mechanicCityState": {
+          "1": { "bankCityAmount": 4 },
+          "2": { "bankCityAmount": 4 },
+          "3": { "bankCityAmount": 4 },
+          "5": { "bankCityAmount": 4 }
+        },
+        "mechanicRoadState": {
+          "1": { "bankRoadAmount": 15 },
+          "2": { "bankRoadAmount": 15 },
+          "3": { "bankRoadAmount": 15 },
+          "5": { "bankRoadAmount": 15 }
+        },
+        "mechanicRobberState": { "isActive": true, "locationTileIndex": 22 },
+        "mechanicSettlementState": {
+          "1": { "bankSettlementAmount": 5 },
+          "2": { "bankSettlementAmount": 5 },
+          "3": { "bankSettlementAmount": 5 },
+          "5": { "bankSettlementAmount": 5 }
+        },
+        "mechanicLargestArmyState": { "1": {}, "2": {}, "3": {}, "5": {} },
+        "mechanicLongestRoadState": {
+          "1": { "longestRoad": 0 },
+          "2": { "longestRoad": 0 },
+          "3": { "longestRoad": 0 },
+          "5": { "longestRoad": 0 }
+        },
+        "mechanicDevelopmentCardsState": {
+          "players": {
+            "1": {
+              "developmentCards": { "cards": [] },
+              "developmentCardsUsed": []
+            },
+            "2": {
+              "developmentCards": { "cards": [] },
+              "developmentCardsUsed": []
+            },
+            "3": {
+              "developmentCards": { "cards": [] },
+              "developmentCardsUsed": []
+            },
+            "5": {
+              "developmentCards": { "cards": [] },
+              "developmentCardsUsed": []
+            }
+          },
+          "bankDevelopmentCards": {
+            "cards": [
+              10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+              10, 10, 10, 10, 10, 10, 10, 10, 10
+            ]
+          }
+        }
+      },
+      "eventsPerspectives": [5, 1, 2, 3]
+    },
+    "playerUserStates": [
+      {
+        "databaseIcon": 11,
+        "isBot": false,
+        "membership": 1,
+        "selectedColor": 5,
+        "playerId": "player_1"
+      },
+      {
+        "databaseIcon": 11,
+        "isBot": false,
+        "selectedColor": 1,
+        "playerId": "player_2"
+      },
+      {
+        "databaseIcon": 11,
+        "isBot": false,
+        "selectedColor": 2,
+        "playerId": "player_3"
+      },
+      {
+        "databaseIcon": 11,
+        "isBot": false,
+        "selectedColor": 3,
+        "playerId": "player_4"
+      }
+    ],
+    "playOrder": [1, 5, 3, 2],
+    "gameDetails": { "isDiscord": false, "isRanked": false },
+    "gameSettings": {
+      "id": "193779101",
+      "gameType": 3,
+      "privateGame": true,
+      "playOrderSelectionActive": false,
+      "minimumKarma": 0,
+      "eloType": 0,
+      "modeSetting": 0,
+      "extensionSetting": 0,
+      "scenarioSetting": 0,
+      "mapSetting": 50,
+      "diceSetting": 0,
+      "victoryPointsToWin": 14,
+      "karmaActive": true,
+      "cardDiscardLimit": 10,
+      "maxPlayers": 4,
+      "gameSpeed": 2,
+      "botSpeed": 1,
+      "hideBankCards": true,
+      "friendlyRobber": false
+    },
+    "databaseGameId": "193782726",
+    "playerPerspective": 2
+  }
+}

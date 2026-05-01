@@ -1,6 +1,6 @@
 The dataset is massive so we chose to reduce it by filtering it by several conditions described in prep.py
 
-designing the script for this task
+Designed the script for this task
 https://docs.google.com/document/d/1v-X0coqnCzLGug44rVjjmQmFF_jew4Os9CQVyofEgDc/edit?tab=t.0
 
 Ran prep.py in cmsc471-final/preprocessed-data/ directory
