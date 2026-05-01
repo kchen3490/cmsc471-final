@@ -72,6 +72,8 @@ const playgroundState = {
   turnOrder: [],
   currentTurnIndex: 0,
   rollHistory: [],
+  turnOrderConfirmed: false,
+  lastRollerPlayerId: null,
 };
 
 // ── COORDINATE HELPERS ──────────────────────────────────────────────────────
@@ -439,6 +441,7 @@ function renderPlayerSelector() {
 function renderTurnOrder() {
   const list = document.getElementById("turnOrderList");
   const status = document.getElementById("turnStatus");
+  const confirmBtn = document.getElementById("confirmTurnOrderBtn");
   if (!list || !status) return;
 
   if (!playgroundState.players.length) {
@@ -482,7 +485,7 @@ function renderTurnOrder() {
     const upBtn = document.createElement("button");
     upBtn.type = "button";
     upBtn.textContent = "Up";
-    upBtn.disabled = index === 0;
+    upBtn.disabled = index === 0 || playgroundState.turnOrderConfirmed;
     upBtn.addEventListener("click", () => {
       const tmp = playgroundState.turnOrder[index - 1];
       playgroundState.turnOrder[index - 1] = playgroundState.turnOrder[index];
@@ -495,7 +498,7 @@ function renderTurnOrder() {
     const downBtn = document.createElement("button");
     downBtn.type = "button";
     downBtn.textContent = "Down";
-    downBtn.disabled = index === playgroundState.turnOrder.length - 1;
+    downBtn.disabled = index === playgroundState.turnOrder.length - 1 || playgroundState.turnOrderConfirmed;
     downBtn.addEventListener("click", () => {
       const tmp = playgroundState.turnOrder[index + 1];
       playgroundState.turnOrder[index + 1] = playgroundState.turnOrder[index];
@@ -514,6 +517,20 @@ function renderTurnOrder() {
 
   const current = currentTurnPlayer();
   status.textContent = current ? `Current turn: ${current.name}` : "Current turn unavailable.";
+  
+  if (confirmBtn) {
+    if (playgroundState.turnOrderConfirmed) {
+      confirmBtn.textContent = "Turn Order Locked ✓";
+      confirmBtn.disabled = true;
+    } else {
+      confirmBtn.textContent = "Confirm Turn Order";
+      confirmBtn.disabled = false;
+      confirmBtn.onclick = () => {
+        playgroundState.turnOrderConfirmed = true;
+        renderTurnOrder();
+      };
+    }
+  }
 }
 
 function renderRollHistory() {
@@ -563,8 +580,10 @@ function renderPlayerTracker() {
     const resourcesHtml = RESOURCE_TYPES.map((type) => {
       const count = player.resources[type];
       const imagePath = RESOURCE_IMAGES[type];
+      const label = { wood: "Wood", brick: "Brick", sheep: "Sheep", wheat: "Wheat", ore: "Ore" }[type];
       return `
         <div class="resource-item">
+          <div class="card-label">${label}</div>
           <img src="${imagePath}" alt="${type}" class="resource-icon" title="${titleCase(type)}">
           <span class="resource-count">${count}</span>
         </div>
@@ -575,8 +594,10 @@ function renderPlayerTracker() {
     const devCardsHtml = DEV_CARD_TYPES.map((type) => {
       const count = player.devCards[type];
       const imagePath = DEV_CARD_IMAGES[type];
+      const label = { knight: "Knight", victoryPoint: "Victory Point", roadBuilding: "Road Building", yearOfPlenty: "Year of Plenty", monopoly: "Monopoly" }[type];
       return `
         <div class="dev-card-item">
+          <div class="card-label">${label}</div>
           <img src="${imagePath}" alt="${type}" class="dev-card-icon" title="${titleCase(type)}">
           <span class="dev-card-count">${count}</span>
         </div>
@@ -652,6 +673,7 @@ function initPlayground() {
   nextTurnBtn?.addEventListener("click", () => {
     if (!playgroundState.turnOrder.length) return;
     playgroundState.currentTurnIndex = (playgroundState.currentTurnIndex + 1) % playgroundState.turnOrder.length;
+    playgroundState.lastRollerPlayerId = null; // Reset for new turn
     renderTurnOrder();
   });
 
@@ -659,6 +681,7 @@ function initPlayground() {
     if (!playgroundState.turnOrder.length) return;
     playgroundState.currentTurnIndex =
       (playgroundState.currentTurnIndex - 1 + playgroundState.turnOrder.length) % playgroundState.turnOrder.length;
+    playgroundState.lastRollerPlayerId = null; // Reset for new turn
     renderTurnOrder();
   });
 
@@ -667,9 +690,17 @@ function initPlayground() {
     if (!Number.isInteger(roll) || roll < 2 || roll > 12) return;
     const player = currentTurnPlayer();
     if (!player) return;
+    
+    // Prevent same player from rolling twice in a row
+    if (playgroundState.lastRollerPlayerId === player.id) {
+      alert(`${player.name} already rolled this turn. Move to the next player first.`);
+      return;
+    }
+    
     const entry = { value: roll, playerId: player.id, playerName: player.name };
     player.rolls.push(roll);
     playgroundState.rollHistory.push(entry);
+    playgroundState.lastRollerPlayerId = player.id;
     renderRollHistory();
     renderPlayerTracker();
   });
@@ -688,6 +719,7 @@ function initTabs() {
   const playgroundBtn = document.getElementById("playgroundTabBtn");
   const analyticsPanel = document.getElementById("analyticsTab");
   const playgroundPanel = document.getElementById("playgroundTab");
+  const controls = document.getElementById("controls");
 
   const activateTab = (tabName) => {
     const analyticsActive = tabName === "analytics";
@@ -695,6 +727,8 @@ function initTabs() {
     playgroundBtn?.classList.toggle("active", !analyticsActive);
     analyticsPanel?.classList.toggle("active", analyticsActive);
     playgroundPanel?.classList.toggle("active", !analyticsActive);
+    // Show controls only in analytics mode
+    if (controls) controls.style.display = analyticsActive ? "block" : "none";
   };
 
   analyticsBtn?.addEventListener("click", () => activateTab("analytics"));
