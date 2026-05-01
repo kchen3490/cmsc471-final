@@ -1,0 +1,1 @@
+The dataset is massive so we chose to reduce it by filtering it by several conditions described in prep.py
