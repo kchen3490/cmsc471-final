@@ -738,7 +738,7 @@ function initTabs() {
 // ── BOARD LOADING ────────────────────────────────────────────────────────────
 async function loadGameBoard(gameId) {
   try {
-    const res = await fetch(`./data/games/${gameId}.json`);
+    const res = await fetch(`./preprocessed-data/valid/${gameId}.json`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const gameData = await res.json();
     const mapState = gameData?.data?.eventHistory?.initialState?.mapState;
@@ -778,7 +778,7 @@ async function initSelector() {
   const selector = document.getElementById("gameSelector");
   if (!selector) return; // Game selector removed in playground mode
   try {
-    const res = await fetch("./data/games-index.json");
+    const res = await fetch("./preprocessed-data/valid-index.json");
     const allIds = await res.json();
     const ids = allIds.slice(0, MAX_GAMES);
     selector.innerHTML = "";
