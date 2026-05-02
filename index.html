@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
   <meta name="description" content="Debug visualizer for Catan game boards using Colonist.io game data">
   <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
   <div class="app-shell">
     <div class="tab-bar">
@@ -22,24 +24,23 @@
         </select>
         <span id="gameCount"></span>
       </div>
-      
+
       <div class="analytics-container">
         <div class="board-section">
-          <svg
-            id="catanBoard"
-            width="700"
-            height="700"
-            viewBox="-350 -350 700 700"
-          ></svg>
+          <svg id="catanBoard" width="700" height="700" viewBox="-350 -350 700 700"></svg>
         </div>
-        
+
         <div class="analytics-sidebar">
           <div class="turn-controls">
             <h3>Turn Navigation</h3>
             <div class="slider-container" style="display: flex; align-items: center; gap: 8px;">
-              <button id="prevAnalyticsTurnBtn" class="tab-btn" style="padding: 4px 8px; min-width: auto;">&lt;</button>
               <input type="range" id="turnSlider" min="0" max="100" value="0" style="flex-grow: 1;">
-              <button id="nextAnalyticsTurnBtn" class="tab-btn" style="padding: 4px 8px; min-width: auto;">&gt;</button>
+            </div>
+            <div class="button-row" style="display: flex; justify-content: center; gap: 10px;">
+              <button id="prevAnalyticsTurnBtn" class="tab-btn"
+                style="padding: 8px 16px; flex: 1; max-width: 120px;">&lt; Previous</button>
+              <button id="nextAnalyticsTurnBtn" class="tab-btn"
+                style="padding: 8px 16px; flex: 1; max-width: 120px;">Next &gt;</button>
             </div>
             <p id="turnInfo" style="text-align: center; margin-top: 4px;">Turn 0 / 0</p>
           </div>
@@ -134,4 +135,5 @@
   </div>
   <script src="js/script.js"></script>
 </body>
+
 </html>

@@ -38,7 +38,7 @@
 const SIZE = 55;
 const svg = document.getElementById("catanBoard");
 const LABEL_MAX_DIST = 195; // px — hide EDGE labels beyond this (vertex labels always shown)
-const PLAYER_COLOR_NAMES = { 1: "red", 2: "blue", 3: "orange", 5: "white" };
+const PLAYER_COLOR_NAMES = { 1: "red", 2: "blue", 3: "orange", 4: "green", 5: "white" };
 const RESOURCE_TYPES = ["wood", "brick", "sheep", "wheat", "ore"];
 const DEV_CARD_TYPES = ["knight", "victoryPoint", "roadBuilding", "yearOfPlenty", "monopoly"];
 const RESOURCE_IMAGES = {
@@ -390,7 +390,9 @@ function updateDiceRollsDisplay(turn) {
 
   const historyHtml = allRolls.slice().reverse().map(rollObj => {
     const playerNum = rollObj.playerId;
-    return `<div style="margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05);"><strong>Turn ${rollObj.turnNumber}:</strong> Player ${playerNum} rolled <strong>${rollObj.value}</strong></div>`;
+    const colorName = PLAYER_COLOR_NAMES[playerNum];
+    const settlementImage = colorName ? `./data/images/settlement_${colorName}.svg` : "";
+    return `<div style="margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05);"><strong>Turn ${rollObj.turnNumber}:</strong> <img src="${settlementImage}" alt="Player ${playerNum}" class="player-settlement-icon"> rolled <strong>${rollObj.value}</strong></div>`;
   }).join("");
 
   rollHistory.innerHTML = `
