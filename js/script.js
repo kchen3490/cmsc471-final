@@ -76,6 +76,419 @@ const playgroundState = {
   lastRollerPlayerId: null,
 };
 
+// Analytics mode state
+let currentGameData = null;
+let turnStates = [];
+let currentTurnIndex = 0;
+
+// ── TURN PARSING ────────────────────────────────────────────────────────────
+function parseTurnsFromEvents(gameData) {
+  const events = gameData?.data?.eventHistory?.events ?? [];
+  const initialState = gameData?.data?.eventHistory?.initialState ?? {};
+  const turns = [];
+  const playOrder = gameData?.data?.playOrder || [];
+  let longestRoadOwner = null;
+  let maxRoadLength = 4; // Minimum 5 required
+  let largestArmyOwner = null;
+  let maxKnightsPlayed = 2; // Minimum 3 required
+
+  // Initialize with the starting state
+  let currentTurn = {
+    turnNumber: 0,
+    diceRoll: null,
+    diceRolls: [],
+    roads: {},
+    settlements: {},
+    cities: {},
+    playerResources: {},
+    playerDevCards: {},
+    playerStats: {},
+    activePlayer: null
+  };
+
+  for (const playerId of playOrder) {
+    currentTurn.playerStats[playerId] = {
+      citiesBuilt: 0, settlementsBuilt: 0, roadsBuilt: 0,
+      longestRoad: 0, knightsPlayed: 0, vp: 0
+    };
+  }
+
+  // Copy initial map state
+  if (initialState.mapState) {
+    if (initialState.mapState.tileEdgeStates) {
+      currentTurn.roads = JSON.parse(JSON.stringify(initialState.mapState.tileEdgeStates));
+    }
+    if (initialState.mapState.tileCornerStates) {
+      currentTurn.settlements = JSON.parse(JSON.stringify(initialState.mapState.tileCornerStates));
+    }
+  }
+
+  turns.push(currentTurn);
+
+  // Process events
+  for (const event of events) {
+    const stateChange = event?.stateChange ?? {};
+
+    // Track dice rolls from log text
+    if (stateChange.gameLogState) {
+      for (const log of Object.values(stateChange.gameLogState)) {
+        if (log?.text?.type === 10 && log.text.firstDice !== undefined && log.text.secondDice !== undefined) {
+          const roll = log.text.firstDice + log.text.secondDice;
+          currentTurn.diceRolls.push({
+            value: roll,
+            playerId: log.text.playerColor || log.from,
+            turnNumber: currentTurn.turnNumber
+          });
+          currentTurn.diceRoll = roll;
+        }
+      }
+    }
+
+    // Fallback tracking from diceState just in case
+    if (!stateChange.gameLogState && (stateChange.diceState?.dice1 !== undefined || stateChange.diceState?.dice2 !== undefined)) {
+      const dice1 = stateChange.diceState?.dice1;
+      const dice2 = stateChange.diceState?.dice2;
+      if (dice1 && dice2) {
+        const roll = dice1 + dice2;
+        currentTurn.diceRolls.push({
+          value: roll,
+          playerId: currentTurn.activePlayer,
+          turnNumber: currentTurn.turnNumber
+        });
+        currentTurn.diceRoll = roll;
+      }
+    }
+
+    // Track current player
+    if (stateChange.currentState?.currentTurnPlayerColor) {
+      currentTurn.activePlayer = stateChange.currentState.currentTurnPlayerColor;
+    }
+
+    // Track building placements (roads) with deep merge
+    if (stateChange.mapState?.tileEdgeStates) {
+      for (const [key, value] of Object.entries(stateChange.mapState.tileEdgeStates)) {
+        if (currentTurn.roads[key]) {
+          Object.assign(currentTurn.roads[key], value);
+        } else {
+          currentTurn.roads[key] = { ...value };
+        }
+      }
+    }
+
+    // Track settlements and cities with deep merge
+    if (stateChange.mapState?.tileCornerStates) {
+      for (const [key, value] of Object.entries(stateChange.mapState.tileCornerStates)) {
+        if (currentTurn.settlements[key]) {
+          Object.assign(currentTurn.settlements[key], value);
+        } else {
+          currentTurn.settlements[key] = { ...value };
+        }
+      }
+    }
+
+    if (stateChange.mechanicCityState) {
+      for (const [pId, state] of Object.entries(stateChange.mechanicCityState)) {
+        if (state.bankCityAmount !== undefined && currentTurn.playerStats[pId]) {
+          currentTurn.playerStats[pId].citiesBuilt = 4 - state.bankCityAmount;
+        }
+      }
+    }
+    if (stateChange.mechanicSettlementState) {
+      for (const [pId, state] of Object.entries(stateChange.mechanicSettlementState)) {
+        if (state.bankSettlementAmount !== undefined && currentTurn.playerStats[pId]) {
+          currentTurn.playerStats[pId].settlementsBuilt = 5 - state.bankSettlementAmount;
+        }
+      }
+    }
+    if (stateChange.mechanicRoadState) {
+      for (const [pId, state] of Object.entries(stateChange.mechanicRoadState)) {
+        if (state.bankRoadAmount !== undefined && currentTurn.playerStats[pId]) {
+          currentTurn.playerStats[pId].roadsBuilt = 15 - state.bankRoadAmount;
+        }
+      }
+    }
+    if (stateChange.mechanicLongestRoadState) {
+      for (const [pId, state] of Object.entries(stateChange.mechanicLongestRoadState)) {
+        if (state.longestRoad !== undefined && currentTurn.playerStats[pId]) {
+          currentTurn.playerStats[pId].longestRoad = state.longestRoad;
+        }
+      }
+    }
+    if (stateChange.playerStates) {
+      for (const [pId, state] of Object.entries(stateChange.playerStates)) {
+        if (state.victoryPointsState && currentTurn.playerStats[pId]) {
+          // 1. TRUST THE ENGINE: Sum all point types (Public, Awards, and VP Cards)
+          const totalVp = Object.values(state.victoryPointsState)
+            .reduce((sum, val) => sum + (typeof val === 'number' ? val : 0), 0);
+
+          currentTurn.playerStats[pId].vp = totalVp;
+        }
+
+        if (state.resourceCards?.cards) {
+          currentTurn.playerResources[pId] = state.resourceCards.cards;
+        }
+      }
+    }
+    if (stateChange.mechanicDevelopmentCardsState?.players) {
+      for (const [pId, state] of Object.entries(stateChange.mechanicDevelopmentCardsState.players)) {
+        if (state.developmentCards?.cards) {
+          currentTurn.playerDevCards[pId] = state.developmentCards.cards;
+        }
+        if (state.developmentCardsUsed && currentTurn.playerStats[pId]) {
+          currentTurn.playerStats[pId].knightsPlayed = state.developmentCardsUsed.filter(c => c === 11).length;
+        }
+      }
+    }
+
+    // Update Longest Road Tracking
+    if (stateChange.mechanicLongestRoadState) {
+      for (const [pId, state] of Object.entries(stateChange.mechanicLongestRoadState)) {
+        if (state.longestRoad > maxRoadLength) {
+          maxRoadLength = state.longestRoad;
+          longestRoadOwner = Number(pId);
+        }
+      }
+    }
+
+    // Update Largest Army Tracking
+    if (stateChange.mechanicDevelopmentCardsState?.players) {
+      for (const [pId, state] of Object.entries(stateChange.mechanicDevelopmentCardsState.players)) {
+        if (state.developmentCardsUsed) {
+          const knights = state.developmentCardsUsed.filter(c => c === 11).length;
+          if (knights > maxKnightsPlayed) {
+            maxKnightsPlayed = knights;
+            largestArmyOwner = Number(pId);
+          }
+        }
+      }
+    }
+
+    // Calculate total VP for each player (inside the event loop)
+    for (const pId of playOrder) {
+      const stats = currentTurn.playerStats[pId];
+      const devCards = currentTurn.playerDevCards[pId] || [];
+
+      // 1. Settlements (1 VP each) + Cities (2 VP each)
+      let calculatedVp = (stats.settlementsBuilt * 1) + (stats.citiesBuilt * 2);
+
+      // 2. Add 2 VP for Longest Road (This matches your missing +2 for Blue/Red)
+      if (pId === longestRoadOwner) {
+        calculatedVp += 2;
+      }
+
+      // 3. Add 2 VP for Largest Army
+      if (pId === largestArmyOwner) {
+        calculatedVp += 2;
+      }
+
+      // 4. Add 1 VP for every Victory Point card
+      const vpCardCount = devCards.filter(cardType => cardType === 10 || cardType === 12).length;
+      calculatedVp += vpCardCount;
+
+      // CRITICAL FIX: Explicitly update the turn state so the UI sees it
+      currentTurn.playerStats[pId].vp = calculatedVp;
+    }
+
+    // Check if turn is complete
+    if (stateChange.currentState?.completedTurns !== undefined &&
+      stateChange.currentState.completedTurns > currentTurn.turnNumber) {
+      // Start a new turn
+      currentTurn = {
+        turnNumber: stateChange.currentState.completedTurns,
+        diceRoll: null,
+        diceRolls: [],
+        roads: JSON.parse(JSON.stringify(currentTurn.roads)),
+        settlements: JSON.parse(JSON.stringify(currentTurn.settlements)),
+        cities: JSON.parse(JSON.stringify(currentTurn.cities)),
+        playerResources: JSON.parse(JSON.stringify(currentTurn.playerResources)),
+        playerDevCards: JSON.parse(JSON.stringify(currentTurn.playerDevCards)),
+        playerStats: JSON.parse(JSON.stringify(currentTurn.playerStats)),
+        activePlayer: stateChange.currentState.currentTurnPlayerColor || currentTurn.activePlayer
+      };
+      turns.push(currentTurn);
+    }
+  }
+
+  return turns;
+}
+
+function updateAnalyticsView(turnIndex) {
+  if (!currentGameData || !turnStates || turnIndex >= turnStates.length) return;
+
+  currentTurnIndex = turnIndex;
+  const turn = turnStates[turnIndex];
+  const initialState = currentGameData?.data?.eventHistory?.initialState ?? {};
+  const mapState = initialState.mapState ?? {};
+
+  // Update turn info
+  const turnInfo = document.getElementById("turnInfo");
+  if (turnInfo) {
+    turnInfo.textContent = `Turn ${turnIndex} / ${turnStates.length - 1}`;
+  }
+
+  // Clear and redraw board
+  svg.innerHTML = "";
+
+  const hexes = mapState.tileHexStates ? Object.values(mapState.tileHexStates) : [];
+  const ports = mapState.portEdgeStates ? Object.values(mapState.portEdgeStates) : [];
+  const edges = mapState.tileEdgeStates ? Object.values(mapState.tileEdgeStates) : [];
+  const corners = mapState.tileCornerStates ? Object.values(mapState.tileCornerStates) : [];
+
+  // Draw in layers
+  hexes.forEach(renderHexPolygon);
+  ports.forEach(renderPort);
+  edges.forEach(renderEdge);
+  corners.forEach(renderVertex);
+  hexes.forEach(renderHexLabels);
+
+  // Render roads from current turn state
+  Object.values(turn.roads).forEach(road => {
+    if (road.type === 1 && road.owner) renderRoadPiece(road);
+  });
+
+  // Render settlements/cities from current turn state
+  Object.values(turn.settlements).forEach(piece => {
+    if (piece.owner) {
+      if (piece.buildingType === 2) {
+        renderCityPiece(piece);
+      } else if (piece.buildingType === 1) {
+        renderSettlementPiece(piece);
+      }
+    }
+  });
+
+  edges.forEach(renderEdgeLabel);
+  corners.forEach(renderVertexLabel);
+
+  // Update dice rolls display
+  updateDiceRollsDisplay(turn);
+
+  // Update player tracker for analytics
+  updateAnalyticsPlayerTracker(turn);
+}
+
+function updateDiceRollsDisplay(turn) {
+  const rollHistory = document.getElementById("rollHistory");
+  if (!rollHistory) return;
+
+  const allRolls = [];
+  for (let i = 0; i <= currentTurnIndex; i++) {
+    if (turnStates[i] && turnStates[i].diceRolls) {
+      allRolls.push(...turnStates[i].diceRolls);
+    }
+  }
+
+  if (allRolls.length === 0) {
+    rollHistory.innerHTML = "<p style='color: #94a3b8; font-size: 12px;'>No rolls yet</p>";
+    return;
+  }
+
+  const counts = allRolls.reduce((acc, rollObj) => {
+    acc[rollObj.value] = (acc[rollObj.value] || 0) + 1;
+    return acc;
+  }, {});
+
+  const historyHtml = allRolls.slice().reverse().map(rollObj => {
+    const playerNum = rollObj.playerId;
+    return `<div style="margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05);"><strong>Turn ${rollObj.turnNumber}:</strong> Player ${playerNum} rolled <strong>${rollObj.value}</strong></div>`;
+  }).join("");
+
+  rollHistory.innerHTML = `
+    <div style="font-size: 12px;">
+      <div style="margin-bottom: 8px;"><strong>Summary:</strong> ${Object.entries(counts).map(([roll, count]) => `${roll}:${count}`).join(" | ")}</div>
+      <div style="max-height: 150px; overflow-y: auto; padding-right: 4px;">
+        ${historyHtml}
+      </div>
+    </div>
+  `;
+}
+
+function updateAnalyticsPlayerTracker(turn) {
+  const tracker = document.getElementById("analyticsPlayerTracker");
+  if (!tracker) return;
+
+  if (!currentGameData?.data?.playerUserStates) {
+    tracker.innerHTML = "<p style='color: #94a3b8; font-size: 12px;'>No player data</p>";
+    return;
+  }
+
+  const players = currentGameData.data.playerUserStates;
+  const playOrder = currentGameData.data.playOrder || [];
+
+  tracker.innerHTML = playOrder.map(playerId => {
+    const playerNum = playerId;
+    const colorKey = [1, 2, 3, 5][playerId - 1] || playerId;
+    const colorName = PLAYER_COLOR_NAMES[colorKey];
+    const settlementImage = colorName ? `./data/images/settlement_${colorName}.svg` : "";
+
+    const stats = turn.playerStats?.[playerId] || { citiesBuilt: 0, settlementsBuilt: 0, roadsBuilt: 0, vp: 0, longestRoad: 0, knightsPlayed: 0 };
+    const resources = turn.playerResources?.[playerId] || [];
+    const devCards = turn.playerDevCards?.[playerId] || [];
+
+    const playerRoads = stats.roadsBuilt;
+    const playerSettlements = stats.settlementsBuilt;
+    const playerCities = stats.citiesBuilt;
+
+    const resCounts = { wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0 };
+    const resMap = { 1: 'wood', 2: 'brick', 3: 'sheep', 4: 'wheat', 5: 'ore' };
+    resources.forEach(r => { if (resMap[r]) resCounts[resMap[r]]++; });
+
+    const devCounts = { knight: 0, victoryPoint: 0, roadBuilding: 0, yearOfPlenty: 0, monopoly: 0 };
+    const devMap = { 11: 'knight', 10: 'victoryPoint', 12: 'victoryPoint', 13: 'monopoly', 14: 'roadBuilding', 15: 'yearOfPlenty' };
+    devCards.forEach(d => { if (devMap[d]) devCounts[devMap[d]]++; });
+
+    const resourcesHtml = RESOURCE_TYPES.map(type => {
+      const count = resCounts[type];
+      const imagePath = RESOURCE_IMAGES[type];
+      const label = { wood: "Wood", brick: "Brick", sheep: "Sheep", wheat: "Wheat", ore: "Ore" }[type];
+      return `
+        <div class="resource-item" style="display: inline-flex; align-items: center; gap: 4px; margin-right: 8px;">
+          <img src="${imagePath}" alt="${type}" title="${label}" style="width: 16px; height: 16px;">
+          <span>${count}</span>
+        </div>
+      `;
+    }).join("");
+
+    const devCardsHtml = DEV_CARD_TYPES.map(type => {
+      const count = devCounts[type];
+      const imagePath = DEV_CARD_IMAGES[type];
+      const label = { knight: "Knight", victoryPoint: "Victory Point", roadBuilding: "Road Building", yearOfPlenty: "Year of Plenty", monopoly: "Monopoly" }[type];
+      return `
+        <div class="resource-item" style="display: inline-flex; align-items: center; gap: 4px; margin-right: 8px;">
+          <img src="${imagePath}" alt="${type}" title="${label}" style="width: 16px; height: 16px;">
+          <span>${count}</span>
+        </div>
+      `;
+    }).join("");
+
+    const isActive = turn.activePlayer === playerId ? " active-turn" : "";
+
+    return `
+      <div class="player-card${isActive}">
+        <div class="player-header">
+          ${settlementImage ? `<img src="${settlementImage}" alt="Player ${playerNum}" class="player-settlement-icon">` : ""}
+          <h3>Player ${playerNum}</h3>
+          <span style="margin-left: auto; font-weight: bold; color: gold;">${stats.vp} VP</span>
+        </div>
+        <div style="font-size: 11px; color: #cbd5e1; margin-bottom: 4px;">
+          <strong>Buildings:</strong> Roads: ${playerRoads} | Settlements: ${playerSettlements} | Cities: ${playerCities}
+        </div>
+        <div style="font-size: 11px; color: #cbd5e1; margin-bottom: 4px;">
+          <strong>Stats:</strong> Longest Road: ${stats.longestRoad} | Knights Played: ${stats.knightsPlayed}
+        </div>
+        <div style="font-size: 11px; color: #cbd5e1; margin-bottom: 4px;">
+          <strong>Resources:</strong><br>
+          ${resourcesHtml}
+        </div>
+        <div style="font-size: 11px; color: #cbd5e1;">
+          <strong>Dev Cards:</strong><br>
+          ${devCardsHtml}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
 // ── COORDINATE HELPERS ──────────────────────────────────────────────────────
 function axialToPixel(x, y) {
   return { px: SIZE * 1.5 * x, py: -SIZE * Math.sqrt(3) * (y + x / 2) };
@@ -358,6 +771,37 @@ function renderRoadPiece(road) {
   }));
 }
 
+function renderCityPiece(city) {
+  const { px: cx, py: cy } = axialToPixel(city.x, city.y);
+  const vIdx = CORNER_Z_TO_VERTEX[city.z] ?? city.z;
+  const p = hexVertex(cx, cy, vIdx);
+  const colorName = PLAYER_COLOR_NAMES[city.owner];
+
+  // Per your requirement: ./data/images/city_${colorName}.svg
+  const href = colorName ? `./data/images/city_${colorName}.svg` : "";
+  const size = 42; // Cities are typically larger than settlements (32)
+
+  if (href) {
+    appendSvgImageOrFallback({
+      href,
+      x: p.x - size / 2,
+      y: p.y - size / 2,
+      width: size,
+      height: size,
+      class: "piece-city"
+    }, () => svgEl("rect", { // Fallback to a square if image fails
+      x: p.x - 10,
+      y: p.y - 10,
+      width: 20,
+      height: 20,
+      fill: "#fff",
+      stroke: "#111",
+      "stroke-width": 2
+    }));
+    return;
+  }
+}
+
 function openingPlacementsFromEvents(gameData, mapState) {
   const events = gameData?.data?.eventHistory?.events ?? [];
   const lookupCorners = mapState?.tileCornerStates ?? {};
@@ -463,7 +907,7 @@ function renderTurnOrder() {
     const colorKey = [1, 2, 3, 5][playerIndex % 4] || 1;
     const colorName = PLAYER_COLOR_NAMES[colorKey];
     const settlementImage = colorName ? `./data/images/settlement_${colorName}.svg` : "";
-    
+
     const labelContent = document.createElement("div");
     labelContent.style.display = "flex";
     labelContent.style.alignItems = "center";
@@ -517,7 +961,7 @@ function renderTurnOrder() {
 
   const current = currentTurnPlayer();
   status.textContent = current ? `Current turn: ${current.name}` : "Current turn unavailable.";
-  
+
   if (confirmBtn) {
     if (playgroundState.turnOrderConfirmed) {
       confirmBtn.textContent = "Turn Order Locked ✓";
@@ -690,13 +1134,13 @@ function initPlayground() {
     if (!Number.isInteger(roll) || roll < 2 || roll > 12) return;
     const player = currentTurnPlayer();
     if (!player) return;
-    
+
     // Prevent same player from rolling twice in a row
     if (playgroundState.lastRollerPlayerId === player.id) {
       alert(`${player.name} already rolled this turn. Move to the next player first.`);
       return;
     }
-    
+
     const entry = { value: roll, playerId: player.id, playerName: player.name };
     player.rolls.push(roll);
     playgroundState.rollHistory.push(entry);
@@ -744,26 +1188,23 @@ async function loadGameBoard(gameId) {
     const mapState = gameData?.data?.eventHistory?.initialState?.mapState;
     if (!mapState) throw new Error("mapState missing");
 
-    svg.innerHTML = "";
+    // Store game data for turn parsing
+    currentGameData = gameData;
 
-    const hexes = mapState.tileHexStates ? Object.values(mapState.tileHexStates) : [];
-    const ports = mapState.portEdgeStates ? Object.values(mapState.portEdgeStates) : [];
-    const edges = mapState.tileEdgeStates ? Object.values(mapState.tileEdgeStates) : [];
-    const corners = mapState.tileCornerStates ? Object.values(mapState.tileCornerStates) : [];
-    const openingPlacements = openingPlacementsFromEvents(gameData, mapState);
+    // Parse turns from events
+    turnStates = parseTurnsFromEvents(gameData);
 
-    // Draw in layers: polygons first, then everything on top
-    hexes.forEach(renderHexPolygon);   // Pass 1: all hex fills
-    ports.forEach(renderPort);         // Pass 2: port lines + circles
-    edges.forEach(renderEdge);         // Pass 3: edge dots
-    corners.forEach(renderVertex);     // Pass 4: vertex dots
-    hexes.forEach(renderHexLabels);    // Pass 5: dice tokens + text (always on top)
-    openingPlacements.roads.forEach(renderRoadPiece);               // Pass 6: placed roads
-    openingPlacements.settlements.forEach(renderSettlementPiece);   // Pass 7: placed settlements
-    edges.forEach(renderEdgeLabel);    // Pass 8: edge labels (on top of pieces)
-    corners.forEach(renderVertexLabel); // Pass 9: vertex labels (on top of pieces)
+    // Update turn slider max value
+    const slider = document.getElementById("turnSlider");
+    if (slider) {
+      slider.max = Math.max(turnStates.length - 1, 0);
+      slider.value = 0;
+    }
 
-    console.log(`Loaded: ${gameId}`);
+    // Render the initial state
+    updateAnalyticsView(0);
+
+    console.log(`Loaded: ${gameId} with ${turnStates.length} turns`);
   } catch (err) {
     console.error(err);
     svg.innerHTML = "";
@@ -798,4 +1239,38 @@ window.addEventListener("DOMContentLoaded", () => {
   initTabs();
   initSelector();
   initPlayground();
+
+  // Add turn slider listener for analytics mode
+  const turnSlider = document.getElementById("turnSlider");
+  const prevBtn = document.getElementById("prevAnalyticsTurnBtn");
+  const nextBtn = document.getElementById("nextAnalyticsTurnBtn");
+
+  if (turnSlider) {
+    turnSlider.addEventListener("input", (e) => {
+      const turnIndex = parseInt(e.target.value);
+      updateAnalyticsView(turnIndex);
+    });
+  }
+
+  if (prevBtn && turnSlider) {
+    prevBtn.addEventListener("click", () => {
+      let turnIndex = parseInt(turnSlider.value);
+      if (turnIndex > parseInt(turnSlider.min)) {
+        turnIndex--;
+        turnSlider.value = turnIndex;
+        updateAnalyticsView(turnIndex);
+      }
+    });
+  }
+
+  if (nextBtn && turnSlider) {
+    nextBtn.addEventListener("click", () => {
+      let turnIndex = parseInt(turnSlider.value);
+      if (turnIndex < parseInt(turnSlider.max)) {
+        turnIndex++;
+        turnSlider.value = turnIndex;
+        updateAnalyticsView(turnIndex);
+      }
+    });
+  }
 });

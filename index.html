@@ -22,12 +22,39 @@
         </select>
         <span id="gameCount"></span>
       </div>
-      <svg
-        id="catanBoard"
-        width="700"
-        height="700"
-        viewBox="-350 -350 700 700"
-      ></svg>
+      
+      <div class="analytics-container">
+        <div class="board-section">
+          <svg
+            id="catanBoard"
+            width="700"
+            height="700"
+            viewBox="-350 -350 700 700"
+          ></svg>
+        </div>
+        
+        <div class="analytics-sidebar">
+          <div class="turn-controls">
+            <h3>Turn Navigation</h3>
+            <div class="slider-container" style="display: flex; align-items: center; gap: 8px;">
+              <button id="prevAnalyticsTurnBtn" class="tab-btn" style="padding: 4px 8px; min-width: auto;">&lt;</button>
+              <input type="range" id="turnSlider" min="0" max="100" value="0" style="flex-grow: 1;">
+              <button id="nextAnalyticsTurnBtn" class="tab-btn" style="padding: 4px 8px; min-width: auto;">&gt;</button>
+            </div>
+            <p id="turnInfo" style="text-align: center; margin-top: 4px;">Turn 0 / 0</p>
+          </div>
+
+          <div class="dice-section">
+            <h3>Dice Rolls</h3>
+            <div id="rollHistory" class="history-box"></div>
+          </div>
+
+          <div class="player-tracker-section">
+            <h3>Players</h3>
+            <div id="analyticsPlayerTracker"></div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section id="playgroundTab" class="tab-panel">
