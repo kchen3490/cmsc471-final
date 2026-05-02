@@ -1,3 +1,130 @@
+// ── HEURISTIC ──────────────────────────────────────────────────────────────
+// roll_probability[sum] = probability of rolling that; i.e. roll_probability[7] = 6/36
+const roll_probability = [0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1];
+const sample_weight = [5.0, 3.0, 4.0, 2.5, 2.0, 2.0];
+
+/* Given a game state, calculate the heuristic based on the function(s).
+ * income: for each resource, returns sum(probability * # of adjacent settlements)
+ * variety: number of resource types with income > 0 (may want to adjust this threshold)
+ * expansion: sum(probabilities of available settlement locations)
+ * dev_card: min(ore income, wheat income, sheep income)
+ * vp: current number of vp
+ * robber_risk: if number of cards in hand > 7, then (roll_probability[7] * number of cards in hand / 2) ("discard income")
+ */
+
+// order of resources based on RESOURCE_TYPES = ["wood", "brick", "sheep", "wheat", "ore"]
+function income(state, player) {
+    const mapState = resolve_heuristic_map_state(state);
+    const hexes = mapState.tileHexStates ? Object.values(mapState.tileHexStates) : [];
+    const settlements = state.settlements ?? {};
+    const pid = Number(player);
+    const res = [0, 0, 0, 0, 0];
+
+    for (const piece of Object.values(settlements)) {
+        if (!piece?.owner || Number(piece.owner) !== pid) continue;
+        if (piece.buildingType !== 1 && piece.buildingType !== 2) continue;
+        const prod = piece.buildingType === 2 ? 2 : 1;
+        const touches = heuristic_touching_hexes(
+            { x: piece.x, y: piece.y, z: piece.z },
+            hexes
+        );
+        for (const h of touches) {
+            const t = h.type;
+            if (t < 1 || t > 5) continue;
+            const dn = Number(h.diceNumber);
+            const p = dn >= 2 && dn <= 12 ? roll_probability[dn] : 0;
+            if (p === 0) continue;
+            res[t - 1] += p * prod;
+        }
+    }
+    return res;
+}
+
+function variety(incomeVec, threshold) {
+    let n = 0;
+    for (const v of incomeVec) {
+        if (v > threshold) n += 1;
+    }
+    return n;
+}
+
+function expansion(state, player) {
+    const mapState = resolve_heuristic_map_state(state);
+    const cornerEntries = mapState.tileCornerStates
+        ? Object.entries(mapState.tileCornerStates)
+        : [];
+    const hexes = mapState.tileHexStates ? Object.values(mapState.tileHexStates) : [];
+    const settlements = state.settlements ?? {};
+    let sum = 0;
+
+    for (const [cornerKey, baseCorner] of cornerEntries) {
+        const occ = settlements[cornerKey];
+        if (occ?.owner) continue;
+
+        const spot = {
+            x: occ?.x ?? baseCorner.x,
+            y: occ?.y ?? baseCorner.y,
+            z: occ?.z ?? baseCorner.z,
+        };
+        const touches = heuristic_touching_hexes(spot, hexes);
+        for (const h of touches) {
+            const dn = Number(h.diceNumber);
+            const p = dn >= 2 && dn <= 12 ? roll_probability[dn] : 0;
+            sum += p;
+        }
+    }
+    return sum;
+}
+
+function dev_card(income) {
+    let dev_card_resources = [income[2], income[3], income[4]];
+    return Math.min(...dev_card_resources);
+}
+
+function vp(state, player) {
+    const stats =
+        state.playerStats?.[player] ?? state.playerStats?.[String(player)] ?? null;
+    return stats?.vp ?? 0;
+}
+
+function robber_risk(state, player) {
+    const cards =
+        state.playerResources?.[player] ?? state.playerResources?.[String(player)];
+    const n = Array.isArray(cards) ? cards.length : 0;
+    if (n <= 7) return 0;
+    return roll_probability[7] * (n / 2);
+}
+
+// state = current game state; player = player we are calculating heuristic for, w = weights
+function calculate_heuristric(state, player, w) {
+    const incomeVec = income(state, player);
+    const income_sum = incomeVec.reduce((acc, curr) => acc + curr, 0);
+    const varietyVal = variety(incomeVec, 0);
+    const expansionVal = expansion(state, player);
+    const devCardVal = dev_card(incomeVec);
+    const vpVal = vp(state, player);
+    const robberVal = robber_risk(state, player);
+
+    if (Array.isArray(w) && w.length >= 6) {
+        return (
+            w[0] * income_sum +
+            w[1] * varietyVal +
+            w[2] * expansionVal +
+            w[3] * devCardVal +
+            w[4] * vpVal -
+            w[5] * robberVal
+        );
+    }
+    return (
+        sample_weight[0] * income_sum +
+        sample_weight[1] * varietyVal +
+        sample_weight[2] * expansionVal +
+        sample_weight[3] * devCardVal +
+        sample_weight[4] * vpVal -
+        sample_weight[5] * robberVal
+    );
+}
+
 /**
  * CATAN BOARD VISUALIZATION  —  Colonist.io data
  *
@@ -536,6 +663,41 @@ function hexVertex(cx, cy, vIdx) {
   // Keep local geometry aligned with mirrored x / inverted y world transform.
   return { x: cx + SIZE * Math.cos(a), y: cy - SIZE * Math.sin(a) };
 }
+
+// ── HEURISTIC GRID ─ attach map via state.mapState, or fallback to viewer currentGameData
+function resolve_heuristic_map_state(state) {
+  if (state?.mapState?.tileHexStates && state?.mapState?.tileCornerStates) {
+    return state.mapState;
+  }
+  if (typeof currentGameData !== "undefined" && currentGameData?.data?.eventHistory?.initialState?.mapState) {
+    return currentGameData.data.eventHistory.initialState.mapState;
+  }
+  return {};
+}
+
+function heuristic_corner_px(corner) {
+  const p = axialToPixel(corner.x, corner.y);
+  const vi = CORNER_Z_TO_VERTEX[corner.z] ?? CORNER_Z_TO_VERTEX[0];
+  return hexVertex(p.px, p.py, vi);
+}
+
+function heuristic_touching_hexes(corner, hexes) {
+  const pt = heuristic_corner_px(corner);
+  const EPS = SIZE * 0.05 + 1e-9;
+  const touching = [];
+  for (const h of hexes) {
+    const c = axialToPixel(h.x, h.y);
+    for (let vi = 0; vi < 6; vi++) {
+      const vtx = hexVertex(c.px, c.py, vi);
+      if (Math.hypot(vtx.x - pt.x, vtx.y - pt.y) < EPS) {
+        touching.push(h);
+        break;
+      }
+    }
+  }
+  return touching;
+}
+
 function edgeMidByIdx(cx, cy, eIdx) {
   const v0 = hexVertex(cx, cy, eIdx);
   const v1 = hexVertex(cx, cy, (eIdx + 1) % 6);
