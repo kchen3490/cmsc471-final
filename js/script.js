@@ -198,6 +198,7 @@ function simulate(state, playerToMove, weights) {
 
     const cornerAdj = new Map(); // cornerKey -> Set(neighborCornerKey)
     const edgeEndpointsByKey = new Map(); // edgeKey -> [c0, c1]
+    const incidentEdgesByCorner = new Map(); // cornerKey -> Set(edgeKey)
     for (const [edgeKey, e] of edgeEntries) {
         const ends = edgeEndpointsCornerKeys(e);
         if (!ends) continue;
@@ -207,6 +208,10 @@ function simulate(state, playerToMove, weights) {
         if (!cornerAdj.has(b)) cornerAdj.set(b, new Set());
         cornerAdj.get(a).add(b);
         cornerAdj.get(b).add(a);
+        if (!incidentEdgesByCorner.has(a)) incidentEdgesByCorner.set(a, new Set());
+        if (!incidentEdgesByCorner.has(b)) incidentEdgesByCorner.set(b, new Set());
+        incidentEdgesByCorner.get(a).add(edgeKey);
+        incidentEdgesByCorner.get(b).add(edgeKey);
     }
 
     const cornerOwner = new Map(); // cornerKey -> ownerNumber
@@ -218,6 +223,7 @@ function simulate(state, playerToMove, weights) {
     for (const [edgeKey, piece] of Object.entries(baseRoads)) {
         if (piece?.owner && Number(piece.owner) === pid && piece.type === 1) ownedRoadEdges.push(edgeKey);
     }
+    const ownedRoadEdgeSet = new Set(ownedRoadEdges);
 
     const ownedRoadEndpointCorners = new Set();
     for (const edgeKey of ownedRoadEdges) {
@@ -232,6 +238,20 @@ function simulate(state, playerToMove, weights) {
         if (piece?.owner && Number(piece.owner) === pid) ownedBuildingCorners.add(cornerKey);
     }
 
+    const settlementConnectsToOwnedRoad = (cornerKey) => {
+        const inc = incidentEdgesByCorner.get(cornerKey);
+        if (!inc) return false;
+        for (const edgeKey of inc) {
+            if (!ownedRoadEdgeSet.has(edgeKey)) continue;
+            // Note: This allows settlements in the "middle" of your road network too
+            // (a corner can have 2 incident owned roads); we do NOT require an endpoint.
+            const occ = cornerOwner.get(cornerKey);
+            if (occ !== undefined && occ !== pid) continue;
+            return true;
+        }
+        return false;
+    };
+
     const canPlaceSettlementAt = (cornerKey) => {
         if (cornerOwner.has(cornerKey)) return false;
         const neigh = cornerAdj.get(cornerKey);
@@ -239,6 +259,8 @@ function simulate(state, playerToMove, weights) {
         for (const nk of neigh) {
             if (cornerOwner.has(nk)) return false; // adjacent to any existing settlement/city
         }
+        // Must be connected to the player's existing road network (settlement built at end of road).
+        if (!settlementConnectsToOwnedRoad(cornerKey)) return false;
         return true;
     };
 
