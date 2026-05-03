@@ -92,6 +92,28 @@ function parseTurnsFromEvents(gameData) {
   let largestArmyOwner = null;
   let maxKnightsPlayed = 2; // Minimum 3 required
 
+  // Initialize turn 0
+  const turnZero = {
+    turnNumber: 0,
+    diceRoll: null,
+    diceRolls: [],
+    roads: {},
+    settlements: {},
+    cities: {},
+    playerResources: {},
+    playerDevCards: {},
+    playerStats: {},
+    activePlayer: null
+  };
+
+  for (const playerId of playOrder) {
+    turnZero.playerStats[playerId] = {
+      citiesBuilt: 0, settlementsBuilt: 0, roadsBuilt: 0,
+      longestRoad: 0, knightsPlayed: 0, vp: 0
+    };
+  }
+  turns.push(turnZero);
+
   // Initialize with the starting state
   let currentTurn = {
     turnNumber: 0,
@@ -392,7 +414,7 @@ function updateDiceRollsDisplay(turn) {
   const historyHtml = allRolls.slice().reverse().map(rollObj => {
     const colorName = PLAYER_COLOR_NAMES[rollObj.playerId] || "white";
     const playerIcon = `./data/images/player_bg_${colorName}.svg`;
-    return `<div style="margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05);"><strong>Turn ${rollObj.turnNumber}:</strong> <img src="${playerIcon}" width="20" height="20" style="margin-right: 4px; vertical-align: middle;"> rolled <strong>${rollObj.value}</strong></div>`;
+    return `<div style="margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05);"><strong>Turn ${rollObj.turnNumber + 1}:</strong> <img src="${playerIcon}" width="20" height="20" style="margin-right: 4px; vertical-align: middle;"> rolled <strong>${rollObj.value}</strong></div>`;
   }).join("");
 
   rollHistory.innerHTML = `
@@ -483,18 +505,18 @@ function updateAnalyticsPlayerTracker(turn) {
         <div style="font-size: 11px; color: #cbd5e1; margin-bottom: 4px;">
           <strong>Buildings:</strong> 
           <br>
-          Roads: ${playerRoads} <img src=${roadImage} width="20" height="20" style="margin-right: 4px; vertical-align: middle;">
+          Roads: <b> ${playerRoads} </b> <img src=${roadImage} width="20" height="20" style="margin-right: 4px; vertical-align: middle;">
           <br>
-          Settlements: ${playerSettlements} <img src=${settlementImage} width="20" height="20" style="margin-right: 4px; vertical-align: middle;">
+          Settlements: <b> ${playerSettlements} </b> <img src=${settlementImage} width="20" height="20" style="margin-right: 4px; vertical-align: middle;">
           <br>
-          Cities: ${playerCities} <img src=${cityImage} width="20" height="20" style="margin-right: 4px; vertical-align: middle;">
+          Cities: <b> ${playerCities} </b> <img src=${cityImage} width="20" height="20" style="margin-right: 4px; vertical-align: middle;">
         </div>
         <div style="font-size: 11px; color: #cbd5e1; margin-bottom: 4px;">
           <strong>Stats:</strong> 
           <br>
-          Longest Road: ${stats.longestRoad} <img src=${`./data/images/icon_longest_road.svg`} width="20" height="20" style="margin-right: 4px; vertical-align: middle;">  
+          Longest Road: <b> ${stats.longestRoad} </b> <img src=${`./data/images/icon_longest_road.svg`} width="20" height="20" style="margin-right: 4px; vertical-align: middle;">  
           <br>
-          Knights Played: ${stats.knightsPlayed} <img src=${`./data/images/icon_largest_army.svg`} width="20" height="20" style="margin-right: 4px; vertical-align: middle;"> 
+          Knights Played: <b> ${stats.knightsPlayed} </b> <img src=${`./data/images/icon_largest_army.svg`} width="20" height="20" style="margin-right: 4px; vertical-align: middle;"> 
         </div>
         <div style="font-size: 11px; color: #cbd5e1; margin-bottom: 4px;">
           <strong>Resources:</strong><br>
