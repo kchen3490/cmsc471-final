@@ -391,8 +391,8 @@ function updateDiceRollsDisplay(turn) {
 
   const historyHtml = allRolls.slice().reverse().map(rollObj => {
     const colorName = PLAYER_COLOR_NAMES[rollObj.playerId] || "white";
-    const settlementImage = `./data/images/settlement_${colorName}.svg`;
-    return `<div style="margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05);"><strong>Turn ${rollObj.turnNumber}:</strong> <img src="${settlementImage}" width="20" height="20" style="margin-right: 4px; vertical-align: middle;"> rolled <strong>${rollObj.value}</strong></div>`;
+    const playerIcon = `./data/images/player_bg_${colorName}.svg`;
+    return `<div style="margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05);"><strong>Turn ${rollObj.turnNumber}:</strong> <img src="${playerIcon}" width="20" height="20" style="margin-right: 4px; vertical-align: middle;"> rolled <strong>${rollObj.value}</strong></div>`;
   }).join("");
 
   rollHistory.innerHTML = `
@@ -423,7 +423,10 @@ function updateAnalyticsPlayerTracker(turn) {
 
     // UPDATE: Map colorName directly from your new PLAYER_COLOR_NAMES using the data's ID
     const colorName = PLAYER_COLOR_NAMES[playerId] || "white";
+    const playerIcon = `./data/images/player_bg_${colorName}.svg`;
     const settlementImage = colorName ? `./data/images/settlement_${colorName}.svg` : "";
+    const roadImage = colorName ? `./data/images/road_${colorName}.svg` : "";
+    const cityImage = colorName ? `./data/images/city_${colorName}.svg` : "";
 
     // Data lookup remains tied to the original playerId
     const stats = turn.playerStats?.[playerId] || { citiesBuilt: 0, settlementsBuilt: 0, roadsBuilt: 0, vp: 0, longestRoad: 0, knightsPlayed: 0 };
@@ -473,15 +476,25 @@ function updateAnalyticsPlayerTracker(turn) {
     return `
       <div class="player-card${isActive}">
         <div class="player-header">
-          ${settlementImage ? `<img src="${settlementImage}" alt="Player ${playerNum}" class="player-settlement-icon">` : ""}
+          ${playerIcon ? `<img src="${playerIcon}" alt="Player ${playerNum}" class="player-settlement-icon">` : ""}
           <h3>Player ${playerNum}</h3>
           <span style="margin-left: auto; font-weight: bold; color: gold;">${stats.vp} VP</span>
         </div>
         <div style="font-size: 11px; color: #cbd5e1; margin-bottom: 4px;">
-          <strong>Buildings:</strong> Roads: ${playerRoads} | Settlements: ${playerSettlements} | Cities: ${playerCities}
+          <strong>Buildings:</strong> 
+          <br>
+          Roads: ${playerRoads} <img src=${roadImage} width="20" height="20" style="margin-right: 4px; vertical-align: middle;">
+          <br>
+          Settlements: ${playerSettlements} <img src=${settlementImage} width="20" height="20" style="margin-right: 4px; vertical-align: middle;">
+          <br>
+          Cities: ${playerCities} <img src=${cityImage} width="20" height="20" style="margin-right: 4px; vertical-align: middle;">
         </div>
         <div style="font-size: 11px; color: #cbd5e1; margin-bottom: 4px;">
-          <strong>Stats:</strong> Longest Road: ${stats.longestRoad} | Knights Played: ${stats.knightsPlayed}
+          <strong>Stats:</strong> 
+          <br>
+          Longest Road: ${stats.longestRoad} <img src=${`./data/images/icon_longest_road.svg`} width="20" height="20" style="margin-right: 4px; vertical-align: middle;">  
+          <br>
+          Knights Played: ${stats.knightsPlayed} <img src=${`./data/images/icon_largest_army.svg`} width="20" height="20" style="margin-right: 4px; vertical-align: middle;"> 
         </div>
         <div style="font-size: 11px; color: #cbd5e1; margin-bottom: 4px;">
           <strong>Resources:</strong><br>
@@ -1025,7 +1038,7 @@ function renderPlayerTracker() {
     const playerIndex = playgroundState.players.indexOf(player);
     const colorKey = [1, 2, 3, 5][playerIndex % 4] || 1;
     const colorName = PLAYER_COLOR_NAMES[colorKey];
-    const settlementImage = colorName ? `./data/images/settlement_${colorName}.svg` : "";
+    const playerIcon = colorName ? `./data/images/player_bg_${colorName}.svg` : "";
 
     // Build resource display with images
     const resourcesHtml = RESOURCE_TYPES.map((type) => {
@@ -1058,7 +1071,7 @@ function renderPlayerTracker() {
     return `
       <div class="player-card">
         <div class="player-header">
-          ${settlementImage ? `<img src="${settlementImage}" alt="${player.name}" class="player-settlement-icon">` : ""}
+          ${playerIcon ? `<img src="${playerIcon}" alt="${player.name}" class="player-settlement-icon">` : ""}
           <h3>${player.name}</h3>
         </div>
         <div class="resources-section">
