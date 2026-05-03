@@ -38,7 +38,7 @@ body {
 }
 
 .tab-panel.active {
-  display: block;
+  display: flex;
 }
 
 #analyticsTab {
@@ -175,6 +175,18 @@ svg#catanBoard {
 
 #analyticsPlayerTracker .player-card:last-child {
   margin-bottom: 0;
+}
+
+/* 1. Hide ONLY the Analytics-specific versions of components in the playground */
+#playgroundTab .turn-controls,
+#playgroundTab .dice-section,
+#playgroundTab .player-tracker-section {
+  display: none !important;
+}
+
+/* 2. Hide the Analytics Sidebar entirely if the Analytics Tab isn't active */
+#analyticsTab:not(.active) .analytics-sidebar {
+  display: none;
 }
 
 /* ─── CONTROLS ───────────────────────────────────────────────────────────── */

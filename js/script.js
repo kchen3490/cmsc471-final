@@ -390,7 +390,7 @@ function updateAnalyticsView(turnIndex) {
 }
 
 function updateDiceRollsDisplay(turn) {
-  const rollHistory = document.getElementById("rollHistory");
+  const rollHistory = document.getElementById("analyticsRollHistory");
   if (!rollHistory) return;
 
   const allRolls = [];
@@ -1021,7 +1021,7 @@ function renderTurnOrder() {
 
 function renderRollHistory() {
   const summary = document.getElementById("diceSummary");
-  const history = document.getElementById("rollHistory");
+  const history = document.getElementById("playgroundRollHistory");
   if (!summary || !history) return;
 
   if (!playgroundState.rollHistory.length) {
