@@ -38,7 +38,7 @@
 const SIZE = 55;
 const svg = document.getElementById("catanBoard");
 const LABEL_MAX_DIST = 195; // px — hide EDGE labels beyond this (vertex labels always shown)
-const PLAYER_COLOR_NAMES = { 1: "red", 2: "blue", 3: "orange", 4: "green", 5: "white" };
+const PLAYER_COLOR_NAMES = { 1: "red", 2: "blue", 3: "orange", 4: "green", 5: "black", 6: "bronze", 7: "silver", 8: "yellow", 9: "white", 10: "purple", 11: "mysticblue", 12: "pink" };
 const RESOURCE_TYPES = ["wood", "brick", "sheep", "wheat", "ore"];
 const DEV_CARD_TYPES = ["knight", "victoryPoint", "roadBuilding", "yearOfPlenty", "monopoly"];
 const RESOURCE_IMAGES = {
@@ -388,11 +388,10 @@ function updateDiceRollsDisplay(turn) {
     return acc;
   }, {});
 
+
   const historyHtml = allRolls.slice().reverse().map(rollObj => {
     const playerNum = rollObj.playerId;
-    const colorName = PLAYER_COLOR_NAMES[playerNum];
-    const settlementImage = colorName ? `./data/images/settlement_${colorName}.svg` : "";
-    return `<div style="margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05);"><strong>Turn ${rollObj.turnNumber}:</strong> <img src="${settlementImage}" alt="Player ${playerNum}" class="player-settlement-icon"> rolled <strong>${rollObj.value}</strong></div>`;
+    return `<div style="margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05);"><strong>Turn ${rollObj.turnNumber}:</strong> Player ${playerNum} rolled <strong>${rollObj.value}</strong></div>`;
   }).join("");
 
   rollHistory.innerHTML = `
@@ -417,12 +416,15 @@ function updateAnalyticsPlayerTracker(turn) {
   const players = currentGameData.data.playerUserStates;
   const playOrder = currentGameData.data.playOrder || [];
 
-  tracker.innerHTML = playOrder.map(playerId => {
-    const playerNum = playerId;
-    const colorKey = [1, 2, 3, 5][playerId - 1] || playerId;
-    const colorName = PLAYER_COLOR_NAMES[colorKey];
+  tracker.innerHTML = playOrder.map((playerId, index) => {
+    // MAINTAIN LOGIC: playerNum is always 1, 2, 3, 4 based on array position
+    const playerNum = index + 1;
+
+    // UPDATE: Map colorName directly from your new PLAYER_COLOR_NAMES using the data's ID
+    const colorName = PLAYER_COLOR_NAMES[playerId] || "white";
     const settlementImage = colorName ? `./data/images/settlement_${colorName}.svg` : "";
 
+    // Data lookup remains tied to the original playerId
     const stats = turn.playerStats?.[playerId] || { citiesBuilt: 0, settlementsBuilt: 0, roadsBuilt: 0, vp: 0, longestRoad: 0, knightsPlayed: 0 };
     const resources = turn.playerResources?.[playerId] || [];
     const devCards = turn.playerDevCards?.[playerId] || [];
@@ -431,6 +433,7 @@ function updateAnalyticsPlayerTracker(turn) {
     const playerSettlements = stats.settlementsBuilt;
     const playerCities = stats.citiesBuilt;
 
+    // Resource and Dev Card maps remain the same
     const resCounts = { wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0 };
     const resMap = { 1: 'wood', 2: 'brick', 3: 'sheep', 4: 'wheat', 5: 'ore' };
     resources.forEach(r => { if (resMap[r]) resCounts[resMap[r]]++; });
@@ -439,16 +442,17 @@ function updateAnalyticsPlayerTracker(turn) {
     const devMap = { 11: 'knight', 10: 'victoryPoint', 12: 'victoryPoint', 13: 'monopoly', 14: 'roadBuilding', 15: 'yearOfPlenty' };
     devCards.forEach(d => { if (devMap[d]) devCounts[devMap[d]]++; });
 
+    // ... (rest of your HTML generation remains the same)
     const resourcesHtml = RESOURCE_TYPES.map(type => {
       const count = resCounts[type];
       const imagePath = RESOURCE_IMAGES[type];
       const label = { wood: "Wood", brick: "Brick", sheep: "Sheep", wheat: "Wheat", ore: "Ore" }[type];
       return `
-        <div class="resource-item" style="display: inline-flex; align-items: center; gap: 4px; margin-right: 8px;">
-          <img src="${imagePath}" alt="${type}" title="${label}" style="width: 16px; height: 16px;">
-          <span>${count}</span>
-        </div>
-      `;
+          <div class="resource-item" style="display: inline-flex; align-items: center; gap: 4px; margin-right: 8px;">
+            <img src="${imagePath}" alt="${type}" title="${label}" style="width: 16px; height: 16px;">
+            <span>${count}</span>
+          </div>
+        `;
     }).join("");
 
     const devCardsHtml = DEV_CARD_TYPES.map(type => {
@@ -456,11 +460,11 @@ function updateAnalyticsPlayerTracker(turn) {
       const imagePath = DEV_CARD_IMAGES[type];
       const label = { knight: "Knight", victoryPoint: "Victory Point", roadBuilding: "Road Building", yearOfPlenty: "Year of Plenty", monopoly: "Monopoly" }[type];
       return `
-        <div class="resource-item" style="display: inline-flex; align-items: center; gap: 4px; margin-right: 8px;">
-          <img src="${imagePath}" alt="${type}" title="${label}" style="width: 16px; height: 16px;">
-          <span>${count}</span>
-        </div>
-      `;
+          <div class="resource-item" style="display: inline-flex; align-items: center; gap: 4px; margin-right: 8px;">
+            <img src="${imagePath}" alt="${type}" title="${label}" style="width: 16px; height: 16px;">
+            <span>${count}</span>
+          </div>
+        `;
     }).join("");
 
     const isActive = turn.activePlayer === playerId ? " active-turn" : "";
