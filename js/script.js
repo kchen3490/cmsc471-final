@@ -144,6 +144,8 @@ function calculate_heuristric(state, player, w) {
 // A "move" here is one of:
 // - build_settlement: place a settlement (buildingType=1) on an empty corner
 // - upgrade_city: upgrade an owned settlement (buildingType=1) to a city (buildingType=2)
+// - build_road: place a road (type=1) on an empty edge (must connect to your network)
+// - buy_dev_card: spend 1 sheep, 1 wheat, 1 ore (no board geometry changes simulated)
 //
 // Returns:
 //   { type, key, corner?, score }
