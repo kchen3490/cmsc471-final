@@ -390,8 +390,9 @@ function updateDiceRollsDisplay(turn) {
 
 
   const historyHtml = allRolls.slice().reverse().map(rollObj => {
-    const playerNum = rollObj.playerId;
-    return `<div style="margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05);"><strong>Turn ${rollObj.turnNumber}:</strong> Player ${playerNum} rolled <strong>${rollObj.value}</strong></div>`;
+    const colorName = PLAYER_COLOR_NAMES[rollObj.playerId] || "white";
+    const settlementImage = `./data/images/settlement_${colorName}.svg`;
+    return `<div style="margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05);"><strong>Turn ${rollObj.turnNumber}:</strong> <img src="${settlementImage}" width="20" height="20" style="margin-right: 4px; vertical-align: middle;"> rolled <strong>${rollObj.value}</strong></div>`;
   }).join("");
 
   rollHistory.innerHTML = `
