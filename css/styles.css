@@ -193,7 +193,7 @@ svg#catanBoard {
 #controls {
   position: absolute;
   top: 16px;
-  left: 16px;
+  left: -4px;
   background: rgba(20, 30, 60, 0.92);
   padding: 12px 16px;
   border-radius: 10px;

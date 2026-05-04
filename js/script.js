@@ -678,7 +678,7 @@ function updateAnalyticsPlayerTracker(turn) {
           ${resourcesHtml}
         </div>
         <div style="font-size: 11px; color: #cbd5e1;">
-          <strong>Dev Cards:</strong><br>
+          <strong>Dev Cards:</strong> <br>
           ${devCardsHtml}
         </div>
       </div>
@@ -1523,7 +1523,7 @@ function updateBankStateDisplay(turn) {
       ${resourcesHtml}
     </div>
     <div style="font-size: 11px; color: #cbd5e1; margin-top: 6px;">
-      <strong>Dev Cards:</strong> ${devCardCount}
+      <strong>Dev Cards:</strong> ${devCardCount} <img src=${`./data/images/card_devcardback.svg`} width="20" height="20" style="margin-right: 4px; vertical-align: middle;">
     </div>
   `;
 }
@@ -1545,15 +1545,27 @@ function updateEventLogDisplay(turnIndex) {
   }
 
   const resMap = { 1: 'lumber', 2: 'brick', 3: 'wool', 4: 'grain', 5: 'ore' };
+  const altMap = { 1: 'wood', 2: 'brick', 3: 'sheep', 4: 'wheat', 5: 'ore' };
   const getResNames = (arr) => {
     if (!arr || arr.length === 0) return "";
     return arr.map(r => {
       const resName = resMap[r] || r;
+      const altName = altMap[r] || r;
       const resImgPath = `./data/images/card_${resName}.svg`;
-      return `<img src="${resImgPath}" alt="${resName}" title="${resName}" 
+      return `<img src="${resImgPath}" alt="${altName}" title="${altName}" 
                  width="24" height="32" 
                  style="vertical-align: middle; margin: 0 2px; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3);">`;
     }).join("");
+  };
+  const getTileImage = (typeId) => {
+    const resName = resMap[typeId];
+    const altName = altMap[typeId];
+    if (!resName) return ""; // Return empty for Desert or Water if not mapped
+
+    const tileImgPath = `./data/images/tile_${resName}.svg`;
+    return `<img src="${tileImgPath}" alt="${altName}" title="${altName}" 
+               width="28" height="28" 
+               style="vertical-align: middle; margin: 0 4px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));">`;
   };
 
   const getPlayerIcon = (id) => {
@@ -1569,16 +1581,25 @@ function updateEventLogDisplay(turnIndex) {
 
     switch (log.type) {
       case 'dice': text = `${pIconHtml} rolled <strong>${log.value}</strong>`; break;
-      case 'gain': text = `${pIconHtml} gained: ${getResNames(log.resources)}`; break;
-      case 'discard': text = `${pIconHtml} discarded: ${getResNames(log.resources)}`; break;
-      case 'bankTrade': text = `${pIconHtml} traded ${getResNames(log.given)} for ${getResNames(log.received)} with bank`; break;
-      case 'tradeProposed': text = `${pIconHtml} proposed: ${getResNames(log.offered)} for ${getResNames(log.wanted)}`; break;
+      case 'gain': text = `${pIconHtml} gained: ${getResNames(log.resources.sort())}`; break;
+      case 'discard': text = `${pIconHtml} discarded: ${getResNames(log.resources.sort())}`; break;
+      case 'bankTrade': text = `${pIconHtml} traded ${getResNames(log.given)} for ${getResNames(log.received.sort())} with bank`; break;
+      case 'tradeProposed': text = `${pIconHtml} proposed: ${getResNames(log.offered.sort())} for ${getResNames(log.wanted)}`; break;
       case 'tradeResponse': text = `${pIconHtml} ${log.status} the trade`; break;
-      case 'tradeAccepted': text = `${pIconHtml} accepted trade: ${getResNames(log.received)} for ${getResNames(log.offered)}`; break;
+      case 'tradeAccepted': text = `${pIconHtml} accepted trade: ${getResNames(log.received.sort())} for ${getResNames(log.offered.sort())}`; break;
       case 'robberMoved': {
         const hex = mapState.tileHexStates?.[log.hexIndex];
-        const hexInfo = hex ? `${HEX_TYPES[hex.type]} (${hex.diceNumber})` : `index ${log.hexIndex}`;
-        text = `${pIconHtml} moved the robber to <strong>${hexInfo}</strong>`;
+        let hexInfo = "";
+
+        if (hex) {
+          const tileImg = getTileImage(hex.type);
+          // Display: [Player Icon] moved the robber to [Tile Image] (Dice Number)
+          hexInfo = `${tileImg} <strong>${hex.diceNumber}</strong>`;
+        } else {
+          hexInfo = `index ${log.hexIndex}`;
+        }
+
+        text = `${pIconHtml} moved the robber to ${hexInfo}`;
         break;
       }
       case 'stealDetail': {
