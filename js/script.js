@@ -103,6 +103,9 @@ function parseTurnsFromEvents(gameData) {
     playerResources: {},
     playerDevCards: {},
     playerStats: {},
+    bankState: initialState.bankState?.resourceCards ? { ...initialState.bankState.resourceCards } : { 1: 19, 2: 19, 3: 19, 4: 19, 5: 19 },
+    bankDevCards: initialState.mechanicDevelopmentCardsState?.bankDevelopmentCards?.cards ? [...initialState.mechanicDevelopmentCardsState.bankDevelopmentCards.cards] : [],
+    robberIndex: initialState.mechanicRobberState?.locationTileIndex ?? -1,
     activePlayer: null
   };
 
@@ -114,6 +117,7 @@ function parseTurnsFromEvents(gameData) {
   }
   turns.push(turnZero);
 
+  let activeOffers = {}; // Track across events
   // Initialize with the starting state
   let currentTurn = {
     turnNumber: 0,
@@ -125,8 +129,17 @@ function parseTurnsFromEvents(gameData) {
     playerResources: {},
     playerDevCards: {},
     playerStats: {},
+    bankState: initialState.bankState?.resourceCards ? { ...initialState.bankState.resourceCards } : { 1: 19, 2: 19, 3: 19, 4: 19, 5: 19 },
+    bankDevCards: initialState.mechanicDevelopmentCardsState?.bankDevelopmentCards?.cards ? [...initialState.mechanicDevelopmentCardsState.bankDevelopmentCards.cards] : [],
+    robberIndex: initialState.mechanicRobberState?.locationTileIndex ?? -1,
+    eventLogs: [],
     activePlayer: null
   };
+
+  if (currentTurn.robberIndex === -1 && initialState.mapState?.tileHexStates) {
+    const desertHex = Object.entries(initialState.mapState.tileHexStates).find(([idx, hex]) => hex.type === 0);
+    if (desertHex) currentTurn.robberIndex = parseInt(desertHex[0]);
+  }
 
   for (const playerId of playOrder) {
     currentTurn.playerStats[playerId] = {
@@ -151,9 +164,21 @@ function parseTurnsFromEvents(gameData) {
   for (const event of events) {
     const stateChange = event?.stateChange ?? {};
 
-    // Track dice rolls from log text
+    // Bank and Robber State
+    if (stateChange.bankState?.resourceCards) {
+      Object.assign(currentTurn.bankState, stateChange.bankState.resourceCards);
+    }
+    if (stateChange.mechanicDevelopmentCardsState?.bankDevelopmentCards?.cards) {
+      currentTurn.bankDevCards = [...stateChange.mechanicDevelopmentCardsState.bankDevelopmentCards.cards];
+    }
+    if (stateChange.mechanicRobberState?.locationTileIndex !== undefined) {
+      currentTurn.robberIndex = stateChange.mechanicRobberState.locationTileIndex;
+    }
+
+    // Process Logs
     if (stateChange.gameLogState) {
       for (const log of Object.values(stateChange.gameLogState)) {
+        // Track dice rolls from log text
         if (log?.text?.type === 10 && log.text.firstDice !== undefined && log.text.secondDice !== undefined) {
           const roll = log.text.firstDice + log.text.secondDice;
           currentTurn.diceRolls.push({
@@ -162,6 +187,130 @@ function parseTurnsFromEvents(gameData) {
             turnNumber: currentTurn.turnNumber
           });
           currentTurn.diceRoll = roll;
+          currentTurn.eventLogs.push({ type: 'dice', player: log.text.playerColor || log.from, value: roll });
+        }
+
+        // Resources Gained (Type 47)
+        if (log?.text?.type === 47 && log.text.cardsToBroadcast) {
+          currentTurn.eventLogs.push({
+            type: 'gain',
+            player: log.text.playerColor || log.from,
+            resources: log.text.cardsToBroadcast
+          });
+        }
+
+        // Discarded (Type 55)
+        if (log?.text?.type === 55 && log.text.cardEnums) {
+          currentTurn.eventLogs.push({
+            type: 'discard',
+            player: log.text.playerColor || log.from,
+            resources: log.text.cardEnums
+          });
+        }
+
+        // Robber Moved (Type 11)
+        if (log?.text?.type === 11) {
+          currentTurn.eventLogs.push({
+            type: 'robberMoved',
+            player: log.text.playerColor || log.from,
+            hexIndex: currentTurn.robberIndex
+          });
+        }
+
+        // Steal (Type 16 - Spectator view, 14 - Thief, 15 - Victim)
+        if (log?.text?.type === 16) {
+          currentTurn.eventLogs.push({
+            type: 'steal',
+            player: log.text.playerColorThief,
+            victim: log.text.playerColorVictim
+          });
+        } else if (log?.text?.type === 14 && log.text.cardEnums) {
+          // If we have secret info, we can use it to enrich the log
+          // Type 14 is sent to the thief
+          currentTurn.eventLogs.push({
+            type: 'stealDetail',
+            player: log.from,
+            victim: log.text.playerColor,
+            resources: log.text.cardEnums
+          });
+        }
+
+        // Bank Trade (Type 116)
+        if (log?.text?.type === 116) {
+          currentTurn.eventLogs.push({
+            type: 'bankTrade',
+            player: log.text.playerColor || log.from,
+            given: log.text.givenCardEnums,
+            received: log.text.receivedCardEnums
+          });
+        }
+
+        // Trade Accepted (Type 115)
+        if (log?.text?.type === 115) {
+          currentTurn.eventLogs.push({
+            type: 'tradeAccepted',
+            player: log.text.playerColor || log.from,
+            accepter: log.text.acceptingPlayerColor,
+            offered: log.text.givenCardEnums,
+            received: log.text.receivedCardEnums
+          });
+        }
+      }
+    }
+
+    // Trade State Parsing (Proposed and Responses)
+    if (stateChange.tradeState?.activeOffers) {
+      for (const [offerId, offerUpdate] of Object.entries(stateChange.tradeState.activeOffers)) {
+        if (offerUpdate === null) {
+          delete activeOffers[offerId];
+          continue;
+        }
+
+        if (!activeOffers[offerId]) {
+          activeOffers[offerId] = { id: offerId, responses: {} };
+        }
+
+        const offer = activeOffers[offerId];
+        if (offerUpdate.creator) offer.creator = offerUpdate.creator;
+        if (offerUpdate.wantedResources) offer.wantedResources = offerUpdate.wantedResources;
+        if (offerUpdate.offeredResources) offer.offeredResources = offerUpdate.offeredResources;
+
+        // New offer proposed log
+        if (offerUpdate.creator && offerUpdate.wantedResources && offerUpdate.offeredResources) {
+          currentTurn.eventLogs.push({
+            type: 'tradeProposed',
+            player: offer.creator,
+            wanted: offer.wantedResources,
+            offered: offer.offeredResources,
+            id: offerId
+          });
+        }
+
+        // Responses
+        if (offerUpdate.playerResponses) {
+          for (const [pId, response] of Object.entries(offerUpdate.playerResponses)) {
+            if (offer.responses[pId] === response) continue;
+            offer.responses[pId] = response;
+
+            if (response === 1) {
+              currentTurn.eventLogs.push({
+                type: 'tradeResponse',
+                player: parseInt(pId),
+                status: 'accepted',
+                originalId: offerId,
+                creator: offer.creator,
+                wanted: offer.wantedResources,
+                offered: offer.offeredResources
+              });
+            } else if (response === 2) {
+              currentTurn.eventLogs.push({
+                type: 'tradeResponse',
+                player: parseInt(pId),
+                status: 'rejected',
+                originalId: offerId
+              });
+            }
+          }
         }
       }
     }
@@ -178,6 +327,7 @@ function parseTurnsFromEvents(gameData) {
           turnNumber: currentTurn.turnNumber
         });
         currentTurn.diceRoll = roll;
+        currentTurn.eventLogs.push({ type: 'dice', player: currentTurn.activePlayer, value: roll });
       }
     }
 
@@ -325,6 +475,10 @@ function parseTurnsFromEvents(gameData) {
         playerResources: JSON.parse(JSON.stringify(currentTurn.playerResources)),
         playerDevCards: JSON.parse(JSON.stringify(currentTurn.playerDevCards)),
         playerStats: JSON.parse(JSON.stringify(currentTurn.playerStats)),
+        bankState: JSON.parse(JSON.stringify(currentTurn.bankState)),
+        bankDevCards: [...currentTurn.bankDevCards],
+        robberIndex: currentTurn.robberIndex,
+        eventLogs: [],
         activePlayer: stateChange.currentState.currentTurnPlayerColor || currentTurn.activePlayer
       };
       turns.push(currentTurn);
@@ -385,13 +539,24 @@ function updateAnalyticsView(turnIndex) {
   // Update dice rolls display
   updateDiceRollsDisplay(turn);
 
+  // Render Robber
+  if (turn.robberIndex !== -1) {
+    renderRobberPiece(turn.robberIndex, mapState.tileHexStates[turn.robberIndex]);
+  }
+
+  // Update bank state display
+  updateBankStateDisplay(turn);
+
+  // Update event log display
+  updateEventLogDisplay(turnIndex);
+
   // Update player tracker for analytics
   updateAnalyticsPlayerTracker(turn);
 }
 
 function updateDiceRollsDisplay(turn) {
-  const rollHistory = document.getElementById("analyticsRollHistory");
-  if (!rollHistory) return;
+  const rollSummary = document.getElementById("analyticsRollHistory");
+  if (!rollSummary) return;
 
   const allRolls = [];
   for (let i = 0; i <= currentTurnIndex; i++) {
@@ -401,7 +566,7 @@ function updateDiceRollsDisplay(turn) {
   }
 
   if (allRolls.length === 0) {
-    rollHistory.innerHTML = "<p style='color: #94a3b8; font-size: 12px;'>No rolls yet</p>";
+    rollSummary.innerHTML = "<p style='color: #94a3b8; font-size: 12px;'>No rolls yet</p>";
     return;
   }
 
@@ -410,19 +575,9 @@ function updateDiceRollsDisplay(turn) {
     return acc;
   }, {});
 
-
-  const historyHtml = allRolls.slice().reverse().map(rollObj => {
-    const colorName = PLAYER_COLOR_NAMES[rollObj.playerId] || "white";
-    const playerIcon = `./data/images/player_bg_${colorName}.svg`;
-    return `<div style="margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.05);"><strong>Turn ${rollObj.turnNumber + 1}:</strong> <img src="${playerIcon}" width="20" height="20" style="margin-right: 4px; vertical-align: middle;"> rolled <strong>${rollObj.value}</strong></div>`;
-  }).join("");
-
-  rollHistory.innerHTML = `
+  rollSummary.innerHTML = `
     <div style="font-size: 12px;">
-      <div style="margin-bottom: 8px;"><strong>Summary:</strong> ${Object.entries(counts).map(([roll, count]) => `${roll}:${count}`).join(" | ")}</div>
-      <div style="max-height: 150px; overflow-y: auto; padding-right: 4px;">
-        ${historyHtml}
-      </div>
+      <strong>Summary:</strong> ${Object.entries(counts).sort((a, b) => a[0] - b[0]).map(([roll, count]) => `<span>${roll}:${count}</span>`).join(" | ")}
     </div>
   `;
 }
@@ -827,7 +982,7 @@ function renderCityPiece(city) {
     appendSvgImageOrFallback({
       href,
       x: p.x - size / 2,
-      y: p.y - size / 2,
+      y: p.y - size / 2 - 10,
       width: size,
       height: size,
       class: "piece-city"
@@ -1316,3 +1471,133 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+function renderRobberPiece(hexIndex, hexData) {
+  if (!hexData) return;
+  const { px, py } = axialToPixel(hexData.x, hexData.y);
+
+  const size = 32;
+  const href = "./data/images/icon_robber.svg";
+
+  appendSvgImageOrFallback({
+    href,
+    x: px - size / 2 - 24,
+    y: py - size / 2 + 12,
+    width: size,
+    height: size,
+    class: "piece-robber"
+  }, () => svgEl("circle", {
+    cx: px - 24,
+    cy: py + 12,
+    r: 10,
+    fill: "#444",
+    stroke: "#000",
+    "stroke-width": 1
+  }));
+}
+
+function updateBankStateDisplay(turn) {
+  const bankTracker = document.getElementById("analyticsBankTracker");
+  if (!bankTracker) return;
+
+  const resCounts = turn.bankState || { 1: 19, 2: 19, 3: 19, 4: 19, 5: 19 };
+  const resMap = { 1: 'wood', 2: 'brick', 3: 'sheep', 4: 'wheat', 5: 'ore' };
+
+  const resourcesHtml = [1, 2, 3, 4, 5].map(id => {
+    const type = resMap[id];
+    const count = resCounts[id] || 0;
+    const imagePath = RESOURCE_IMAGES[type];
+    return `
+      <div class="resource-item" style="display: inline-flex; align-items: center; gap: 4px; margin-right: 8px;">
+        <img src="${imagePath}" alt="${type}" title="${type}" style="width: 16px; height: 16px;">
+        <span>${count}</span>
+      </div>
+    `;
+  }).join("");
+
+  const devCardCount = turn.bankDevCards ? turn.bankDevCards.length : 0;
+
+  bankTracker.innerHTML = `
+    <div style="font-size: 11px; color: #cbd5e1;">
+      <strong>Resources:</strong><br>
+      ${resourcesHtml}
+    </div>
+    <div style="font-size: 11px; color: #cbd5e1; margin-top: 6px;">
+      <strong>Dev Cards:</strong> ${devCardCount}
+    </div>
+  `;
+}
+
+function updateEventLogDisplay(turnIndex) {
+  const logBox = document.getElementById("analyticsEventLog");
+  if (!logBox) return;
+
+  let allLogs = [];
+  for (let i = 0; i <= turnIndex; i++) {
+    if (turnStates[i] && turnStates[i].eventLogs) {
+      allLogs = allLogs.concat(turnStates[i].eventLogs.map(log => ({ ...log, turn: i })));
+    }
+  }
+
+  if (allLogs.length === 0) {
+    logBox.innerHTML = "<p style='color: #94a3b8; font-size: 12px;'>No events yet</p>";
+    return;
+  }
+
+  const resMap = { 1: 'lumber', 2: 'brick', 3: 'wool', 4: 'grain', 5: 'ore' };
+  const getResNames = (arr) => {
+    if (!arr || arr.length === 0) return "";
+    return arr.map(r => {
+      const resName = resMap[r] || r;
+      const resImgPath = `./data/images/card_${resName}.svg`;
+      return `<img src="${resImgPath}" alt="${resName}" title="${resName}" 
+                 width="24" height="32" 
+                 style="vertical-align: middle; margin: 0 2px; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3);">`;
+    }).join("");
+  };
+
+  const getPlayerIcon = (id) => {
+    const colorName = PLAYER_COLOR_NAMES[id] || "white";
+    return `<img src="./data/images/player_bg_${colorName}.svg" width="20" height="20" style="margin-right: 4px; vertical-align: middle;">`;
+  };
+
+  const mapState = currentGameData?.data?.eventHistory?.initialState?.mapState ?? {};
+
+  const logHtml = allLogs.slice().reverse().map(log => {
+    const pIconHtml = getPlayerIcon(log.player);
+    let text = "";
+
+    switch (log.type) {
+      case 'dice': text = `${pIconHtml} rolled <strong>${log.value}</strong>`; break;
+      case 'gain': text = `${pIconHtml} gained: ${getResNames(log.resources)}`; break;
+      case 'discard': text = `${pIconHtml} discarded: ${getResNames(log.resources)}`; break;
+      case 'bankTrade': text = `${pIconHtml} traded ${getResNames(log.given)} for ${getResNames(log.received)} with bank`; break;
+      case 'tradeProposed': text = `${pIconHtml} proposed: ${getResNames(log.offered)} for ${getResNames(log.wanted)}`; break;
+      case 'tradeResponse': text = `${pIconHtml} ${log.status} the trade`; break;
+      case 'tradeAccepted': text = `${pIconHtml} accepted trade: ${getResNames(log.received)} for ${getResNames(log.offered)}`; break;
+      case 'robberMoved': {
+        const hex = mapState.tileHexStates?.[log.hexIndex];
+        const hexInfo = hex ? `${HEX_TYPES[hex.type]} (${hex.diceNumber})` : `index ${log.hexIndex}`;
+        text = `${pIconHtml} moved the robber to <strong>${hexInfo}</strong>`;
+        break;
+      }
+      case 'stealDetail': {
+        const victimIcon = getPlayerIcon(log.victim);
+        text = `${pIconHtml} stole ${getResNames(log.resources)} from ${victimIcon}`;
+        break;
+      }
+      case 'steal': {
+        // Fallback if detail not available
+        const victimIcon = getPlayerIcon(log.victim);
+        text = `${pIconHtml} stole from ${victimIcon}`;
+        break;
+      }
+    }
+
+    return `<div style="margin-bottom: 6px; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px;">
+      <span style="color: #ffffff;"><strong>Turn ${log.turn}:</strong></span> ${text}
+    </div>`;
+  }).join("");
+
+  logBox.innerHTML = logHtml;
+}
