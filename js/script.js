@@ -653,11 +653,15 @@ function updateAnalyticsView(turnIndex) {
   const corners = mapState.tileCornerStates ? Object.values(mapState.tileCornerStates) : [];
 
   // Draw in layers
-  hexes.forEach(renderHexPolygon);
+  _currentTooltipTurn = turn;
+  _currentTooltipMapState = mapState;
+
+  const tileHexEntries = mapState.tileHexStates ? Object.entries(mapState.tileHexStates) : [];
+  tileHexEntries.forEach(([idx, tile]) => renderHexPolygon(tile, parseInt(idx)));
   ports.forEach(renderPort);
   edges.forEach(renderEdge);
   corners.forEach(renderVertex);
-  hexes.forEach(renderHexLabels);
+  tileHexEntries.forEach(([, tile]) => renderHexLabels(tile));
 
   // Render roads from current turn state
   Object.values(turn.roads).forEach(road => {
@@ -904,12 +908,223 @@ function hexPolyPoints(cx, cy) {
 // Pass 4: edges
 // Pass 5: vertices
 
-function renderHexPolygon(tile) {
+// ── TOOLTIP ─────────────────────────────────────────────────────────────────
+// A single floating <div> tooltip driven by D3-style pointer tracking.
+// We avoid importing D3 just for this — the logic is simple enough to inline.
+
+let _tooltipEl = null;
+function getTooltip() {
+  if (!_tooltipEl) {
+    _tooltipEl = document.createElement("div");
+    _tooltipEl.id = "catan-tooltip";
+    Object.assign(_tooltipEl.style, {
+      position: "fixed",
+      pointerEvents: "none",
+      zIndex: "9999",
+      background: "rgba(15,23,42,0.97)",
+      color: "#e2e8f0",
+      border: "1px solid rgba(148,163,184,0.3)",
+      borderRadius: "8px",
+      padding: "10px 13px",
+      fontSize: "12px",
+      lineHeight: "1.6",
+      maxWidth: "240px",
+      boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+      display: "none",
+      transition: "opacity 0.1s",
+    });
+    document.body.appendChild(_tooltipEl);
+  }
+  return _tooltipEl;
+}
+
+function showTooltip(html, mouseEvent) {
+  const tt = getTooltip();
+  tt.innerHTML = html;
+  tt.style.display = "block";
+  positionTooltip(mouseEvent);
+}
+
+function positionTooltip(e) {
+  const tt = getTooltip();
+  if (tt.style.display === "none") return;
+  const pad = 14;
+  const tw = tt.offsetWidth;
+  const th = tt.offsetHeight;
+  let left = e.clientX + pad;
+  let top = e.clientY + pad;
+  if (left + tw > window.innerWidth - 8) left = e.clientX - tw - pad;
+  if (top + th > window.innerHeight - 8) top = e.clientY - th - pad;
+  tt.style.left = left + "px";
+  tt.style.top = top + "px";
+}
+
+function hideTooltip() {
+  const tt = getTooltip();
+  tt.style.display = "none";
+}
+
+// ── TOOLTIP CONTENT BUILDERS ─────────────────────────────────────────────────
+
+const HEX_TYPE_ICONS = {
+  0: "🏜️", 1: "🪵", 2: "🧱", 3: "🐑", 4: "🌾", 5: "⛏️"
+};
+const RESOURCE_NAMES_BY_TYPE = {
+  1: "Wood", 2: "Brick", 3: "Sheep", 4: "Wheat", 5: "Ore"
+};
+const PORT_RESOURCE_ICONS = {
+  1: "🔀", 2: "🪵", 3: "🧱", 4: "🐑", 5: "🌾", 6: "⛏️"
+};
+const PORT_RESOURCE_NAMES = {
+  1: "Any", 2: "Wood", 3: "Brick", 4: "Sheep", 5: "Wheat", 6: "Ore"
+};
+
+function buildHexTooltipHtml(tile, tileIndex, turn, mapState) {
+  const icon = HEX_TYPE_ICONS[tile.type] ?? "❓";
+  const name = HEX_TYPES[tile.type] ?? "Unknown";
+  const isDesert = tile.type === 0;
+  const hasRobber = turn && turn.robberIndex === tileIndex;
+
+  // Find which player corners/settlements border this hex.
+  // A corner (x,y,z) is adjacent to hex (x,y) if its reference hex is (x,y).
+  // Also corners from neighbouring hexes can border this hex — we use the
+  // tileCornerStates from mapState (static geometry) and ownership from turn.settlements.
+  const settlements = turn?.settlements ?? {};
+  const ownerSet = new Set();
+
+  // Corner adjacency: each hex has exactly 6 corners, but in the data they are
+  // referenced by (x,y,z). The two corners with x==tile.x && y==tile.y are z=0 and z=1.
+  // The other 4 are referenced by neighbouring hexes. We iterate ALL corners and
+  // check pixel distance to the hex centre instead — simpler and robust.
+  const { px: hcx, py: hcy } = axialToPixel(tile.x, tile.y);
+  const threshold = SIZE * 1.05; // slightly more than SIZE to catch all 6 vertices
+
+  for (const [, corner] of Object.entries(settlements)) {
+    if (!corner.owner) continue;
+    const { px: ccx, py: ccy } = axialToPixel(corner.x, corner.y);
+    const vIdx = CORNER_Z_TO_VERTEX[corner.z] ?? corner.z;
+    const vp = hexVertex(ccx, ccy, vIdx);
+    const d = Math.hypot(vp.x - hcx, vp.y - hcy);
+    if (d <= threshold) ownerSet.add(corner.owner);
+  }
+
+  const playOrder = currentGameData?.data?.playOrder || [];
+  const playerNums = {};
+  playOrder.forEach((id, i) => { playerNums[id] = i + 1; });
+
+  let html = `<div style="font-weight:700;font-size:13px;margin-bottom:6px;">${icon} ${name} Hex</div>`;
+
+  if (isDesert) {
+    html += `<div style="color:#94a3b8;">No resources produced.</div>`;
+  } else {
+    const isHot = tile.diceNumber === 6 || tile.diceNumber === 8;
+    const diceColor = isHot ? "#f87171" : "#e2e8f0";
+    html += `<div>Roll: <span style="font-weight:700;color:${diceColor};">${tile.diceNumber}</span></div>`;
+    html += `<div>Produces: <b>${RESOURCE_NAMES_BY_TYPE[tile.type] ?? name}</b></div>`;
+  }
+
+  if (hasRobber) {
+    html += `<div style="margin-top:6px;padding:4px 7px;background:rgba(239,68,68,0.18);border-radius:5px;color:#fca5a5;">🚫 Robber is here — no resources produced${ownerSet.size > 0 ? " for affected players" : ""}.</div>`;
+  }
+
+  if (ownerSet.size > 0) {
+    const sorted = [...ownerSet].sort((a, b) => (playerNums[a] ?? 99) - (playerNums[b] ?? 99));
+    const playerList = sorted.map(id => {
+      const num = playerNums[id] ?? id;
+      const color = PLAYER_COLOR_NAMES[id] ?? "unknown";
+      const blockedStyle = hasRobber ? "text-decoration:line-through;color:#94a3b8;" : "";
+      return `<span style="${blockedStyle}">P${num} (${color})</span>`;
+    }).join(", ");
+    html += `<div style="margin-top:5px;">Players: ${playerList}</div>`;
+  } else if (!isDesert) {
+    html += `<div style="margin-top:5px;color:#94a3b8;">No players settled here yet.</div>`;
+  }
+
+  return html;
+}
+
+function buildPortTooltipHtml(port, turn, mapState) {
+  const info = PORT_TYPES[port.type] ?? { label: "?", name: "Unknown" };
+  const icon = PORT_RESOURCE_ICONS[port.type] ?? "❓";
+  const resName = PORT_RESOURCE_NAMES[port.type] ?? "?";
+  const is3to1 = port.type === 1;
+
+  let html = `<div style="font-weight:700;font-size:13px;margin-bottom:6px;">${icon} ${info.name}</div>`;
+
+  if (is3to1) {
+    html += `<div>Trade <b>3</b> of any <em>identical</em> resource → <b>1</b> of any resource.</div>`;
+  } else {
+    html += `<div>Trade <b>2 ${resName}</b> → <b>1</b> of any resource.</div>`;
+  }
+
+  // Find which corners border this port's two land vertices.
+  // Port edge midpoint → find the two vertices (v0, v1) of that edge.
+  // Any settlement/city at those two vertices "owns" the port.
+  const { px: cx, py: cy } = axialToPixel(port.x, port.y);
+  const eIdx = EDGE_Z_TO_IDX[port.z] ?? port.z;
+  const v0 = hexVertex(cx, cy, eIdx);
+  const v1 = hexVertex(cx, cy, (eIdx + 1) % 6);
+  const portVertices = [v0, v1];
+
+  const settlements = turn?.settlements ?? {};
+  const ownerSet = new Set();
+  const threshold = SIZE * 0.4;
+
+  for (const [, corner] of Object.entries(settlements)) {
+    if (!corner.owner) continue;
+    const { px: ccx, py: ccy } = axialToPixel(corner.x, corner.y);
+    const vIdx = CORNER_Z_TO_VERTEX[corner.z] ?? corner.z;
+    const vp = hexVertex(ccx, ccy, vIdx);
+    for (const pv of portVertices) {
+      if (Math.hypot(vp.x - pv.x, vp.y - pv.y) <= threshold) {
+        ownerSet.add(corner.owner);
+        break;
+      }
+    }
+  }
+
+  const playOrder = currentGameData?.data?.playOrder || [];
+  const playerNums = {};
+  playOrder.forEach((id, i) => { playerNums[id] = i + 1; });
+
+  if (ownerSet.size > 0) {
+    const sorted = [...ownerSet].sort((a, b) => (playerNums[a] ?? 99) - (playerNums[b] ?? 99));
+    const playerList = sorted.map(id => {
+      const num = playerNums[id] ?? id;
+      const color = PLAYER_COLOR_NAMES[id] ?? "unknown";
+      return `P${num} (${color})`;
+    }).join(", ");
+    html += `<div style="margin-top:5px;">Access: <b>${playerList}</b></div>`;
+  } else {
+    html += `<div style="margin-top:5px;color:#94a3b8;">No players at this port yet.</div>`;
+  }
+
+  return html;
+}
+
+// ── HEX & PORT RENDER WITH TOOLTIPS ─────────────────────────────────────────
+
+// We need to know the current turn when attaching listeners.
+// Store a reference that updateAnalyticsView keeps current.
+let _currentTooltipTurn = null;
+let _currentTooltipMapState = null;
+
+function renderHexPolygon(tile, tileIndex) {
   const { px, py } = axialToPixel(tile.x, tile.y);
-  svg.appendChild(svgEl("polygon", {
+  const poly = svgEl("polygon", {
     points: hexPolyPoints(px, py),
     class: `hex hex-type-${tile.type}`,
-  }));
+    style: "cursor:pointer;",
+  });
+
+  poly.addEventListener("mouseenter", (e) => {
+    const html = buildHexTooltipHtml(tile, tileIndex, _currentTooltipTurn, _currentTooltipMapState);
+    showTooltip(html, e);
+  });
+  poly.addEventListener("mousemove", positionTooltip);
+  poly.addEventListener("mouseleave", hideTooltip);
+
+  svg.appendChild(poly);
 }
 
 function renderHexLabels(tile) {
@@ -965,8 +1180,27 @@ function renderPort(port) {
   for (const v of [v0, v1]) {
     svg.appendChild(svgEl("line", { x1: v.x, y1: v.y, x2: outX, y2: outY, class: "port-line" }));
   }
-  svg.appendChild(svgEl("circle", { cx: outX, cy: outY, r: 16, class: `port port-type-${port.type}` }));
-  svg.appendChild(svgText({ x: outX, y: outY, class: "port-label" }, info.label));
+
+  // Invisible hit-target circle so tooltip triggers over the whole port area
+  const hitR = 22;
+  const portCircle = svgEl("circle", { cx: outX, cy: outY, r: hitR, fill: "transparent", style: "cursor:pointer;" });
+  const visCircle = svgEl("circle", { cx: outX, cy: outY, r: 16, class: `port port-type-${port.type}` });
+  const label = svgText({ x: outX, y: outY, class: "port-label" }, info.label);
+
+  const attachTooltip = (el) => {
+    el.addEventListener("mouseenter", (e) => {
+      const html = buildPortTooltipHtml(port, _currentTooltipTurn, _currentTooltipMapState);
+      showTooltip(html, e);
+    });
+    el.addEventListener("mousemove", positionTooltip);
+    el.addEventListener("mouseleave", hideTooltip);
+  };
+
+  svg.appendChild(visCircle);
+  svg.appendChild(label);
+  svg.appendChild(portCircle); // on top so it captures events
+  attachTooltip(portCircle);
+  attachTooltip(label);
 }
 
 function renderEdge(edge) {
@@ -1552,25 +1786,95 @@ async function loadGameBoard(gameId) {
 }
 
 // ── GAME SELECTOR ────────────────────────────────────────────────────────────
-const MAX_GAMES = 500;
+const PAGE_SIZE = 500;
+let _allGameIds = [];
+let _currentPage = 1;
+
+function totalPages() {
+  return Math.max(1, Math.ceil(_allGameIds.length / PAGE_SIZE));
+}
+
+function populateSelectorForPage(page) {
+  const selector = document.getElementById("gameSelector");
+  if (!selector) return;
+
+  _currentPage = Math.max(1, Math.min(page, totalPages()));
+
+  const start = (_currentPage - 1) * PAGE_SIZE;
+  const ids = _allGameIds.slice(start, start + PAGE_SIZE);
+
+  selector.innerHTML = "";
+  ids.forEach(id => {
+    const opt = document.createElement("option");
+    opt.value = id;
+    opt.textContent = `Game ${id}`;
+    selector.appendChild(opt);
+  });
+
+  // Sync pagination UI
+  const pageInput = document.getElementById("pageInput");
+  const pageTotalLabel = document.getElementById("pageTotalLabel");
+  const pagePrevBtn = document.getElementById("pagePrevBtn");
+  const pageNextBtn = document.getElementById("pageNextBtn");
+  const countEl = document.getElementById("gameCount");
+
+  if (pageInput) pageInput.value = _currentPage;
+  if (pageTotalLabel) pageTotalLabel.textContent = `of ${totalPages()}`;
+  if (pagePrevBtn) pagePrevBtn.disabled = _currentPage <= 1;
+  if (pageNextBtn) pageNextBtn.disabled = _currentPage >= totalPages();
+  if (countEl) {
+    countEl.textContent =
+      `(${start + 1}–${start + ids.length} of ${_allGameIds.length})`;
+  }
+
+  // Load the first game on the new page automatically
+  if (ids.length > 0) loadGameBoard(ids[0]);
+}
 
 async function initSelector() {
   const selector = document.getElementById("gameSelector");
   if (!selector) return; // Game selector removed in playground mode
   try {
     const res = await fetch("./preprocessed-data/valid-index.json");
-    const allIds = await res.json();
-    const ids = allIds.slice(0, MAX_GAMES);
-    selector.innerHTML = "";
-    ids.forEach(id => {
-      const opt = document.createElement("option");
-      opt.value = id; opt.textContent = `Game ${id}`;
-      selector.appendChild(opt);
-    });
-    const countEl = document.getElementById("gameCount");
-    if (countEl) countEl.textContent = `(showing ${ids.length} of ${allIds.length})`;
+    _allGameIds = await res.json();
+
+    // Wire up pagination controls
+    const pagePrevBtn = document.getElementById("pagePrevBtn");
+    const pageNextBtn = document.getElementById("pageNextBtn");
+    const pageInput = document.getElementById("pageInput");
+    const pageTotalLabel = document.getElementById("pageTotalLabel");
+
+    if (pageTotalLabel) pageTotalLabel.textContent = `of ${totalPages()}`;
+    if (pageInput) pageInput.max = totalPages();
+
+    if (pagePrevBtn) {
+      pagePrevBtn.addEventListener("click", () => {
+        populateSelectorForPage(_currentPage - 1);
+      });
+    }
+    if (pageNextBtn) {
+      pageNextBtn.addEventListener("click", () => {
+        populateSelectorForPage(_currentPage + 1);
+      });
+    }
+    if (pageInput) {
+      pageInput.addEventListener("change", () => {
+        const requested = parseInt(pageInput.value);
+        if (!isNaN(requested)) populateSelectorForPage(requested);
+      });
+      // Also respond to Enter key
+      pageInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const requested = parseInt(pageInput.value);
+          if (!isNaN(requested)) populateSelectorForPage(requested);
+        }
+      });
+    }
+
     selector.addEventListener("change", e => loadGameBoard(e.target.value));
-    if (ids.length > 0) loadGameBoard(ids[0]);
+
+    // Load page 1
+    populateSelectorForPage(1);
   } catch (err) { console.error("Index load failed:", err); }
 }
 
