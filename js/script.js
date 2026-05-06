@@ -48,12 +48,45 @@ const RESOURCE_IMAGES = {
   wheat: "./data/images/card_grain.svg",
   ore: "./data/images/card_ore.svg"
 };
+const DEV_CARD_BACK_IMAGE = "./data/images/card_devcardback.svg";
 const DEV_CARD_IMAGES = {
   knight: "./data/images/card_knight.svg",
   victoryPoint: "./data/images/card_vp.svg",
   roadBuilding: "./data/images/card_roadbuilding.svg",
   yearOfPlenty: "./data/images/card_yearofplenty.svg",
   monopoly: "./data/images/card_monopoly.svg"
+};
+const DEV_CARD_CODE_TO_TYPE = {
+  11: 'knight',
+  10: 'victoryPoint',
+  12: 'victoryPoint',
+  13: 'monopoly',
+  14: 'roadBuilding',
+  15: 'yearOfPlenty'
+};
+const DEV_CARD_LABELS = {
+  knight: 'Knight',
+  victoryPoint: 'Victory Point',
+  roadBuilding: 'Road Building',
+  yearOfPlenty: 'Year of Plenty',
+  monopoly: 'Monopoly'
+};
+const getBuildingImagePath = (type, playerId) => {
+  const colorName = PLAYER_COLOR_NAMES[playerId];
+  return colorName ? `./data/images/${type}_${colorName}.svg` : "";
+};
+const getNewCodes = (before = [], after = []) => {
+  const counts = {};
+  before.forEach(code => counts[code] = (counts[code] || 0) + 1);
+  const added = [];
+  after.forEach(code => {
+    if (counts[code]) {
+      counts[code] -= 1;
+    } else {
+      added.push(code);
+    }
+  });
+  return added;
 };
 
 // ── ENUMS ───────────────────────────────────────────────────────────────────
@@ -102,6 +135,7 @@ function parseTurnsFromEvents(gameData) {
     cities: {},
     playerResources: {},
     playerDevCards: {},
+    playerDevCardsUsed: {},
     playerStats: {},
     bankState: initialState.bankState?.resourceCards ? { ...initialState.bankState.resourceCards } : { 1: 19, 2: 19, 3: 19, 4: 19, 5: 19 },
     bankDevCards: initialState.mechanicDevelopmentCardsState?.bankDevelopmentCards?.cards ? [...initialState.mechanicDevelopmentCardsState.bankDevelopmentCards.cards] : [],
@@ -128,6 +162,7 @@ function parseTurnsFromEvents(gameData) {
     cities: {},
     playerResources: {},
     playerDevCards: {},
+    playerDevCardsUsed: {},
     playerStats: {},
     bankState: initialState.bankState?.resourceCards ? { ...initialState.bankState.resourceCards } : { 1: 19, 2: 19, 3: 19, 4: 19, 5: 19 },
     bankDevCards: initialState.mechanicDevelopmentCardsState?.bankDevelopmentCards?.cards ? [...initialState.mechanicDevelopmentCardsState.bankDevelopmentCards.cards] : [],
@@ -164,6 +199,10 @@ function parseTurnsFromEvents(gameData) {
   for (const event of events) {
     const stateChange = event?.stateChange ?? {};
 
+    const prevPlayerStats = JSON.parse(JSON.stringify(currentTurn.playerStats || {}));
+    const prevPlayerDevCards = JSON.parse(JSON.stringify(currentTurn.playerDevCards || {}));
+    const prevPlayerDevCardsUsed = JSON.parse(JSON.stringify(currentTurn.playerDevCardsUsed || {}));
+
     // Bank and Robber State
     if (stateChange.bankState?.resourceCards) {
       Object.assign(currentTurn.bankState, stateChange.bankState.resourceCards);
@@ -177,6 +216,7 @@ function parseTurnsFromEvents(gameData) {
 
     // Process Logs
     if (stateChange.gameLogState) {
+      const devCardPlayPending = {};
       for (const log of Object.values(stateChange.gameLogState)) {
         // Track dice rolls from log text
         if (log?.text?.type === 10 && log.text.firstDice !== undefined && log.text.secondDice !== undefined) {
@@ -188,6 +228,39 @@ function parseTurnsFromEvents(gameData) {
           });
           currentTurn.diceRoll = roll;
           currentTurn.eventLogs.push({ type: 'dice', player: log.text.playerColor || log.from, value: roll });
+        }
+
+        // Development card played (Type 20)
+        if (log?.text?.type === 20 && log.text.cardEnum !== undefined) {
+          const cardType = DEV_CARD_CODE_TO_TYPE[log.text.cardEnum];
+          const playerId = log.text.playerColor || log.from;
+          const event = { type: 'devCardPlayed', player: playerId, cardType, resources: [], stolenResource: undefined };
+          currentTurn.eventLogs.push(event);
+          if (cardType) {
+            if (!devCardPlayPending[playerId]) devCardPlayPending[playerId] = [];
+            devCardPlayPending[playerId].push({ cardType, eventIndex: currentTurn.eventLogs.length - 1 });
+          }
+        }
+
+        // Year of Plenty picks resources from the bank (Type 21)
+        if (log?.text?.type === 21 && Array.isArray(log.text.cardEnums)) {
+          const playerId = log.text.playerColor || log.from;
+          const pending = (devCardPlayPending[playerId] || []).slice().reverse().find(p => p.cardType === 'yearOfPlenty');
+          if (pending) {
+            currentTurn.eventLogs[pending.eventIndex].resources = [...log.text.cardEnums];
+          }
+        }
+
+        // Monopoly steals a resource from everyone (Type 86)
+        if (log?.text?.type === 86 && log.text.cardEnum !== undefined) {
+          const playerId = log.text.playerColor || log.from;
+          const pending = (devCardPlayPending[playerId] || []).slice().reverse().find(p => p.cardType === 'monopoly');
+          if (pending) {
+            currentTurn.eventLogs[pending.eventIndex].stolenResource = log.text.cardEnum;
+            if (log.text.amountStolen !== undefined) {
+              currentTurn.eventLogs[pending.eventIndex].amountStolen = log.text.amountStolen;
+            }
+          }
         }
 
         // Resources Gained (Type 47)
@@ -217,16 +290,9 @@ function parseTurnsFromEvents(gameData) {
           });
         }
 
-        // Steal (Type 16 - Spectator view, 14 - Thief, 15 - Victim)
-        if (log?.text?.type === 16) {
-          currentTurn.eventLogs.push({
-            type: 'steal',
-            player: log.text.playerColorThief,
-            victim: log.text.playerColorVictim
-          });
-        } else if (log?.text?.type === 14 && log.text.cardEnums) {
-          // If we have secret info, we can use it to enrich the log
-          // Type 14 is sent to the thief
+        // Steal (Type 16 - Spectator view) is intentionally omitted because detailed theft logs are available via type 14/15.
+        if (log?.text?.type === 14 && log.text.cardEnums) {
+          // Type 14 is secret information sent to the thief
           currentTurn.eventLogs.push({
             type: 'stealDetail',
             player: log.from,
@@ -249,7 +315,7 @@ function parseTurnsFromEvents(gameData) {
         if (log?.text?.type === 115) {
           currentTurn.eventLogs.push({
             type: 'tradeAccepted',
-            player: log.text.playerColor || log.from,
+            proposer: log.text.playerColor || log.from,
             accepter: log.text.acceptingPlayerColor,
             offered: log.text.givenCardEnums,
             received: log.text.receivedCardEnums
@@ -408,6 +474,7 @@ function parseTurnsFromEvents(gameData) {
         }
         if (state.developmentCardsUsed && currentTurn.playerStats[pId]) {
           currentTurn.playerStats[pId].knightsPlayed = state.developmentCardsUsed.filter(c => c === 11).length;
+          currentTurn.playerDevCardsUsed[pId] = [...state.developmentCardsUsed];
         }
       }
     }
@@ -461,6 +528,58 @@ function parseTurnsFromEvents(gameData) {
       currentTurn.playerStats[pId].vp = calculatedVp;
     }
 
+    const changedPlayerIds = new Set([
+      ...Object.keys(currentTurn.playerStats || {}),
+      ...Object.keys(prevPlayerStats || {}),
+      ...Object.keys(prevPlayerDevCards || {}),
+      ...Object.keys(prevPlayerDevCardsUsed || {})
+    ]);
+
+    for (const pId of changedPlayerIds) {
+      const oldStats = prevPlayerStats[pId] || { roadsBuilt: 0, settlementsBuilt: 0, citiesBuilt: 0 };
+      const newStats = currentTurn.playerStats[pId] || { roadsBuilt: 0, settlementsBuilt: 0, citiesBuilt: 0 };
+
+      const newRoads = (newStats.roadsBuilt || 0) - (oldStats.roadsBuilt || 0);
+      const newSettlements = (newStats.settlementsBuilt || 0) - (oldStats.settlementsBuilt || 0);
+      const newCities = (newStats.citiesBuilt || 0) - (oldStats.citiesBuilt || 0);
+
+      if (newRoads > 0) {
+        currentTurn.eventLogs.push({ type: 'buildingPurchased', player: Number(pId), building: 'road', count: newRoads });
+      }
+      if (newSettlements > 0) {
+        currentTurn.eventLogs.push({ type: 'buildingPurchased', player: Number(pId), building: 'settlement', count: newSettlements });
+      }
+      if (newCities > 0) {
+        currentTurn.eventLogs.push({ type: 'buildingPurchased', player: Number(pId), building: 'city', count: newCities });
+      }
+
+      const oldDevCards = prevPlayerDevCards[pId] || [];
+      const newDevCards = currentTurn.playerDevCards[pId] || [];
+      if (newDevCards.length > oldDevCards.length) {
+        currentTurn.eventLogs.push({ type: 'devCardBought', player: Number(pId), count: newDevCards.length - oldDevCards.length });
+      }
+
+      const oldUsed = prevPlayerDevCardsUsed[pId] || [];
+      const newUsed = currentTurn.playerDevCardsUsed[pId] || [];
+      const addedUsedCodes = getNewCodes(oldUsed, newUsed);
+      addedUsedCodes.forEach(code => {
+        const cardType = DEV_CARD_CODE_TO_TYPE[code];
+        if (cardType) {
+          const hasDetailedPlay = ['yearOfPlenty', 'monopoly'].includes(cardType) && currentTurn.eventLogs.some(logItem =>
+            logItem.type === 'devCardPlayed' &&
+            logItem.player === Number(pId) &&
+            logItem.cardType === cardType &&
+            ((Array.isArray(logItem.resources) && logItem.resources.length > 0) ||
+              logItem.amountStolen !== undefined ||
+              logItem.stolenResource !== undefined)
+          );
+          if (!hasDetailedPlay) {
+            currentTurn.eventLogs.push({ type: 'devCardPlayed', player: Number(pId), cardType });
+          }
+        }
+      });
+    }
+
     // Check if turn is complete
     if (stateChange.currentState?.completedTurns !== undefined &&
       stateChange.currentState.completedTurns > currentTurn.turnNumber) {
@@ -474,6 +593,7 @@ function parseTurnsFromEvents(gameData) {
         cities: JSON.parse(JSON.stringify(currentTurn.cities)),
         playerResources: JSON.parse(JSON.stringify(currentTurn.playerResources)),
         playerDevCards: JSON.parse(JSON.stringify(currentTurn.playerDevCards)),
+        playerDevCardsUsed: JSON.parse(JSON.stringify(currentTurn.playerDevCardsUsed)),
         playerStats: JSON.parse(JSON.stringify(currentTurn.playerStats)),
         bankState: JSON.parse(JSON.stringify(currentTurn.bankState)),
         bankDevCards: [...currentTurn.bankDevCards],
@@ -1482,13 +1602,13 @@ function renderRobberPiece(hexIndex, hexData) {
   appendSvgImageOrFallback({
     href,
     x: px - size / 2 - 24,
-    y: py - size / 2 + 12,
+    y: py - size / 2 + 6,
     width: size,
     height: size,
     class: "piece-robber"
   }, () => svgEl("circle", {
     cx: px - 24,
-    cy: py + 12,
+    cy: py + 6,
     r: 10,
     fill: "#444",
     stroke: "#000",
@@ -1586,7 +1706,50 @@ function updateEventLogDisplay(turnIndex) {
       case 'bankTrade': text = `${pIconHtml} traded ${getResNames(log.given)} for ${getResNames(log.received.sort())} with bank`; break;
       case 'tradeProposed': text = `${pIconHtml} proposed: ${getResNames(log.offered.sort())} for ${getResNames(log.wanted)}`; break;
       case 'tradeResponse': text = `${pIconHtml} ${log.status} the trade`; break;
-      case 'tradeAccepted': text = `${pIconHtml} accepted trade: ${getResNames(log.received.sort())} for ${getResNames(log.offered.sort())}`; break;
+      case 'tradeAccepted': {
+        const proposerIcon = getPlayerIcon(log.proposer);
+        const accepterIcon = getPlayerIcon(log.accepter);
+        text = `${accepterIcon} accepted trade from ${proposerIcon}: ${getResNames(log.received.sort())} for ${getResNames(log.offered.sort())}`;
+        break;
+      }
+      case 'buildingPurchased': {
+        const typeLabel = log.building.charAt(0).toUpperCase() + log.building.slice(1);
+        const imagePath = getBuildingImagePath(log.building, log.player);
+        const itemText = log.count > 1 ? `${log.count} ${typeLabel}s` : `a ${typeLabel}`;
+        text = `${pIconHtml} built <strong>${itemText}</strong> <img src="${imagePath}" alt="${typeLabel}" title="${typeLabel}" width="20" height="20" style="vertical-align: middle; margin: 0 4px;">`;
+        break;
+      }
+      case 'devCardBought': {
+        const imagePath = DEV_CARD_BACK_IMAGE;
+        const cardText = log.count > 1 ? `${log.count} development cards` : 'a development card';
+        text = `${pIconHtml} bought ${cardText} <img src="${imagePath}" alt="Dev Card" title="Development Card" width="20" height="20" style="vertical-align: middle; margin: 0 4px;">`;
+        break;
+      }
+      case 'devCardPlayed': {
+        const imagePath = DEV_CARD_IMAGES[log.cardType] || DEV_CARD_BACK_IMAGE;
+        const label = DEV_CARD_LABELS[log.cardType] || log.cardType;
+        const cardIcon = `<img src="${imagePath}" alt="${label}" title="${label}" width="20" height="20" style="vertical-align: middle; margin: 0 4px;">`;
+        if (log.cardType === 'yearOfPlenty' && Array.isArray(log.resources) && log.resources.length > 0) {
+          text = `${pIconHtml} played <b>${label}</b> ${cardIcon} and got ${getResNames(log.resources)}`;
+        } else if (log.cardType === 'monopoly') {
+          const stolenCount = log.amountStolen ?? (Array.isArray(log.stolenResources) ? log.stolenResources.length : undefined);
+          const stolenType = log.stolenResource !== undefined
+            ? getResNames([log.stolenResource])
+            : Array.isArray(log.stolenResources) && log.stolenResources.length > 0
+              ? getResNames([log.stolenResources[0]])
+              : null;
+          if (stolenCount !== undefined && stolenType) {
+            text = `${pIconHtml} played <b>${label}</b> ${cardIcon} and stole ${stolenCount} ${stolenType}`;
+          } else if (log.stolenResource !== undefined) {
+            text = `${pIconHtml} played <b>${label}</b> ${cardIcon} and stole ${getResNames([log.stolenResource])}`;
+          } else {
+            text = `${pIconHtml} played <b>${label}</b> ${cardIcon}`;
+          }
+        } else {
+          text = `${pIconHtml} played <b>${label}</b> ${cardIcon}`;
+        }
+        break;
+      }
       case 'robberMoved': {
         const hex = mapState.tileHexStates?.[log.hexIndex];
         let hexInfo = "";
