@@ -979,6 +979,31 @@ const PORT_RESOURCE_NAMES = {
   1: "Any", 2: "Wood", 3: "Brick", 4: "Sheep", 5: "Wheat", 6: "Ore"
 };
 
+function buildPlayerAccessListHtml(ownerSet, playerNums, hasRobber) {
+  const sorted = [...ownerSet].sort((a, b) => (playerNums[a] ?? 99) - (playerNums[b] ?? 99));
+  if (sorted.length === 0) return "";
+
+  return sorted.map(id => {
+    const color = PLAYER_COLOR_NAMES[id] ?? "white";
+    const imgPath = `./data/images/player_bg_${color}.svg`;
+
+    // Container for relative positioning of the X
+    let html = `<div style="position:relative; display:inline-flex; width:22px; height:22px; vertical-align:middle; margin-right:6px; margin-bottom: 2px;">`;
+    html += `<img src="${imgPath}" style="width:22px; height:22px;" alt="${color} player icon" title="Player ${playerNums[id]} (${color})">`;
+
+    if (hasRobber) {
+      // Draw a red X over it
+      html += `<svg viewBox="0 0 24 24" style="position:absolute; top:0; left:0; width:22px; height:22px; pointer-events:none;">
+        <line x1="4" y1="4" x2="20" y2="20" stroke="#6e1616ff" stroke-width="4" stroke-linecap="round" />
+        <line x1="20" y1="4" x2="4" y2="20" stroke="#6e1616ff" stroke-width="4" stroke-linecap="round" />
+      </svg>`;
+    }
+
+    html += `</div>`;
+    return html;
+  }).join("");
+}
+
 function buildHexTooltipHtml(tile, tileIndex, turn, mapState) {
   const icon = HEX_TYPE_ICONS[tile.type] ?? "❓";
   const name = HEX_TYPES[tile.type] ?? "Unknown";
@@ -1028,14 +1053,8 @@ function buildHexTooltipHtml(tile, tileIndex, turn, mapState) {
   }
 
   if (ownerSet.size > 0) {
-    const sorted = [...ownerSet].sort((a, b) => (playerNums[a] ?? 99) - (playerNums[b] ?? 99));
-    const playerList = sorted.map(id => {
-      const num = playerNums[id] ?? id;
-      const color = PLAYER_COLOR_NAMES[id] ?? "unknown";
-      const blockedStyle = hasRobber ? "text-decoration:line-through;color:#94a3b8;" : "";
-      return `<span style="${blockedStyle}">P${num} (${color})</span>`;
-    }).join(", ");
-    html += `<div style="margin-top:5px;">Players: ${playerList}</div>`;
+    const playerList = buildPlayerAccessListHtml(ownerSet, playerNums, hasRobber);
+    html += `<div style="margin-top:5px; display: flex; align-items: center;">Players: <span style="margin-left: 5px;">${playerList}</span></div>`;
   } else if (!isDesert) {
     html += `<div style="margin-top:5px;color:#94a3b8;">No players settled here yet.</div>`;
   }
@@ -1088,13 +1107,8 @@ function buildPortTooltipHtml(port, turn, mapState) {
   playOrder.forEach((id, i) => { playerNums[id] = i + 1; });
 
   if (ownerSet.size > 0) {
-    const sorted = [...ownerSet].sort((a, b) => (playerNums[a] ?? 99) - (playerNums[b] ?? 99));
-    const playerList = sorted.map(id => {
-      const num = playerNums[id] ?? id;
-      const color = PLAYER_COLOR_NAMES[id] ?? "unknown";
-      return `P${num} (${color})`;
-    }).join(", ");
-    html += `<div style="margin-top:5px;">Access: <b>${playerList}</b></div>`;
+    const playerList = buildPlayerAccessListHtml(ownerSet, playerNums, false);
+    html += `<div style="margin-top:5px; display: flex; align-items: center;">Access: <span style="margin-left: 5px;">${playerList}</span></div>`;
   } else {
     html += `<div style="margin-top:5px;color:#94a3b8;">No players at this port yet.</div>`;
   }
