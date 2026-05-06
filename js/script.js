@@ -252,13 +252,37 @@ function parseTurnsFromEvents(gameData) {
         }
 
         // Monopoly steals a resource from everyone (Type 86)
+        // The type 86 log contains amountStolen (total) and cardEnum (resource).
+        // Per-victim counts are derived by diffing each opponent's resourceCards in
+        // the same event's playerStates — no type 14 logs are emitted for monopoly.
         if (log?.text?.type === 86 && log.text.cardEnum !== undefined) {
           const playerId = log.text.playerColor || log.from;
           const pending = (devCardPlayPending[playerId] || []).slice().reverse().find(p => p.cardType === 'monopoly');
           if (pending) {
-            currentTurn.eventLogs[pending.eventIndex].stolenResource = log.text.cardEnum;
-            if (log.text.amountStolen !== undefined) {
-              currentTurn.eventLogs[pending.eventIndex].amountStolen = log.text.amountStolen;
+            const monopolyLogEntry = currentTurn.eventLogs[pending.eventIndex];
+            monopolyLogEntry.stolenResource = log.text.cardEnum;
+            monopolyLogEntry.amountStolen = log.text.amountStolen ?? 0;
+
+            // Build per-victim breakdown by comparing each opponent's hand in
+            // this event's playerStates against the last known hand.
+            const resource = log.text.cardEnum;
+            const stealsByVictim = {};
+            const newPlayerStates = stateChange.playerStates || {};
+            for (const [pIdStr, pState] of Object.entries(newPlayerStates)) {
+              const pId = Number(pIdStr);
+              if (pId === playerId) continue; // skip the monopoly player themselves
+              if (!pState.resourceCards?.cards) continue;
+              const afterCards = pState.resourceCards.cards;
+              const beforeCards = currentTurn.playerResources[pIdStr] || currentTurn.playerResources[pId] || [];
+              const beforeCount = beforeCards.filter(c => c === resource).length;
+              const afterCount = afterCards.filter(c => c === resource).length;
+              const stolen = beforeCount - afterCount;
+              if (stolen > 0) {
+                stealsByVictim[pId] = stolen;
+              }
+            }
+            if (Object.keys(stealsByVictim).length > 0) {
+              monopolyLogEntry.stealsByVictim = stealsByVictim;
             }
           }
         }
@@ -290,9 +314,8 @@ function parseTurnsFromEvents(gameData) {
           });
         }
 
-        // Steal (Type 16 - Spectator view) is intentionally omitted because detailed theft logs are available via type 14/15.
+        // Steal detail (Type 14) — only for regular knight/robber steals, not monopoly
         if (log?.text?.type === 14 && log.text.cardEnums) {
-          // Type 14 is secret information sent to the thief
           currentTurn.eventLogs.push({
             type: 'stealDetail',
             player: log.from,
@@ -565,15 +588,14 @@ function parseTurnsFromEvents(gameData) {
       addedUsedCodes.forEach(code => {
         const cardType = DEV_CARD_CODE_TO_TYPE[code];
         if (cardType) {
-          const hasDetailedPlay = ['yearOfPlenty', 'monopoly'].includes(cardType) && currentTurn.eventLogs.some(logItem =>
+          // Check if this card was already logged from type 20
+          const alreadyLogged = currentTurn.eventLogs.some(logItem =>
             logItem.type === 'devCardPlayed' &&
             logItem.player === Number(pId) &&
-            logItem.cardType === cardType &&
-            ((Array.isArray(logItem.resources) && logItem.resources.length > 0) ||
-              logItem.amountStolen !== undefined ||
-              logItem.stolenResource !== undefined)
+            logItem.cardType === cardType
           );
-          if (!hasDetailedPlay) {
+
+          if (!alreadyLogged) {
             currentTurn.eventLogs.push({ type: 'devCardPlayed', player: Number(pId), cardType });
           }
         }
@@ -1732,16 +1754,30 @@ function updateEventLogDisplay(turnIndex) {
         if (log.cardType === 'yearOfPlenty' && Array.isArray(log.resources) && log.resources.length > 0) {
           text = `${pIconHtml} played <b>${label}</b> ${cardIcon} and got ${getResNames(log.resources)}`;
         } else if (log.cardType === 'monopoly') {
-          const stolenCount = log.amountStolen ?? (Array.isArray(log.stolenResources) ? log.stolenResources.length : undefined);
-          const stolenType = log.stolenResource !== undefined
-            ? getResNames([log.stolenResource])
-            : Array.isArray(log.stolenResources) && log.stolenResources.length > 0
-              ? getResNames([log.stolenResources[0]])
-              : null;
-          if (stolenCount !== undefined && stolenType) {
-            text = `${pIconHtml} played <b>${label}</b> ${cardIcon} and stole ${stolenCount} ${stolenType}`;
-          } else if (log.stolenResource !== undefined) {
-            text = `${pIconHtml} played <b>${label}</b> ${cardIcon} and stole ${getResNames([log.stolenResource])}`;
+          const stolenType = log.stolenResource !== undefined ? altMap[log.stolenResource] : null;
+          const stolenTypeDisplay = stolenType ? `<img src="${RESOURCE_IMAGES[stolenType]}" alt="${stolenType}" title="${stolenType}" width="20" height="20" style="vertical-align: middle; margin: 0 2px;">` : null;
+
+          if (stolenTypeDisplay) {
+            const playOrder = currentGameData?.data?.playOrder || [];
+            const otherPlayers = playOrder.filter(id => String(id) !== String(log.player));
+            let playersToList = otherPlayers.length > 0 ? otherPlayers : Object.keys(log.stealsByVictim || {});
+
+            let totalStolen = 0;
+            const victimLines = playersToList.map(victimId => {
+              const count = (log.stealsByVictim && log.stealsByVictim[victimId]) ? log.stealsByVictim[victimId] : 0;
+              totalStolen += count;
+
+              const colorName = PLAYER_COLOR_NAMES[victimId] || "white";
+              const victimIcon = `<img src="./data/images/settlement_${colorName}.svg" alt="${colorName}" width="20" height="20" style="margin-right: 4px; vertical-align: middle;">`;
+
+              let stolenHtml = '<span style="color: #94a3b8; font-size: 11px;">N/A</span>';
+              if (count > 0) {
+                stolenHtml = Array(count).fill(stolenTypeDisplay).join("");
+              }
+              return `<div style="margin-left: 20px; display: flex; align-items: center; margin-top: 2px;">${victimIcon} ${stolenHtml}</div>`;
+            }).join('');
+
+            text = `${pIconHtml} played <b>${label}</b> ${cardIcon} and stole ${totalStolen} ${stolenTypeDisplay}:<div style="margin-top: 4px;">${victimLines}</div>`;
           } else {
             text = `${pIconHtml} played <b>${label}</b> ${cardIcon}`;
           }
