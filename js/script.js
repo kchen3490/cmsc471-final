@@ -2049,7 +2049,7 @@ function updateEventLogDisplay(turnIndex) {
       case 'tradeAccepted': {
         const proposerIcon = getPlayerIcon(log.proposer);
         const accepterIcon = getPlayerIcon(log.accepter);
-        text = `${accepterIcon} accepted trade from ${proposerIcon}: ${getResNames(log.received.sort())} for ${getResNames(log.offered.sort())}`;
+        text = `${proposerIcon} completed trade with ${accepterIcon}: <br> ${proposerIcon} gave ${getResNames(log.offered.sort())} and got ${getResNames(log.received.sort())}`;
         break;
       }
       case 'buildingPurchased': {
