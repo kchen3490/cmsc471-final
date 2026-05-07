@@ -1,3 +1,471 @@
+// ── HEURISTIC ──────────────────────────────────────────────────────────────
+// roll_probability[sum] = probability of rolling that; i.e. roll_probability[7] = 6/36
+const roll_probability = [0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1];
+const sample_weight = [5.0, 3.0, 4.0, 2.5, 2.0, 2.0, 1.5];
+
+/* Given a game state, calculate the heuristic based on the function(s).
+ * income: for each resource, returns sum(probability * # of adjacent settlements)
+ * variety: number of resource types with income > 0 (may want to adjust this threshold)
+ * expansion: sum(probabilities of available settlement locations)
+ * dev_card: min(ore income, wheat income, sheep income)
+ * vp: current number of vp
+ * robber_risk: if number of cards in hand > 7, then (roll_probability[7] * number of cards in hand / 2) ("discard income")
+ * roads: uses playerStats.longestRoad (if present) and squares it (L^2) so longer road networks
+ *        are increasingly preferred over incremental road growth
+ */
+
+// order of resources based on RESOURCE_TYPES = ["wood", "brick", "sheep", "wheat", "ore"]
+function income(state, player) {
+    const mapState = resolve_heuristic_map_state(state);
+    const hexes = mapState.tileHexStates ? Object.values(mapState.tileHexStates) : [];
+    const settlements = state.settlements ?? {};
+    const pid = Number(player);
+    const res = [0, 0, 0, 0, 0];
+
+    for (const piece of Object.values(settlements)) {
+        if (!piece?.owner || Number(piece.owner) !== pid) continue;
+        if (piece.buildingType !== 1 && piece.buildingType !== 2) continue;
+        const prod = piece.buildingType === 2 ? 2 : 1;
+        const touches = heuristic_touching_hexes(
+            { x: piece.x, y: piece.y, z: piece.z },
+            hexes
+        );
+        for (const h of touches) {
+            const t = h.type;
+            if (t < 1 || t > 5) continue;
+            const dn = Number(h.diceNumber);
+            const p = dn >= 2 && dn <= 12 ? roll_probability[dn] : 0;
+            if (p === 0) continue;
+            res[t - 1] += p * prod;
+        }
+    }
+    return res;
+}
+
+function variety(incomeVec, threshold) {
+    let n = 0;
+    for (const v of incomeVec) {
+        if (v > threshold) n += 1;
+    }
+    return n;
+}
+
+function expansion(state, player) {
+    const mapState = resolve_heuristic_map_state(state);
+    const cornerEntries = mapState.tileCornerStates
+        ? Object.entries(mapState.tileCornerStates)
+        : [];
+    const hexes = mapState.tileHexStates ? Object.values(mapState.tileHexStates) : [];
+    const settlements = state.settlements ?? {};
+    let sum = 0;
+
+    for (const [cornerKey, baseCorner] of cornerEntries) {
+        const occ = settlements[cornerKey];
+        if (occ?.owner) continue;
+
+        const spot = {
+            x: occ?.x ?? baseCorner.x,
+            y: occ?.y ?? baseCorner.y,
+            z: occ?.z ?? baseCorner.z,
+        };
+        const touches = heuristic_touching_hexes(spot, hexes);
+        for (const h of touches) {
+            const dn = Number(h.diceNumber);
+            const p = dn >= 2 && dn <= 12 ? roll_probability[dn] : 0;
+            sum += p;
+        }
+    }
+    return sum;
+}
+
+function dev_card(income) {
+    let dev_card_resources = [income[2], income[3], income[4]];
+    return Math.min(...dev_card_resources);
+}
+
+function vp(state, player) {
+    const stats =
+        state.playerStats?.[player] ?? state.playerStats?.[String(player)] ?? null;
+    return stats?.vp ?? 0;
+}
+
+function robber_risk(state, player) {
+    const cards =
+        state.playerResources?.[player] ?? state.playerResources?.[String(player)];
+    const n = Array.isArray(cards) ? cards.length : 0;
+    if (n <= 7) return 0;
+    return roll_probability[7] * (n / 2);
+}
+
+function roads(state, player) {
+    const stats =
+        state.playerStats?.[player] ?? state.playerStats?.[String(player)] ?? null;
+    const L = Number(stats?.longestRoad ?? 0);
+    if (!Number.isFinite(L) || L <= 0) return 0;
+    return L * L;
+}
+
+// state = current game state; player = player we are calculating heuristic for, w = weights
+function calculate_heuristric(state, player, w) {
+    const incomeVec = income(state, player);
+    const income_sum = incomeVec.reduce((acc, curr) => acc + curr, 0);
+    const varietyVal = variety(incomeVec, 0);
+    const expansionVal = expansion(state, player);
+    const devCardVal = dev_card(incomeVec);
+    const vpVal = vp(state, player);
+    const robberVal = robber_risk(state, player);
+    const roadsVal = roads(state, player);
+
+    if (Array.isArray(w) && w.length >= 7) {
+        return (
+            w[0] * income_sum +
+            w[1] * varietyVal +
+            w[2] * expansionVal +
+            w[3] * devCardVal +
+            w[4] * vpVal -
+            w[5] * robberVal +
+            w[6] * roadsVal
+        );
+    }
+    return (
+        sample_weight[0] * income_sum +
+        sample_weight[1] * varietyVal +
+        sample_weight[2] * expansionVal +
+        sample_weight[3] * devCardVal +
+        sample_weight[4] * vpVal -
+        sample_weight[5] * robberVal +
+        sample_weight[6] * roadsVal
+    );
+}
+
+// Given a board state and the player to move, choose the move that maximizes
+// calculate_heuristric(nextState, playerToMove, weights).
+//
+// A "move" here is one of:
+// - build_settlement: place a settlement (buildingType=1) on an empty corner
+// - upgrade_city: upgrade an owned settlement (buildingType=1) to a city (buildingType=2)
+// - build_road: place a road (type=1) on an empty edge (must connect to your network)
+// - buy_dev_card: spend 1 sheep, 1 wheat, 1 ore (no board geometry changes simulated)
+//
+// Returns:
+//   { type, key, corner?, score }
+// or null if no candidate moves exist.
+function simulate(state, playerToMove, weights) {
+    const mapState = resolve_heuristic_map_state(state);
+    const pid = Number(playerToMove);
+    if (!Number.isFinite(pid)) return null;
+
+    const baseSettlements = state?.settlements ?? {};
+    const baseRoads = state?.roads ?? {};
+    const cornerEntries = mapState?.tileCornerStates ? Object.entries(mapState.tileCornerStates) : [];
+    const edgeEntries = mapState?.tileEdgeStates ? Object.entries(mapState.tileEdgeStates) : [];
+
+    // --- Precompute corner px + edge endpoints so we can enforce:
+    // (a) settlement distance rule (no adjacent settlement/city),
+    // (b) road connectivity (must connect to your network; opponent buildings block pass-through).
+    const cornerPxByKey = new Map();
+    for (const [cornerKey, c] of cornerEntries) {
+        cornerPxByKey.set(cornerKey, heuristic_corner_px(c));
+    }
+
+    const cornerKeyNearPx = (pt) => {
+        // O(N) is fine at Catan board sizes.
+        const EPS = SIZE * 0.05 + 1e-9;
+        const eps2 = EPS * EPS;
+        let bestKey = null;
+        let bestD2 = Infinity;
+        for (const [k, p] of cornerPxByKey.entries()) {
+            const dx = p.x - pt.x;
+            const dy = p.y - pt.y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < bestD2) {
+                bestD2 = d2;
+                bestKey = k;
+            }
+        }
+        return bestD2 <= eps2 ? bestKey : null;
+    };
+
+    const edgeEndpointsCornerKeys = (edgeLike) => {
+        const { px, py } = axialToPixel(edgeLike.x, edgeLike.y);
+        const eIdx = EDGE_Z_TO_IDX[edgeLike.z] ?? EDGE_Z_TO_IDX[0];
+        const v0 = hexVertex(px, py, eIdx);
+        const v1 = hexVertex(px, py, (eIdx + 1) % 6);
+        const k0 = cornerKeyNearPx(v0);
+        const k1 = cornerKeyNearPx(v1);
+        return k0 && k1 ? [k0, k1] : null;
+    };
+
+    const cornerAdj = new Map(); // cornerKey -> Set(neighborCornerKey)
+    const edgeEndpointsByKey = new Map(); // edgeKey -> [c0, c1]
+    const incidentEdgesByCorner = new Map(); // cornerKey -> Set(edgeKey)
+    for (const [edgeKey, e] of edgeEntries) {
+        const ends = edgeEndpointsCornerKeys(e);
+        if (!ends) continue;
+        edgeEndpointsByKey.set(edgeKey, ends);
+        const [a, b] = ends;
+        if (!cornerAdj.has(a)) cornerAdj.set(a, new Set());
+        if (!cornerAdj.has(b)) cornerAdj.set(b, new Set());
+        cornerAdj.get(a).add(b);
+        cornerAdj.get(b).add(a);
+        if (!incidentEdgesByCorner.has(a)) incidentEdgesByCorner.set(a, new Set());
+        if (!incidentEdgesByCorner.has(b)) incidentEdgesByCorner.set(b, new Set());
+        incidentEdgesByCorner.get(a).add(edgeKey);
+        incidentEdgesByCorner.get(b).add(edgeKey);
+    }
+
+    const cornerOwner = new Map(); // cornerKey -> ownerNumber
+    for (const [cornerKey, piece] of Object.entries(baseSettlements)) {
+        if (piece?.owner) cornerOwner.set(cornerKey, Number(piece.owner));
+    }
+
+    const ownedRoadEdges = [];
+    for (const [edgeKey, piece] of Object.entries(baseRoads)) {
+        if (piece?.owner && Number(piece.owner) === pid && piece.type === 1) ownedRoadEdges.push(edgeKey);
+    }
+    const ownedRoadEdgeSet = new Set(ownedRoadEdges);
+
+    const ownedRoadEndpointCorners = new Set();
+    for (const edgeKey of ownedRoadEdges) {
+        const ends = edgeEndpointsByKey.get(edgeKey) ?? edgeEndpointsCornerKeys(baseRoads[edgeKey]);
+        if (!ends) continue;
+        ownedRoadEndpointCorners.add(ends[0]);
+        ownedRoadEndpointCorners.add(ends[1]);
+    }
+
+    const ownedBuildingCorners = new Set();
+    for (const [cornerKey, piece] of Object.entries(baseSettlements)) {
+        if (piece?.owner && Number(piece.owner) === pid) ownedBuildingCorners.add(cornerKey);
+    }
+
+    const settlementConnectsToOwnedRoad = (cornerKey) => {
+        const inc = incidentEdgesByCorner.get(cornerKey);
+        if (!inc) return false;
+        for (const edgeKey of inc) {
+            if (!ownedRoadEdgeSet.has(edgeKey)) continue;
+            // Note: This allows settlements in the "middle" of your road network too
+            // (a corner can have 2 incident owned roads); we do NOT require an endpoint.
+            const occ = cornerOwner.get(cornerKey);
+            if (occ !== undefined && occ !== pid) continue;
+            return true;
+        }
+        return false;
+    };
+
+    const canPlaceSettlementAt = (cornerKey) => {
+        if (cornerOwner.has(cornerKey)) return false;
+        const neigh = cornerAdj.get(cornerKey);
+        if (!neigh) return true; // isolated (shouldn't happen), but safe.
+        for (const nk of neigh) {
+            if (cornerOwner.has(nk)) return false; // adjacent to any existing settlement/city
+        }
+        // Must be connected to the player's existing road network (settlement built at end of road).
+        if (!settlementConnectsToOwnedRoad(cornerKey)) return false;
+        return true;
+    };
+
+    const roadConnectsToNetwork = (edgeKey) => {
+        const ends = edgeEndpointsByKey.get(edgeKey);
+        if (!ends) return false;
+        const [a, b] = ends;
+
+        // If either endpoint has our building, it's connected.
+        if (ownedBuildingCorners.has(a) || ownedBuildingCorners.has(b)) return true;
+
+        // Otherwise it must connect to an existing owned road at an endpoint that
+        // is NOT occupied by an opponent building (opponent blocks pass-through).
+        const occA = cornerOwner.get(a);
+        const occB = cornerOwner.get(b);
+        const aBlocked = occA !== undefined && occA !== pid;
+        const bBlocked = occB !== undefined && occB !== pid;
+
+        if (!aBlocked && ownedRoadEndpointCorners.has(a)) return true;
+        if (!bBlocked && ownedRoadEndpointCorners.has(b)) return true;
+        return false;
+    };
+
+    // Resource ids (Colonist): 1=wood, 2=brick, 3=sheep, 4=wheat, 5=ore
+    const COST = {
+        road: [1, 2],
+        settlement: [1, 2, 3, 4],
+        city: [4, 4, 5, 5, 5],
+        devCard: [3, 4, 5],
+    };
+
+    const getPlayerKey = (obj) => {
+        if (!obj) return null;
+        if (obj[playerToMove] !== undefined) return playerToMove;
+        const sk = String(playerToMove);
+        if (obj[sk] !== undefined) return sk;
+        return null;
+    };
+
+    const cloneStateBase = () => {
+        const next = { ...state };
+        if (state?.playerStats) {
+            next.playerStats = { ...state.playerStats };
+            const statsKey = getPlayerKey(state.playerStats);
+            if (statsKey !== null) next.playerStats[statsKey] = { ...state.playerStats[statsKey] };
+        }
+        if (state?.playerResources) {
+            next.playerResources = { ...state.playerResources };
+            const resKey = getPlayerKey(state.playerResources);
+            if (resKey !== null) {
+                const v = state.playerResources[resKey];
+                next.playerResources[resKey] = Array.isArray(v) ? v.slice() : { ...v };
+            }
+        }
+        if (state?.playerDevCards) {
+            next.playerDevCards = { ...state.playerDevCards };
+            const devKey = getPlayerKey(state.playerDevCards);
+            if (devKey !== null) {
+                const v = state.playerDevCards[devKey];
+                next.playerDevCards[devKey] = Array.isArray(v) ? v.slice() : v;
+            }
+        }
+        return next;
+    };
+
+    const canAffordAndDeduct = (nextState, costIds) => {
+        const resKey = getPlayerKey(nextState.playerResources);
+        if (resKey === null) return false;
+        const hand = nextState.playerResources?.[resKey];
+
+        // Array form: [1,1,3,5,...]
+        if (Array.isArray(hand)) {
+            const tmp = hand.slice();
+            for (const id of costIds) {
+                const idx = tmp.indexOf(id);
+                if (idx === -1) return false;
+                tmp.splice(idx, 1);
+            }
+            nextState.playerResources[resKey] = tmp;
+            return true;
+        }
+
+        // Count-map form: { wood: n, brick: n, sheep: n, wheat: n, ore: n }
+        if (hand && typeof hand === "object") {
+            const nameById = { 1: "wood", 2: "brick", 3: "sheep", 4: "wheat", 5: "ore" };
+            const tmp = { ...hand };
+            for (const id of costIds) {
+                const k = nameById[id];
+                if (!k) return false;
+                const n = Number(tmp[k] ?? 0);
+                if (!Number.isFinite(n) || n <= 0) return false;
+                tmp[k] = n - 1;
+            }
+            nextState.playerResources[resKey] = tmp;
+            return true;
+        }
+
+        return false;
+    };
+
+    const bumpVp = (nextState, delta) => {
+        const stats =
+            nextState.playerStats?.[playerToMove] ??
+            nextState.playerStats?.[String(playerToMove)] ??
+            null;
+        if (stats && typeof stats.vp === "number") {
+            stats.vp += delta;
+        }
+    };
+
+    let bestMove = null;
+    let bestScore = -Infinity;
+
+    // Candidate 1: build settlement on any unoccupied corner in mapState.
+    for (const [cornerKey, baseCorner] of cornerEntries) {
+        const occ = baseSettlements[cornerKey];
+        if (occ?.owner) continue;
+        if (!canPlaceSettlementAt(cornerKey)) continue;
+
+        const spot = {
+            x: occ?.x ?? baseCorner.x,
+            y: occ?.y ?? baseCorner.y,
+            z: occ?.z ?? baseCorner.z,
+        };
+
+        const nextState = cloneStateBase();
+        if (!canAffordAndDeduct(nextState, COST.settlement)) continue;
+        nextState.settlements = { ...baseSettlements };
+        nextState.settlements[cornerKey] = { ...spot, owner: pid, buildingType: 1 };
+        bumpVp(nextState, 1);
+
+        const score = calculate_heuristric(nextState, pid, weights);
+        if (score > bestScore) {
+            bestScore = score;
+            bestMove = { type: "build_settlement", key: cornerKey, corner: spot, score };
+        }
+    }
+
+    // Candidate 2: upgrade any owned settlement to a city.
+    for (const [cornerKey, piece] of Object.entries(baseSettlements)) {
+        if (!piece?.owner || Number(piece.owner) !== pid) continue;
+        if (piece.buildingType !== 1) continue;
+
+        const nextState = cloneStateBase();
+        if (!canAffordAndDeduct(nextState, COST.city)) continue;
+        nextState.settlements = { ...baseSettlements };
+        nextState.settlements[cornerKey] = { ...piece, buildingType: 2 };
+        bumpVp(nextState, 1);
+
+        const score = calculate_heuristric(nextState, pid, weights);
+        if (score > bestScore) {
+            bestScore = score;
+            bestMove = { type: "upgrade_city", key: cornerKey, corner: { x: piece.x, y: piece.y, z: piece.z }, score };
+        }
+    }
+
+    // Candidate 3: place a road on any unoccupied edge in mapState.
+    for (const [edgeKey, baseEdge] of edgeEntries) {
+        const occ = baseRoads[edgeKey];
+        if (occ?.owner) continue;
+        if (!roadConnectsToNetwork(edgeKey)) continue;
+
+        const nextState = cloneStateBase();
+        if (!canAffordAndDeduct(nextState, COST.road)) continue;
+
+        nextState.roads = { ...baseRoads };
+        nextState.roads[edgeKey] = {
+            ...(occ ?? baseEdge),
+            x: (occ?.x ?? baseEdge.x),
+            y: (occ?.y ?? baseEdge.y),
+            z: (occ?.z ?? baseEdge.z),
+            owner: pid,
+            type: 1,
+        };
+
+        const score = calculate_heuristric(nextState, pid, weights);
+        if (score > bestScore) {
+            bestScore = score;
+            bestMove = { type: "build_road", key: edgeKey, edge: { x: baseEdge.x, y: baseEdge.y, z: baseEdge.z }, score };
+        }
+    }
+
+    // Candidate 4: buy a development card (deduct resources only).
+    {
+        const nextState = cloneStateBase();
+        if (canAffordAndDeduct(nextState, COST.devCard)) {
+            const devKey = getPlayerKey(nextState.playerDevCards);
+            if (devKey !== null) {
+                const arr = nextState.playerDevCards?.[devKey];
+                if (Array.isArray(arr)) {
+                    // Unknown actual card type at simulation time; keep as 0 placeholder.
+                    nextState.playerDevCards[devKey] = arr.concat([0]);
+                }
+            }
+            const score = calculate_heuristric(nextState, pid, weights);
+            if (score > bestScore) {
+                bestScore = score;
+                bestMove = { type: "buy_dev_card", key: null, score };
+            }
+        }
+    }
+
+    return bestMove;
+}
+
 /**
  * CATAN BOARD VISUALIZATION  —  Colonist.io data
  *
@@ -879,6 +1347,41 @@ function hexVertex(cx, cy, vIdx) {
   // Keep local geometry aligned with mirrored x / inverted y world transform.
   return { x: cx + SIZE * Math.cos(a), y: cy - SIZE * Math.sin(a) };
 }
+
+// ── HEURISTIC GRID ─ attach map via state.mapState, or fallback to viewer currentGameData
+function resolve_heuristic_map_state(state) {
+  if (state?.mapState?.tileHexStates && state?.mapState?.tileCornerStates) {
+    return state.mapState;
+  }
+  if (typeof currentGameData !== "undefined" && currentGameData?.data?.eventHistory?.initialState?.mapState) {
+    return currentGameData.data.eventHistory.initialState.mapState;
+  }
+  return {};
+}
+
+function heuristic_corner_px(corner) {
+  const p = axialToPixel(corner.x, corner.y);
+  const vi = CORNER_Z_TO_VERTEX[corner.z] ?? CORNER_Z_TO_VERTEX[0];
+  return hexVertex(p.px, p.py, vi);
+}
+
+function heuristic_touching_hexes(corner, hexes) {
+  const pt = heuristic_corner_px(corner);
+  const EPS = SIZE * 0.05 + 1e-9;
+  const touching = [];
+  for (const h of hexes) {
+    const c = axialToPixel(h.x, h.y);
+    for (let vi = 0; vi < 6; vi++) {
+      const vtx = hexVertex(c.px, c.py, vi);
+      if (Math.hypot(vtx.x - pt.x, vtx.y - pt.y) < EPS) {
+        touching.push(h);
+        break;
+      }
+    }
+  }
+  return touching;
+}
+
 function edgeMidByIdx(cx, cy, eIdx) {
   const v0 = hexVertex(cx, cy, eIdx);
   const v1 = hexVertex(cx, cy, (eIdx + 1) % 6);
