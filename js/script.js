@@ -577,6 +577,140 @@ const playgroundState = {
   lastRollerPlayerId: null,
 };
 
+let diceRollChart = null;
+
+function initDiceRollChart() {
+  const container = document.getElementById("diceRollVis");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const containerWidth = container.getBoundingClientRect().width;
+  const width = Math.max(420, Math.floor(containerWidth || 520));
+  const height = 280;
+  const margin = { top: 20, right: 16, bottom: 36, left: 36 };
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+
+  const diceValues = d3.range(2, 13);
+  const colorScale = d3.scaleLinear()
+    .domain([2, 12])
+    .range(["#2563eb", "#f97316"]);
+
+  const svg = d3.select(container)
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("viewBox", `0 0 ${width} ${height}`);
+
+  const chart = svg.append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  const x = d3.scaleBand()
+    .domain(diceValues)
+    .range([0, innerWidth])
+    .padding(0.12);
+
+  const xAxisGroup = chart.append("g")
+    .attr("transform", `translate(0,${innerHeight})`)
+    .call(d3.axisBottom(x).tickValues(diceValues));
+
+  xAxisGroup.selectAll("text")
+    .style("fill", "#cbd5e1")
+    .style("font-size", "11px");
+  xAxisGroup.selectAll("path, line").style("stroke", "#64748b");
+
+  const yAxisGroup = chart.append("g");
+  yAxisGroup.selectAll("path, line").style("stroke", "#64748b");
+
+  const xAxisLabel = chart.append("text")
+    .attr("x", innerWidth / 2)
+    .attr("y", innerHeight + margin.bottom - 2)
+    .attr("text-anchor", "middle")
+    .style("fill", "#cbd5e1")
+    .style("font-size", "12px")
+    .style("font-weight", "600")
+    .text("Roll Value");
+
+  const yAxisLabel = chart.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -innerHeight / 2)
+    .attr("y", -margin.left + 12)
+    .attr("text-anchor", "middle")
+    .style("fill", "#cbd5e1")
+    .style("font-size", "12px")
+    .style("font-weight", "600")
+    .text("Frequency");
+
+  const barsGroup = chart.append("g");
+  const labelsGroup = chart.append("g");
+
+  diceRollChart = {
+    diceValues,
+    colorScale,
+    innerHeight,
+    x,
+    yAxisGroup,
+    xAxisLabel,
+    yAxisLabel,
+    barsGroup,
+    labelsGroup
+  };
+
+  updateDiceRollChart();
+}
+
+function updateDiceRollChart() {
+  if (!diceRollChart) {
+    initDiceRollChart();
+    if (!diceRollChart) return;
+  }
+
+  const data = diceRollChart.diceValues.map((value) => ({
+    value,
+    count: playgroundState.rollHistory.reduce((total, entry) => total + (entry.value === value ? 1 : 0), 0)
+  }));
+
+  const maxCount = d3.max(data, (d) => d.count) ?? 0;
+  const yMax = Math.max(1, maxCount);
+  const y = d3.scaleLinear()
+    .domain([0, yMax])
+    .range([diceRollChart.innerHeight, 0]);
+
+  diceRollChart.yAxisGroup
+    .call(
+      d3.axisLeft(y)
+        .tickValues(d3.range(0, yMax + 1, 1))
+        .tickFormat(d3.format("d"))
+    );
+
+  diceRollChart.yAxisGroup.selectAll("text")
+    .style("fill", "#cbd5e1")
+    .style("font-size", "11px");
+  diceRollChart.yAxisGroup.selectAll("path, line")
+    .style("stroke", "#64748b");
+
+  const bars = diceRollChart.barsGroup.selectAll("rect").data(data, (d) => d.value);
+
+  bars.join("rect")
+    .attr("x", (d) => diceRollChart.x(d.value))
+    .attr("y", (d) => y(d.count))
+    .attr("width", diceRollChart.x.bandwidth())
+    .attr("height", (d) => diceRollChart.innerHeight - y(d.count))
+    .attr("fill", (d) => diceRollChart.colorScale(d.value));
+
+  const labels = diceRollChart.labelsGroup.selectAll("text").data(data, (d) => d.value);
+
+  labels.join("text")
+    .attr("x", (d) => (diceRollChart.x(d.value) ?? 0) + diceRollChart.x.bandwidth() / 2)
+    .attr("y", (d) => (d.count > 0 ? y(d.count) - 6 : y(0) - 6))
+    .attr("text-anchor", "middle")
+    .style("fill", "#e2e8f0")
+    .style("font-size", "11px")
+    .style("font-weight", "600")
+    .text((d) => d.count);
+}
+
 // Analytics mode state
 let currentGameData = null;
 let turnStates = [];
@@ -2075,6 +2209,7 @@ function renderRollHistory() {
   if (!playgroundState.rollHistory.length) {
     summary.textContent = "No rolls recorded yet.";
     history.innerHTML = "";
+    updateDiceRollChart();
     return;
   }
 
@@ -2092,6 +2227,7 @@ function renderRollHistory() {
     })
     .join("");
   history.innerHTML += `<hr><div>${Object.entries(counts).map(([roll, count]) => `${roll}:${count}`).join(" | ")}</div>`;
+  updateDiceRollChart();
 }
 
 function renderPlayerTracker() {
@@ -2244,6 +2380,7 @@ function initPlayground() {
   addDevCardBtn?.addEventListener("click", () => adjustPlayerInventory("devCards", 1));
   removeDevCardBtn?.addEventListener("click", () => adjustPlayerInventory("devCards", -1));
 
+  initDiceRollChart();
   createPlaygroundPlayers(4);
   renderPlayground();
 }
