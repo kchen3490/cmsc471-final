@@ -716,6 +716,212 @@ let currentGameData = null;
 let turnStates = [];
 let currentTurnIndex = 0;
 
+/** D3 chart for #dataDiceRollVis (loaded Colonist.io game dice frequencies). */
+let analyticsDiceRollChart = null;
+/** Selected roll values (2–12); when non-empty, other bars are dimmed/blurred. */
+const analyticsDiceSelectedRolls = new Set();
+
+function resetAnalyticsDiceRollSelection() {
+  analyticsDiceSelectedRolls.clear();
+}
+
+function applyAnalyticsDiceBarFocus() {
+  if (!analyticsDiceRollChart) return;
+  const hasSel = analyticsDiceSelectedRolls.size > 0;
+  const { barsGroup, labelsGroup } = analyticsDiceRollChart;
+  barsGroup.selectAll("rect").each(function (d) {
+    const on = !hasSel || analyticsDiceSelectedRolls.has(d.value);
+    d3.select(this)
+      .style("opacity", on ? 1 : 0.22)
+      .style("filter", on ? null : "blur(3px)");
+  });
+  labelsGroup.selectAll("text").each(function (d) {
+    const on = !hasSel || analyticsDiceSelectedRolls.has(d.value);
+    d3.select(this).style("opacity", on ? 1 : 0.35);
+  });
+}
+
+function initAnalyticsDiceRollChart() {
+  const container = document.getElementById("dataDiceRollVis");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const containerWidth = container.getBoundingClientRect().width;
+  const width = Math.max(280, Math.floor(containerWidth || 340));
+  const height = 260;
+  const margin = { top: 20, right: 12, bottom: 40, left: 44 };
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+
+  const diceValues = d3.range(2, 13);
+  const colorScale = d3.scaleLinear()
+    .domain([2, 12])
+    .range(["#2563eb", "#f97316"]);
+
+  const svg = d3.select(container)
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .style("overflow", "visible");
+
+  const chart = svg.append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  const x = d3.scaleBand()
+    .domain(diceValues)
+    .range([0, innerWidth])
+    .padding(0.12);
+
+  const xAxisGroup = chart.append("g")
+    .attr("transform", `translate(0,${innerHeight})`)
+    .call(d3.axisBottom(x).tickValues(diceValues));
+
+  xAxisGroup.selectAll("text")
+    .style("fill", "#cbd5e1")
+    .style("font-size", "11px");
+  xAxisGroup.selectAll("path, line").style("stroke", "#64748b");
+
+  const yAxisGroup = chart.append("g");
+
+  chart.append("text")
+    .attr("x", innerWidth / 2)
+    .attr("y", innerHeight + margin.bottom - 4)
+    .attr("text-anchor", "middle")
+    .style("fill", "#cbd5e1")
+    .style("font-size", "12px")
+    .style("font-weight", "600")
+    .text("Roll Value");
+
+  chart.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -innerHeight / 2)
+    .attr("y", -margin.left + 14)
+    .attr("text-anchor", "middle")
+    .style("fill", "#cbd5e1")
+    .style("font-size", "12px")
+    .style("font-weight", "600")
+    .text("Frequency");
+
+  const barsGroup = chart.append("g");
+  const labelsGroup = chart.append("g");
+
+  analyticsDiceRollChart = {
+    diceValues,
+    colorScale,
+    innerHeight,
+    x,
+    yAxisGroup,
+    barsGroup,
+    labelsGroup,
+    barTransition: () => d3.transition().duration(450).ease(d3.easeCubicOut)
+  };
+
+  updateAnalyticsDiceRollChart();
+}
+
+function updateAnalyticsDiceRollChart() {
+  const container = document.getElementById("dataDiceRollVis");
+  if (!container || !turnStates?.length) return;
+
+  if (!analyticsDiceRollChart) {
+    initAnalyticsDiceRollChart();
+    if (!analyticsDiceRollChart) return;
+  }
+
+  const { diceValues, colorScale, innerHeight, x, yAxisGroup, barsGroup, labelsGroup, barTransition } = analyticsDiceRollChart;
+
+  const data = diceValues.map((value) => {
+    let count = 0;
+    for (let i = 0; i <= currentTurnIndex; i++) {
+      const rolls = turnStates[i]?.diceRolls;
+      if (!rolls) continue;
+      for (const r of rolls) {
+        if (r.value === value) count++;
+      }
+    }
+    return { value, count };
+  });
+
+  const maxCount = d3.max(data, (d) => d.count) ?? 0;
+  const yMax = Math.max(1, maxCount);
+  const y = d3.scaleLinear()
+    .domain([0, yMax])
+    .range([innerHeight, 0]);
+
+  yAxisGroup.interrupt();
+  barsGroup.selectAll("rect").interrupt();
+  labelsGroup.selectAll("text").interrupt();
+
+  const t = barTransition();
+
+  yAxisGroup
+    .transition(t)
+    .call(
+      d3.axisLeft(y)
+        .tickValues(d3.range(0, yMax + 1, 1))
+        .tickFormat(d3.format("d"))
+    );
+
+  yAxisGroup.selectAll("text")
+    .style("fill", "#cbd5e1")
+    .style("font-size", "11px");
+  yAxisGroup.selectAll("path, line")
+    .style("stroke", "#64748b");
+
+  const rect = barsGroup.selectAll("rect").data(data, (d) => d.value);
+
+  const rectEnter = rect.enter()
+    .append("rect")
+    .attr("x", (d) => x(d.value))
+    .attr("width", x.bandwidth())
+    .attr("y", innerHeight)
+    .attr("height", 0)
+    .attr("fill", (d) => colorScale(d.value))
+    .style("cursor", "pointer");
+
+  const mergedRect = rect.merge(rectEnter);
+
+  mergedRect
+    .on("click", function (event, d) {
+      event.stopPropagation();
+      if (analyticsDiceSelectedRolls.has(d.value)) {
+        analyticsDiceSelectedRolls.delete(d.value);
+      } else {
+        analyticsDiceSelectedRolls.add(d.value);
+      }
+      applyAnalyticsDiceBarFocus();
+    })
+    .transition(t)
+    .attr("x", (d) => x(d.value))
+    .attr("width", x.bandwidth())
+    .attr("y", (d) => y(d.count))
+    .attr("height", (d) => innerHeight - y(d.count))
+    .attr("fill", (d) => colorScale(d.value));
+
+  rect.exit().remove();
+
+  const texts = labelsGroup.selectAll("text").data(data, (d) => d.value);
+
+  const textsEnter = texts.enter()
+    .append("text")
+    .attr("text-anchor", "middle")
+    .style("fill", "#e2e8f0")
+    .style("font-size", "11px")
+    .style("font-weight", "600");
+
+  texts.merge(textsEnter)
+    .transition(t)
+    .attr("x", (d) => (x(d.value) ?? 0) + x.bandwidth() / 2)
+    .attr("y", (d) => (d.count > 0 ? y(d.count) - 6 : y(0) - 6))
+    .text((d) => d.count);
+
+  texts.exit().remove();
+
+  applyAnalyticsDiceBarFocus();
+}
+
 // ── TURN PARSING ────────────────────────────────────────────────────────────
 function parseTurnsFromEvents(gameData) {
   const events = gameData?.data?.eventHistory?.events ?? [];
@@ -1286,6 +1492,7 @@ function updateAnalyticsView(turnIndex) {
 
   // Update dice rolls display
   updateDiceRollsDisplay(turn);
+  updateAnalyticsDiceRollChart();
 
   // Render Robber
   if (turn.robberIndex !== -1) {
@@ -2420,6 +2627,7 @@ async function loadGameBoard(gameId) {
 
     // Parse turns from events
     turnStates = parseTurnsFromEvents(gameData);
+    resetAnalyticsDiceRollSelection();
 
     // Update turn slider max value
     const slider = document.getElementById("turnSlider");
@@ -2568,6 +2776,14 @@ window.addEventListener("DOMContentLoaded", () => {
         turnSlider.value = turnIndex;
         updateAnalyticsView(turnIndex);
       }
+    });
+  }
+
+  const unblurBarsBtn = document.getElementById("analyticsUnblurBarsBtn");
+  if (unblurBarsBtn) {
+    unblurBarsBtn.addEventListener("click", () => {
+      resetAnalyticsDiceRollSelection();
+      applyAnalyticsDiceBarFocus();
     });
   }
 });
