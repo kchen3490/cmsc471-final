@@ -105,6 +105,170 @@ function roads(state, player) {
   return L * L;
 }
 
+/** Corner key -> occupying player id; used for opponent blocking on longest-road paths. */
+function cornerOwnersFromSettlements(settlements) {
+  const m = new Map();
+  if (!settlements) return m;
+  for (const [cornerKey, piece] of Object.entries(settlements)) {
+    if (!piece?.owner) continue;
+    m.set(cornerKey, Number(piece.owner));
+  }
+  return m;
+}
+
+/** Two roads touch at a junction usable by `playerId` iff no opponent building sits on that corner. */
+function roadEdgesAdjacent(edgeA, edgeB, playerId, edgeEndpointsByKey, cornerOwner) {
+  const endsA = edgeEndpointsByKey.get(edgeA);
+  const endsB = edgeEndpointsByKey.get(edgeB);
+  if (!endsA || !endsB) return false;
+  for (const j of endsA) {
+    if (!endsB.includes(j)) continue;
+    const occ = cornerOwner.get(j);
+    if (occ !== undefined && occ !== playerId) continue;
+    return true;
+  }
+  return false;
+}
+
+/** Max number of contiguous road segments in one path (DFS; board size is tiny). */
+function longestRoadTrailLength(edgeKeysOwned, playerId, edgeEndpointsByKey, cornerOwner) {
+  if (!edgeKeysOwned.length) return 0;
+  const adj = new Map();
+  for (const e of edgeKeysOwned) adj.set(e, []);
+
+  const n = edgeKeysOwned.length;
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      const a = edgeKeysOwned[i];
+      const b = edgeKeysOwned[j];
+      if (!roadEdgesAdjacent(a, b, playerId, edgeEndpointsByKey, cornerOwner)) continue;
+      adj.get(a).push(b);
+      adj.get(b).push(a);
+    }
+  }
+
+  let best = 0;
+  function dfs(edge, visited) {
+    let localMax = 1;
+    for (const nb of adj.get(edge) || []) {
+      if (visited.has(nb)) continue;
+      visited.add(nb);
+      localMax = Math.max(localMax, 1 + dfs(nb, visited));
+      visited.delete(nb);
+    }
+    return localMax;
+  }
+
+  for (const start of edgeKeysOwned) {
+    best = Math.max(best, dfs(start, new Set([start])));
+  }
+  return best;
+}
+
+/** player id -> geometric longest-road length for that state's board. */
+function computeLongestRoadLengthsByPlayer(state, edgeEndpointsByKey) {
+  const cornerOwner = cornerOwnersFromSettlements(state.settlements ?? {});
+  const roadsMap = state.roads ?? {};
+  const byOwner = new Map();
+  for (const [edgeKey, piece] of Object.entries(roadsMap)) {
+    if (!piece?.owner || piece.type !== 1) continue;
+    const oid = Number(piece.owner);
+    if (!Number.isFinite(oid)) continue;
+    if (!byOwner.has(oid)) byOwner.set(oid, []);
+    byOwner.get(oid).push(edgeKey);
+  }
+  /** @type {Record<number, number>} */
+  const lengths = {};
+  for (const [oid, edges] of byOwner) {
+    lengths[oid] = longestRoadTrailLength(edges, oid, edgeEndpointsByKey, cornerOwner);
+  }
+  return lengths;
+}
+
+/**
+ * Winner of longest road is unique max length >= 5; ties broken by engine's prior stats.longestRoad,
+ * then lowest player id (stable heuristic).
+ */
+function pickLongestRoadHolder(state, lengthsByPlayer) {
+  const entries = Object.entries(lengthsByPlayer);
+  if (!entries.length) return null;
+  const M = Math.max(...entries.map(([, len]) => Number(len) || 0));
+  if (M < 5) return null;
+  const tied = entries
+    .filter(([, len]) => (Number(len) || 0) === M)
+    .map(([p]) => Number(p))
+    .filter(Number.isFinite);
+  if (tied.length === 1) return tied[0];
+  let best = null;
+  let bestEngine = -1;
+  for (const p of tied) {
+    const engineLR = Number(
+      state.playerStats?.[p]?.longestRoad ?? state.playerStats?.[String(p)]?.longestRoad ?? 0
+    );
+    if (engineLR > bestEngine) {
+      bestEngine = engineLR;
+      best = p;
+    }
+  }
+  if (best != null) return best;
+  return tied.sort((a, b) => a - b)[0];
+}
+
+function resolvePlayerStatsKey(playerStats, p) {
+  if (!playerStats) return null;
+  if (playerStats[p] !== undefined) return p;
+  const s = String(p);
+  if (playerStats[s] !== undefined) return s;
+  return null;
+}
+
+function ensureClonedPlayerStats(nextState, baseState, p) {
+  const key = resolvePlayerStatsKey(nextState.playerStats, p);
+  if (key === null || !nextState.playerStats) return;
+  if (nextState.playerStats[key] === baseState.playerStats?.[key]) {
+    nextState.playerStats[key] = { ...baseState.playerStats[key] };
+  }
+}
+
+/**
+ * After a simulated road build: refresh each player's stats.longestRoad from geometry and
+ * apply ±2 VP when the longest-road holder changes (min length 5).
+ */
+function applyLongestRoadAfterSimulatedRoad(nextState, baseState, baseHolder, edgeEndpointsByKey) {
+  const lengths = computeLongestRoadLengthsByPlayer(nextState, edgeEndpointsByKey);
+  const newHolder = pickLongestRoadHolder(nextState, lengths);
+
+  for (const k of Object.keys(nextState.playerStats ?? {})) {
+    const p = Number(k);
+    if (!Number.isFinite(p)) continue;
+    const L = lengths[p] ?? 0;
+    ensureClonedPlayerStats(nextState, baseState, p);
+    const sk = resolvePlayerStatsKey(nextState.playerStats, p);
+    if (sk !== null && nextState.playerStats[sk]) {
+      nextState.playerStats[sk].longestRoad = L;
+    }
+  }
+
+  if (baseHolder === newHolder) return;
+
+  if (baseHolder != null) {
+    ensureClonedPlayerStats(nextState, baseState, baseHolder);
+    const hk = resolvePlayerStatsKey(nextState.playerStats, baseHolder);
+    if (hk !== null && nextState.playerStats[hk]) {
+      const cur = Number(nextState.playerStats[hk].vp);
+      nextState.playerStats[hk].vp = (Number.isFinite(cur) ? cur : 0) - 2;
+    }
+  }
+  if (newHolder != null) {
+    ensureClonedPlayerStats(nextState, baseState, newHolder);
+    const hk = resolvePlayerStatsKey(nextState.playerStats, newHolder);
+    if (hk !== null && nextState.playerStats[hk]) {
+      const cur = Number(nextState.playerStats[hk].vp);
+      nextState.playerStats[hk].vp = (Number.isFinite(cur) ? cur : 0) + 2;
+    }
+  }
+}
+
 // state = current game state; player = player we are calculating heuristic for, w = weights
 function calculate_heuristric(state, player, w) {
   const incomeVec = income(state, player);
@@ -144,7 +308,8 @@ function calculate_heuristric(state, player, w) {
 // A "move" here is one of:
 // - build_settlement: place a settlement (buildingType=1) on an empty corner
 // - upgrade_city: upgrade an owned settlement (buildingType=1) to a city (buildingType=2)
-// - build_road: place a road (type=1) on an empty edge (must connect to your network)
+// - build_road: place a road (type=1) on an empty edge (must connect to your network);
+//               then longest road +2 VP swing if holder changes (min 5 segments)
 // - buy_dev_card: spend 1 sheep, 1 wheat, 1 ore (no board geometry changes simulated)
 //
 // Returns:
@@ -284,6 +449,11 @@ function simulate(state, playerToMove, weights) {
     return false;
   };
 
+  const baseLRHolder = pickLongestRoadHolder(
+    state,
+    computeLongestRoadLengthsByPlayer(state, edgeEndpointsByKey)
+  );
+
   // Resource ids (Colonist): 1=wood, 2=brick, 3=sheep, 4=wheat, 5=ore
   const COST = {
     road: [1, 2],
@@ -366,8 +536,9 @@ function simulate(state, playerToMove, weights) {
       nextState.playerStats?.[playerToMove] ??
       nextState.playerStats?.[String(playerToMove)] ??
       null;
-    if (stats && typeof stats.vp === "number") {
-      stats.vp += delta;
+    if (stats) {
+      const cur = Number(stats.vp);
+      stats.vp = (Number.isFinite(cur) ? cur : 0) + delta;
     }
   };
 
@@ -435,6 +606,8 @@ function simulate(state, playerToMove, weights) {
       owner: pid,
       type: 1,
     };
+
+    applyLongestRoadAfterSimulatedRoad(nextState, state, baseLRHolder, edgeEndpointsByKey);
 
     const score = calculate_heuristric(nextState, pid, weights);
     if (score > bestScore) {
