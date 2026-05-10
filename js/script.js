@@ -280,8 +280,9 @@ function calculate_heuristric(state, player, w) {
   const robberVal = robber_risk(state, player);
   const roadsVal = roads(state, player);
 
+  let score = 0;
   if (Array.isArray(w) && w.length >= 7) {
-    return (
+    score = (
       w[0] * income_sum +
       w[1] * varietyVal +
       w[2] * expansionVal +
@@ -290,16 +291,30 @@ function calculate_heuristric(state, player, w) {
       w[5] * robberVal +
       w[6] * roadsVal
     );
+  } else {
+    score = (
+      sample_weight[0] * income_sum +
+      sample_weight[1] * varietyVal +
+      sample_weight[2] * expansionVal +
+      sample_weight[3] * devCardVal +
+      sample_weight[4] * vpVal -
+      sample_weight[5] * robberVal +
+      sample_weight[6] * roadsVal
+    );
   }
-  return (
-    sample_weight[0] * income_sum +
-    sample_weight[1] * varietyVal +
-    sample_weight[2] * expansionVal +
-    sample_weight[3] * devCardVal +
-    sample_weight[4] * vpVal -
-    sample_weight[5] * robberVal +
-    sample_weight[6] * roadsVal
-  );
+
+  return {
+    score,
+    stats: {
+      income: income_sum,
+      variety: varietyVal,
+      expansion: expansionVal,
+      devCard: devCardVal,
+      vp: vpVal,
+      robberRisk: robberVal,
+      roads: roadsVal
+    }
+  };
 }
 
 // Given a board state and the player to move, choose the move that maximizes
@@ -542,8 +557,7 @@ function simulate(state, playerToMove, weights) {
     }
   };
 
-  let bestMove = null;
-  let bestScore = -Infinity;
+  const candidates = [];
 
   // Candidate 1: build settlement on any unoccupied corner in mapState.
   for (const [cornerKey, baseCorner] of cornerEntries) {
@@ -563,11 +577,8 @@ function simulate(state, playerToMove, weights) {
     nextState.settlements[cornerKey] = { ...spot, owner: pid, buildingType: 1 };
     bumpVp(nextState, 1);
 
-    const score = calculate_heuristric(nextState, pid, weights);
-    if (score > bestScore) {
-      bestScore = score;
-      bestMove = { type: "build_settlement", key: cornerKey, corner: spot, score };
-    }
+    const { score, stats } = calculate_heuristric(nextState, pid, weights);
+    candidates.push({ type: "build_settlement", key: cornerKey, corner: spot, score, stats });
   }
 
   // Candidate 2: upgrade any owned settlement to a city.
@@ -581,11 +592,8 @@ function simulate(state, playerToMove, weights) {
     nextState.settlements[cornerKey] = { ...piece, buildingType: 2 };
     bumpVp(nextState, 1);
 
-    const score = calculate_heuristric(nextState, pid, weights);
-    if (score > bestScore) {
-      bestScore = score;
-      bestMove = { type: "upgrade_city", key: cornerKey, corner: { x: piece.x, y: piece.y, z: piece.z }, score };
-    }
+    const { score, stats } = calculate_heuristric(nextState, pid, weights);
+    candidates.push({ type: "upgrade_city", key: cornerKey, corner: { x: piece.x, y: piece.y, z: piece.z }, score, stats });
   }
 
   // Candidate 3: place a road on any unoccupied edge in mapState.
@@ -609,11 +617,8 @@ function simulate(state, playerToMove, weights) {
 
     applyLongestRoadAfterSimulatedRoad(nextState, state, baseLRHolder, edgeEndpointsByKey);
 
-    const score = calculate_heuristric(nextState, pid, weights);
-    if (score > bestScore) {
-      bestScore = score;
-      bestMove = { type: "build_road", key: edgeKey, edge: { x: baseEdge.x, y: baseEdge.y, z: baseEdge.z }, score };
-    }
+    const { score, stats } = calculate_heuristric(nextState, pid, weights);
+    candidates.push({ type: "build_road", key: edgeKey, edge: { x: baseEdge.x, y: baseEdge.y, z: baseEdge.z }, score, stats });
   }
 
   // Candidate 4: buy a development card (deduct resources only).
@@ -628,15 +633,13 @@ function simulate(state, playerToMove, weights) {
           nextState.playerDevCards[devKey] = arr.concat([0]);
         }
       }
-      const score = calculate_heuristric(nextState, pid, weights);
-      if (score > bestScore) {
-        bestScore = score;
-        bestMove = { type: "buy_dev_card", key: null, score };
-      }
+      const { score, stats } = calculate_heuristric(nextState, pid, weights);
+      candidates.push({ type: "buy_dev_card", key: null, score, stats });
     }
   }
 
-  return bestMove;
+  candidates.sort((a, b) => b.score - a.score);
+  return candidates.slice(0, 3);
 }
 
 /**
@@ -2893,11 +2896,20 @@ window.addEventListener("DOMContentLoaded", () => {
   const turnSlider = document.getElementById("turnSlider");
   const prevBtn = document.getElementById("prevAnalyticsTurnBtn");
   const nextBtn = document.getElementById("nextAnalyticsTurnBtn");
+  const predictBtn = document.getElementById("predictMoveBtn");
+  const predictContainer = document.getElementById("predictedMovesContainer");
+
+  const clearPredictions = () => {
+    if (predictContainer) {
+      predictContainer.innerHTML = "";
+    }
+  };
 
   if (turnSlider) {
     turnSlider.addEventListener("input", (e) => {
       const turnIndex = parseInt(e.target.value);
       updateAnalyticsView(turnIndex);
+      clearPredictions();
     });
   }
 
@@ -2908,6 +2920,7 @@ window.addEventListener("DOMContentLoaded", () => {
         turnIndex--;
         turnSlider.value = turnIndex;
         updateAnalyticsView(turnIndex);
+        clearPredictions();
       }
     });
   }
@@ -2919,7 +2932,114 @@ window.addEventListener("DOMContentLoaded", () => {
         turnIndex++;
         turnSlider.value = turnIndex;
         updateAnalyticsView(turnIndex);
+        clearPredictions();
       }
+    });
+  }
+
+  if (predictBtn && predictContainer) {
+    predictBtn.addEventListener("click", () => {
+      if (!currentGameData || !turnStates || currentTurnIndex >= turnStates.length) {
+        predictContainer.textContent = "No game loaded.";
+        return;
+      }
+
+      const turn = turnStates[currentTurnIndex];
+      const playerToMove = turn.activePlayer || 1;
+
+      const topMoves = simulate(turn, playerToMove, null);
+      if (!topMoves || topMoves.length === 0) {
+        predictContainer.textContent = "No valid moves predicted.";
+        return;
+      }
+
+      const pColor = PLAYER_COLOR_NAMES[playerToMove] || "white";
+      const playOrder = currentGameData?.data?.playOrder || [];
+      // Get the correct display number based on play order index
+      let displayNum = playerToMove;
+      const idx = playOrder.indexOf(playerToMove);
+      if (idx !== -1) {
+        displayNum = idx + 1;
+      } else {
+        // Fallback: try Number type if string didn't match
+        const idxNum = playOrder.indexOf(Number(playerToMove));
+        if (idxNum !== -1) displayNum = idxNum + 1;
+      }
+
+      predictContainer.innerHTML = `<div style='font-weight: bold; margin-bottom: 6px; color: #e2e8f0;'>Top Predicted Moves for <span style='color: ${pColor}'>Player ${displayNum}</span>:</div>`;
+      topMoves.forEach((move, i) => {
+        let desc = "";
+        if (move.type === "build_settlement") desc = `Build Settlement at corner ${move.key}`;
+        else if (move.type === "upgrade_city") desc = `Upgrade City at corner ${move.key}`;
+        else if (move.type === "build_road") desc = `Build Road at edge ${move.key}`;
+        else if (move.type === "buy_dev_card") desc = `Buy Development Card`;
+
+        const moveDiv = document.createElement("div");
+        moveDiv.style.cursor = "help";
+        moveDiv.style.marginBottom = "4px";
+        moveDiv.style.padding = "6px";
+        moveDiv.style.background = "#1e293b";
+        moveDiv.style.borderRadius = "4px";
+        moveDiv.style.border = "1px solid #475569";
+        
+        moveDiv.innerHTML = `<strong>#${i + 1}</strong>: ${desc} <span style="color:#94a3b8; font-size:12px;">(Score: ${move.score.toFixed(2)})</span>`;
+        
+        const statsStr = Object.entries(move.stats)
+          .map(([k, v]) => `${k.charAt(0).toUpperCase() + k.slice(1)}: ${v.toFixed(2)}`)
+          .join('\n');
+        moveDiv.title = `Heuristic Stats:\n----------------\n${statsStr}`;
+        
+        moveDiv.addEventListener("mouseenter", () => {
+          const hlGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          hlGroup.id = "predictionHighlight";
+          hlGroup.style.pointerEvents = "none";
+          hlGroup.style.opacity = "0.6";
+
+          if (move.type === "build_settlement" || move.type === "upgrade_city") {
+            const { px, py } = axialToPixel(move.corner.x, move.corner.y);
+            const vIdx = CORNER_Z_TO_VERTEX[move.corner.z] ?? move.corner.z;
+            const pt = hexVertex(px, py, vIdx);
+            
+            const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
+            const size = 40;
+            const bType = move.type === "upgrade_city" ? "city" : "settlement";
+            img.setAttribute("href", `./data/images/${bType}_${pColor}.svg`);
+            img.setAttribute("x", pt.x - size / 2);
+            img.setAttribute("y", pt.y - size / 2);
+            img.setAttribute("width", size);
+            img.setAttribute("height", size);
+            img.style.filter = "drop-shadow(0px 0px 4px #fff)";
+            hlGroup.appendChild(img);
+          } else if (move.type === "build_road") {
+            const { px, py } = axialToPixel(move.edge.x, move.edge.y);
+            const eIdx = EDGE_Z_TO_IDX[move.edge.z] ?? move.edge.z;
+            const pt1 = hexVertex(px, py, eIdx);
+            const pt2 = hexVertex(px, py, (eIdx + 1) % 6);
+            
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute("x1", pt1.x);
+            line.setAttribute("y1", pt1.y);
+            line.setAttribute("x2", pt2.x);
+            line.setAttribute("y2", pt2.y);
+            line.setAttribute("stroke", pColor);
+            line.setAttribute("stroke-width", "8");
+            line.setAttribute("stroke-linecap", "round");
+            line.style.filter = "drop-shadow(0px 0px 4px #fff)";
+            hlGroup.appendChild(line);
+          }
+
+          if (hlGroup.childNodes.length > 0) {
+            document.getElementById("catanBoard").appendChild(hlGroup);
+          }
+        });
+
+        moveDiv.addEventListener("mouseleave", () => {
+          const hl = document.getElementById("predictionHighlight");
+          if (hl) hl.remove();
+        });
+
+        predictContainer.appendChild(moveDiv);
+      });
     });
   }
 
