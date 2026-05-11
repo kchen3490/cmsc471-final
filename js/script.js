@@ -762,9 +762,9 @@ function initDiceRollChart() {
   container.innerHTML = "";
 
   const containerWidth = container.getBoundingClientRect().width;
-  const width = Math.max(420, Math.floor(containerWidth || 520));
-  const height = 280;
-  const margin = { top: 20, right: 16, bottom: 36, left: 36 };
+  const width = Math.max(220, Math.floor(containerWidth || 280));
+  const height = 220;
+  const margin = { top: 16, right: 8, bottom: 44, left: 30 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
@@ -775,9 +775,11 @@ function initDiceRollChart() {
 
   const svg = d3.select(container)
     .append("svg")
-    .attr("width", width)
+    .attr("width", "100%")
     .attr("height", height)
-    .attr("viewBox", `0 0 ${width} ${height}`);
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("preserveAspectRatio", "xMidYMid meet")
+    .style("display", "block");
 
   const chart = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -801,7 +803,7 @@ function initDiceRollChart() {
 
   const xAxisLabel = chart.append("text")
     .attr("x", innerWidth / 2)
-    .attr("y", innerHeight + margin.bottom - 2)
+    .attr("y", innerHeight + margin.bottom - 6)
     .attr("text-anchor", "middle")
     .style("fill", "#cbd5e1")
     .style("font-size", "12px")
@@ -844,7 +846,7 @@ function updateDiceRollChart() {
 
   const data = diceRollChart.diceValues.map((value) => ({
     value,
-    count: playgroundState.rollHistory.reduce((total, entry) => total + (entry.value === value ? 1 : 0), 0)
+    count: (typeof pg !== "undefined" && Array.isArray(pg.rollHistory) ? pg.rollHistory : playgroundState.rollHistory).reduce((total, entry) => total + (entry.value === value ? 1 : 0), 0)
   }));
 
   const maxCount = d3.max(data, (d) => d.count) ?? 0;
@@ -926,7 +928,7 @@ function initAnalyticsDiceRollChart() {
   const containerWidth = container.getBoundingClientRect().width;
   const width = Math.max(280, Math.floor(containerWidth || 340));
   const height = 260;
-  const margin = { top: 20, right: 12, bottom: 40, left: 44 };
+  const margin = { top: 20, right: 12, bottom: 40, left: 30 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
@@ -2676,67 +2678,7 @@ function adjustPlayerInventory(kind, delta) {
 }
 
 function initPlayground() {
-  const createBtn = document.getElementById("createGameBtn");
-  const addRollBtn = document.getElementById("addRollBtn");
-  const nextTurnBtn = document.getElementById("nextTurnBtn");
-  const prevTurnBtn = document.getElementById("prevTurnBtn");
-  const addResourceBtn = document.getElementById("addResourceBtn");
-  const removeResourceBtn = document.getElementById("removeResourceBtn");
-  const addDevCardBtn = document.getElementById("addDevCardBtn");
-  const removeDevCardBtn = document.getElementById("removeDevCardBtn");
-  const countInput = document.getElementById("playerCount");
-  const diceInput = document.getElementById("diceValue");
-
-  createBtn?.addEventListener("click", () => {
-    const count = Number(countInput?.value ?? 4);
-    const safeCount = Math.min(8, Math.max(2, Number.isFinite(count) ? count : 4));
-    createPlaygroundPlayers(safeCount);
-    renderPlayground();
-  });
-
-  nextTurnBtn?.addEventListener("click", () => {
-    if (!playgroundState.turnOrder.length) return;
-    playgroundState.currentTurnIndex = (playgroundState.currentTurnIndex + 1) % playgroundState.turnOrder.length;
-    playgroundState.lastRollerPlayerId = null; // Reset for new turn
-    renderTurnOrder();
-  });
-
-  prevTurnBtn?.addEventListener("click", () => {
-    if (!playgroundState.turnOrder.length) return;
-    playgroundState.currentTurnIndex =
-      (playgroundState.currentTurnIndex - 1 + playgroundState.turnOrder.length) % playgroundState.turnOrder.length;
-    playgroundState.lastRollerPlayerId = null; // Reset for new turn
-    renderTurnOrder();
-  });
-
-  addRollBtn?.addEventListener("click", () => {
-    const roll = Number(diceInput?.value ?? 0);
-    if (!Number.isInteger(roll) || roll < 2 || roll > 12) return;
-    const player = currentTurnPlayer();
-    if (!player) return;
-
-    // Prevent same player from rolling twice in a row
-    if (playgroundState.lastRollerPlayerId === player.id) {
-      alert(`${player.name} already rolled this turn. Move to the next player first.`);
-      return;
-    }
-
-    const entry = { value: roll, playerId: player.id, playerName: player.name };
-    player.rolls.push(roll);
-    playgroundState.rollHistory.push(entry);
-    playgroundState.lastRollerPlayerId = player.id;
-    renderRollHistory();
-    renderPlayerTracker();
-  });
-
-  addResourceBtn?.addEventListener("click", () => adjustPlayerInventory("resources", 1));
-  removeResourceBtn?.addEventListener("click", () => adjustPlayerInventory("resources", -1));
-  addDevCardBtn?.addEventListener("click", () => adjustPlayerInventory("devCards", 1));
-  removeDevCardBtn?.addEventListener("click", () => adjustPlayerInventory("devCards", -1));
-
-  initDiceRollChart();
-  createPlaygroundPlayers(4);
-  renderPlayground();
+  if (typeof pgInit === "function") pgInit();
 }
 
 function initTabs() {
@@ -2891,6 +2833,13 @@ window.addEventListener("DOMContentLoaded", () => {
   initTabs();
   initSelector();
   initPlayground();
+
+  const coordToggle = document.getElementById("coordToggle");
+  if (coordToggle) {
+    const apply = () => document.body.classList.toggle("coords-hidden", !coordToggle.checked);
+    coordToggle.addEventListener("change", apply);
+    apply();
+  }
 
   // Add turn slider listener for analytics mode
   const turnSlider = document.getElementById("turnSlider");
@@ -3258,4 +3207,1050 @@ function updateEventLogDisplay(turnIndex) {
   }).join("");
 
   logBox.innerHTML = logHtml;
+}
+// ════════════════════════════════════════════════════════════════════════════
+// PLAYGROUND v2 — live game tracker
+// ════════════════════════════════════════════════════════════════════════════
+
+const PG_AVAILABLE_COLORS = [1, 2, 3, 5, 8, 4, 10, 6, 12]; // red, blue, orange, black, yellow, green, purple, bronze, pink
+const PG_HEX_TYPE_OPTIONS = [
+  { val: 1, label: "Wood" },
+  { val: 2, label: "Brick" },
+  { val: 3, label: "Sheep" },
+  { val: 4, label: "Wheat" },
+  { val: 5, label: "Ore" },
+  { val: 0, label: "Desert" },
+];
+const PG_PORT_TYPE_OPTIONS = [
+  { val: 1, label: "3:1" },
+  { val: 2, label: "Wood 2:1" },
+  { val: 3, label: "Brick 2:1" },
+  { val: 4, label: "Sheep 2:1" },
+  { val: 5, label: "Wheat 2:1" },
+  { val: 6, label: "Ore 2:1" },
+];
+const PG_DICE_NUMBERS = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12];
+const PG_BUILD_COSTS = {
+  road: { wood: 1, brick: 1 },
+  settlement: { wood: 1, brick: 1, sheep: 1, wheat: 1 },
+  city: { wheat: 2, ore: 3 },
+  devcard: { sheep: 1, wheat: 1, ore: 1 },
+};
+const PG_RES_TYPE_TO_NAME = { 1: "wood", 2: "brick", 3: "sheep", 4: "wheat", 5: "ore" };
+const PG_RES_NAME_TO_TYPE = { wood: 1, brick: 2, sheep: 3, wheat: 4, ore: 5 };
+
+const pg = {
+  phase: "setup",   // setup | board | initial | play
+  mapState: null,   // loaded template (cloned)
+  players: [],      // {id, name, colorKey, resources, devCards, settlementsLeft, citiesLeft, roadsLeft}
+  turnOrder: [],
+  currentTurnIdx: 0,
+  settlements: {},  // cornerKey -> {x,y,z,owner,buildingType (1=set,2=city)}
+  roads: {},        // edgeKey -> {x,y,z,owner,type:1}
+  bank: { 1: 19, 2: 19, 3: 19, 4: 19, 5: 19 },
+  rollHistory: [],
+  eventLog: [],
+  turns: [],        // snapshots taken after each "Next Turn"; each = {currentTurnIdx, eventLogLen, snapshotIdx}
+  viewTurn: 0,      // for slider
+  initial: { stepIdx: 0, order: [], expecting: "settlement", lastSettlementKey: null, snake: [] },
+  history: [],      // undo stack
+  _mapTemplate: null,
+};
+
+function pgClone(o) { return JSON.parse(JSON.stringify(o)); }
+
+function pgPushHistory(label) {
+  pg.history.push({
+    label,
+    snap: pgClone({
+      phase: pg.phase,
+      mapState: pg.mapState,
+      players: pg.players,
+      turnOrder: pg.turnOrder,
+      currentTurnIdx: pg.currentTurnIdx,
+      settlements: pg.settlements,
+      roads: pg.roads,
+      bank: pg.bank,
+      rollHistory: pg.rollHistory,
+      eventLog: pg.eventLog,
+      turns: pg.turns,
+      viewTurn: pg.viewTurn,
+      initial: pg.initial,
+    }),
+  });
+  if (pg.history.length > 40) pg.history.shift();
+  document.getElementById("pgUndoBtn").disabled = false;
+}
+
+function pgUndo() {
+  if (!pg.history.length) return;
+  const last = pg.history.pop();
+  Object.assign(pg, last.snap);
+  if (!pg.history.length) document.getElementById("pgUndoBtn").disabled = true;
+  pgRenderAll();
+}
+
+async function pgLoadMapTemplate() {
+  if (pg._mapTemplate) return pg._mapTemplate;
+  try {
+    const idxRes = await fetch("./preprocessed-data/valid-index.json");
+    const ids = await idxRes.json();
+    const id = ids[0];
+    const r = await fetch(`./preprocessed-data/valid/${id}.json`);
+    const data = await r.json();
+    pg._mapTemplate = data?.data?.eventHistory?.initialState?.mapState || null;
+  } catch (e) {
+    console.error("pg: template load failed", e);
+  }
+  return pg._mapTemplate;
+}
+
+function pgMakeBlankMap() {
+  const tpl = pgClone(pg._mapTemplate);
+  if (!tpl) return null;
+  for (const k of Object.keys(tpl.tileHexStates || {})) {
+    tpl.tileHexStates[k].type = -1; // -1 = blank
+    tpl.tileHexStates[k].diceNumber = 0;
+  }
+  for (const k of Object.keys(tpl.portEdgeStates || {})) {
+    tpl.portEdgeStates[k].type = -1;
+  }
+  return tpl;
+}
+
+// ── Geometry helpers used for piece placement
+function pgCornerEntries() {
+  return Object.entries(pg.mapState?.tileCornerStates || {});
+}
+function pgEdgeEntries() {
+  return Object.entries(pg.mapState?.tileEdgeStates || {});
+}
+function pgCornerPx(c) {
+  const { px, py } = axialToPixel(c.x, c.y);
+  const vIdx = CORNER_Z_TO_VERTEX[c.z] ?? 0;
+  return hexVertex(px, py, vIdx);
+}
+function pgEdgeEnds(e) {
+  const { px, py } = axialToPixel(e.x, e.y);
+  const eIdx = EDGE_Z_TO_IDX[e.z] ?? 0;
+  return [hexVertex(px, py, eIdx), hexVertex(px, py, (eIdx + 1) % 6)];
+}
+function pgFindCornerKeyNearPx(p) {
+  const EPS2 = (SIZE * 0.1) ** 2;
+  let best = null, bestD2 = Infinity;
+  for (const [k, c] of pgCornerEntries()) {
+    const cp = pgCornerPx(c);
+    const d2 = (cp.x - p.x) ** 2 + (cp.y - p.y) ** 2;
+    if (d2 < bestD2) { bestD2 = d2; best = k; }
+  }
+  return bestD2 <= EPS2 ? best : null;
+}
+function pgAdjacentCornersToCorner(cornerKey) {
+  const c = pg.mapState.tileCornerStates[cornerKey];
+  if (!c) return [];
+  const cp = pgCornerPx(c);
+  const set = new Set();
+  for (const [ek, e] of pgEdgeEntries()) {
+    const [a, b] = pgEdgeEnds(e);
+    const da2 = (a.x - cp.x) ** 2 + (a.y - cp.y) ** 2;
+    const db2 = (b.x - cp.x) ** 2 + (b.y - cp.y) ** 2;
+    const eps2 = (SIZE * 0.1) ** 2;
+    if (da2 <= eps2) { const k = pgFindCornerKeyNearPx(b); if (k) set.add(k); }
+    else if (db2 <= eps2) { const k = pgFindCornerKeyNearPx(a); if (k) set.add(k); }
+  }
+  return [...set];
+}
+function pgEdgesAtCorner(cornerKey) {
+  const c = pg.mapState.tileCornerStates[cornerKey];
+  if (!c) return [];
+  const cp = pgCornerPx(c);
+  const eps2 = (SIZE * 0.1) ** 2;
+  const out = [];
+  for (const [ek, e] of pgEdgeEntries()) {
+    const [a, b] = pgEdgeEnds(e);
+    if ((a.x - cp.x) ** 2 + (a.y - cp.y) ** 2 <= eps2) out.push(ek);
+    else if ((b.x - cp.x) ** 2 + (b.y - cp.y) ** 2 <= eps2) out.push(ek);
+  }
+  return out;
+}
+function pgHexesTouchingCorner(cornerKey) {
+  const c = pg.mapState.tileCornerStates[cornerKey];
+  if (!c) return [];
+  const cp = pgCornerPx(c);
+  const out = [];
+  for (const [hk, h] of Object.entries(pg.mapState.tileHexStates)) {
+    const { px, py } = axialToPixel(h.x, h.y);
+    for (let v = 0; v < 6; v++) {
+      const vp = hexVertex(px, py, v);
+      if ((vp.x - cp.x) ** 2 + (vp.y - cp.y) ** 2 <= (SIZE * 0.1) ** 2) {
+        out.push({ hexKey: hk, hex: h });
+        break;
+      }
+    }
+  }
+  return out;
+}
+
+// ── SETUP MODAL
+function pgShowSetupModal() {
+  const modal = document.getElementById("playgroundSetupModal");
+  if (!modal) return;
+  modal.style.display = "flex";
+  const select = document.getElementById("pgPlayerCount");
+  const count = Number(select.value) || 4;
+  pgRenderSetupRows(count);
+  select.onchange = () => pgRenderSetupRows(Number(select.value) || 4);
+  document.getElementById("pgSetupConfirmBtn").onclick = pgConfirmSetup;
+}
+
+function pgRenderSetupRows(count) {
+  const box = document.getElementById("pgSetupPlayers");
+  box.innerHTML = "";
+  if (!pg._setupDraft || pg._setupDraft.length !== count) {
+    pg._setupDraft = Array.from({ length: count }, (_, i) => ({
+      name: `Player ${i + 1}`,
+      colorKey: PG_AVAILABLE_COLORS[i] || PG_AVAILABLE_COLORS[0],
+    }));
+  }
+  pg._setupDraft.forEach((p, idx) => {
+    const row = document.createElement("div");
+    row.className = "pg-setup-row";
+    row.innerHTML = `
+      <span style="font-weight:600;color:#94a3b8;">${idx + 1}.</span>
+      <input type="text" value="${p.name.replace(/"/g, "&quot;")}" data-idx="${idx}" class="pg-name-input" style="padding:4px 6px;">
+      <select data-idx="${idx}" class="pg-color-input">
+        ${PG_AVAILABLE_COLORS.map(ck => `<option value="${ck}" ${ck === p.colorKey ? "selected" : ""}>${PLAYER_COLOR_NAMES[ck]}</option>`).join("")}
+      </select>
+      <span>
+        <button data-up="${idx}" type="button" ${idx === 0 ? "disabled" : ""}>↑</button>
+        <button data-down="${idx}" type="button" ${idx === count - 1 ? "disabled" : ""}>↓</button>
+      </span>`;
+    box.appendChild(row);
+  });
+  box.querySelectorAll(".pg-name-input").forEach(el => {
+    el.oninput = () => { pg._setupDraft[Number(el.dataset.idx)].name = el.value || `Player ${Number(el.dataset.idx) + 1}`; };
+  });
+  box.querySelectorAll(".pg-color-input").forEach(el => {
+    el.onchange = () => { pg._setupDraft[Number(el.dataset.idx)].colorKey = Number(el.value); };
+  });
+  box.querySelectorAll("button[data-up]").forEach(b => {
+    b.onclick = () => { const i = Number(b.dataset.up); [pg._setupDraft[i - 1], pg._setupDraft[i]] = [pg._setupDraft[i], pg._setupDraft[i - 1]]; pgRenderSetupRows(count); };
+  });
+  box.querySelectorAll("button[data-down]").forEach(b => {
+    b.onclick = () => { const i = Number(b.dataset.down); [pg._setupDraft[i + 1], pg._setupDraft[i]] = [pg._setupDraft[i], pg._setupDraft[i + 1]]; pgRenderSetupRows(count); };
+  });
+}
+
+function pgConfirmSetup() {
+  const colors = pg._setupDraft.map(p => p.colorKey);
+  if (new Set(colors).size !== colors.length) {
+    alert("Each player needs a unique color.");
+    return;
+  }
+  pg.players = pg._setupDraft.map((p, i) => ({
+    id: p.colorKey, // use color key as id (matches PLAYER_COLOR_NAMES used by piece images)
+    name: p.name,
+    colorKey: p.colorKey,
+    resources: { wood: 0, brick: 0, sheep: 0, wheat: 0, ore: 0 },
+    devCards: { knight: 0, victoryPoint: 0, roadBuilding: 0, yearOfPlenty: 0, monopoly: 0 },
+    settlementsLeft: 5,
+    citiesLeft: 4,
+    roadsLeft: 15,
+    vp: 0,
+  }));
+  pg.turnOrder = pg.players.map(p => p.id);
+  pg.currentTurnIdx = 0;
+  pg.mapState = pgMakeBlankMap();
+  pg.settlements = {};
+  pg.roads = {};
+  pg.bank = { 1: 19, 2: 19, 3: 19, 4: 19, 5: 19 };
+  pg.rollHistory = [];
+  pg.eventLog = [];
+  pg.turns = [];
+  pg.viewTurn = 0;
+  pg.phase = "board";
+  pg.history = [];
+  document.getElementById("playgroundSetupModal").style.display = "none";
+  document.getElementById("pgUndoBtn").disabled = true;
+  pgRenderAll();
+}
+
+// ── BOARD RENDERER
+function pgRenderBoard() {
+  const svgEl_ = document.getElementById("playgroundBoard");
+  if (!svgEl_ || !pg.mapState) return;
+  svgEl_.innerHTML = "";
+  const hexes = Object.entries(pg.mapState.tileHexStates || {});
+  const ports = Object.values(pg.mapState.portEdgeStates || {});
+  const edges = Object.values(pg.mapState.tileEdgeStates || {});
+  const corners = Object.values(pg.mapState.tileCornerStates || {});
+
+  // Hexes
+  hexes.forEach(([idx, tile]) => pgDrawHex(svgEl_, idx, tile));
+  // Ports
+  ports.forEach((port, i) => pgDrawPort(svgEl_, port, i));
+  // Edges/corners only in placement phases — they'd intercept clicks during board editor
+  if (pg.phase === "initial" || pg.phase === "play") {
+    edges.forEach((edge, i) => pgDrawEdge(svgEl_, edge, i));
+    corners.forEach((c, i) => pgDrawCorner(svgEl_, c, i));
+  }
+  // Hex labels (numbers)
+  hexes.forEach(([, tile]) => pgDrawHexLabels(svgEl_, tile));
+  // Pieces
+  for (const [ek, road] of Object.entries(pg.roads)) {
+    pgDrawRoad(svgEl_, road);
+  }
+  for (const [ck, p] of Object.entries(pg.settlements)) {
+    if (p.buildingType === 2) pgDrawCity(svgEl_, p);
+    else pgDrawSettlement(svgEl_, p);
+  }
+}
+
+function pgDrawHex(parent, idx, tile) {
+  const { px, py } = axialToPixel(tile.x, tile.y);
+  const isBlank = tile.type === -1;
+  const clickable = pg.phase === "board";
+  const cls = isBlank ? "hex hex-blank" : `hex hex-type-${tile.type}${clickable ? " hex-clickable" : ""}`;
+  const poly = svgEl("polygon", { points: hexPolyPoints(px, py), class: cls });
+  if (clickable) {
+    poly.addEventListener("click", (e) => pgOpenHexPicker(idx, e));
+  }
+  parent.appendChild(poly);
+}
+
+function pgDrawHexLabels(parent, tile) {
+  const { px, py } = axialToPixel(tile.x, tile.y);
+  if (tile.type === -1) return;
+  if (tile.diceNumber > 0) {
+    const isHot = tile.diceNumber === 6 || tile.diceNumber === 8;
+    const clickable = pg.phase === "board" && tile.type !== 0;
+    const bg = svgEl("circle", { cx: px, cy: py, r: 15, class: `dice-bg${clickable ? " dice-clickable" : ""}` });
+    if (clickable) {
+      bg.addEventListener("click", (e) => { e.stopPropagation(); pgOpenDicePicker(tile, e); });
+    }
+    parent.appendChild(bg);
+    parent.appendChild(svgText({ x: px, y: py - 2, class: `dice-label${isHot ? " hot" : ""}` }, tile.diceNumber));
+    const n = 6 - Math.abs(tile.diceNumber - 7);
+    const sp = 4, sx = px - ((n - 1) * sp) / 2;
+    for (let i = 0; i < n; i++) {
+      parent.appendChild(svgEl("circle", { cx: sx + i * sp, cy: py + 8, r: 1.2, fill: isHot ? "#c00" : "#222" }));
+    }
+  } else if (pg.phase === "board" && tile.type !== -1 && tile.type !== 0) {
+    // Show "set #" placeholder
+    parent.appendChild(svgEl("circle", { cx: px, cy: py, r: 12, class: "dice-bg dice-clickable" }))
+      .addEventListener("click", (e) => { e.stopPropagation(); pgOpenDicePicker(tile, e); });
+    parent.appendChild(svgText({ x: px, y: py + 2, class: "dice-label" }, "?"));
+  }
+  if (tile.type >= 0) {
+    parent.appendChild(svgText({ x: px, y: py + 22, class: "type-label" }, HEX_TYPES[tile.type] ?? "?"));
+  } else if (pg.phase === "board") {
+    parent.appendChild(svgText({ x: px, y: py, class: "type-label" }, "Click to set"));
+  }
+  parent.appendChild(svgText({ x: px, y: py - 28, class: "coord-label" }, `H(${tile.x},${tile.y})`));
+}
+
+function pgDrawPort(parent, port, idx) {
+  const { px: cx, py: cy } = axialToPixel(port.x, port.y);
+  const eIdx = EDGE_Z_TO_IDX[port.z] ?? port.z;
+  const v0 = hexVertex(cx, cy, eIdx);
+  const v1 = hexVertex(cx, cy, (eIdx + 1) % 6);
+  const mid = edgeMidByIdx(cx, cy, eIdx);
+  const pmLen = Math.hypot(mid.x, mid.y) || 1;
+  let ox = mid.x + (mid.x / pmLen) * 30;
+  let oy = mid.y + (mid.y / pmLen) * 30;
+  const oR = Math.hypot(ox, oy);
+  if (oR > 320) { ox *= 320 / oR; oy *= 320 / oR; }
+  const isBlank = port.type === -1;
+  for (const v of [v0, v1]) {
+    parent.appendChild(svgEl("line", { x1: v.x, y1: v.y, x2: ox, y2: oy, class: "port-line" }));
+  }
+  const clickable = pg.phase === "board";
+  const visCls = isBlank ? "port port-blank" : `port port-type-${port.type}${clickable ? " port-clickable" : ""}`;
+  const circle = svgEl("circle", { cx: ox, cy: oy, r: 16, class: visCls });
+  if (clickable) circle.addEventListener("click", (e) => pgOpenPortPicker(idx, e));
+  parent.appendChild(circle);
+  const info = PORT_TYPES[port.type];
+  parent.appendChild(svgText({ x: ox, y: oy, class: "port-label" }, info ? info.label : "?"));
+}
+
+function pgDrawEdge(parent, edge, idx) {
+  const { px: cx, py: cy } = axialToPixel(edge.x, edge.y);
+  const eIdx = EDGE_Z_TO_IDX[edge.z] ?? edge.z;
+  const { x, y } = edgeMidByIdx(cx, cy, eIdx);
+  const ek = pgEdgeKeyOf(edge);
+  if (pg.roads[ek]) return; // road piece will be drawn elsewhere
+  const placeable = pgCanPlaceRoadOnEdge(ek);
+  const circ = svgEl("circle", { cx: x, cy: y, r: placeable ? 6 : 3, class: `edge-point${placeable ? " placeable" : ""}` });
+  if (placeable) circ.addEventListener("click", () => pgClickEdge(ek));
+  parent.appendChild(circ);
+  parent.appendChild(svgText({ x, y: y + 10, class: "edge-label" }, `E(${edge.x},${edge.y},${edge.z})`));
+}
+
+function pgDrawCorner(parent, corner, idx) {
+  const ck = pgCornerKeyOf(corner);
+  const { x, y } = pgCornerPx(corner);
+  if (pg.settlements[ck]) return; // piece drawn elsewhere
+  const placeable = pgCanPlaceSettlementOnCorner(ck);
+  const circ = svgEl("circle", { cx: x, cy: y, r: placeable ? 7 : 4, class: `vertex-point${placeable ? " placeable" : ""}` });
+  if (placeable) circ.addEventListener("click", () => pgClickCorner(ck));
+  parent.appendChild(circ);
+  parent.appendChild(svgText({ x, y: y - 7, class: "vertex-label" }, `V(${corner.x},${corner.y},${corner.z})`));
+}
+
+function pgCornerKeyOf(c) {
+  for (const [k, v] of pgCornerEntries()) { if (v.x === c.x && v.y === c.y && v.z === c.z) return k; }
+  return null;
+}
+function pgEdgeKeyOf(e) {
+  for (const [k, v] of pgEdgeEntries()) { if (v.x === e.x && v.y === e.y && v.z === e.z) return k; }
+  return null;
+}
+
+function pgDrawSettlement(parent, p) {
+  const corner = pg.mapState.tileCornerStates[pgFindCornerKeyForPiece(p)] || p;
+  const { x, y } = pgCornerPx(corner);
+  const colorName = PLAYER_COLOR_NAMES[p.owner];
+  const href = colorName ? `./data/images/settlement_${colorName}.svg` : "";
+  const size = 32;
+  const img = svgEl("image", { href, x: x - size / 2, y: y - size / 2, width: size, height: size, class: "piece-settlement" });
+  if (pg.phase === "play") {
+    img.style.cursor = "pointer";
+    img.addEventListener("click", () => pgTryUpgradeCity(pgFindCornerKeyForPiece(p)));
+  }
+  parent.appendChild(img);
+}
+
+function pgDrawCity(parent, p) {
+  const corner = pg.mapState.tileCornerStates[pgFindCornerKeyForPiece(p)] || p;
+  const { x, y } = pgCornerPx(corner);
+  const colorName = PLAYER_COLOR_NAMES[p.owner];
+  const href = colorName ? `./data/images/city_${colorName}.svg` : "";
+  const size = 42;
+  parent.appendChild(svgEl("image", { href, x: x - size / 2, y: y - size / 2 - 10, width: size, height: size, class: "piece-city" }));
+}
+
+function pgFindCornerKeyForPiece(p) {
+  for (const [k, c] of pgCornerEntries()) { if (c.x === p.x && c.y === p.y && c.z === p.z) return k; }
+  return null;
+}
+function pgFindEdgeKeyForPiece(p) {
+  for (const [k, c] of pgEdgeEntries()) { if (c.x === p.x && c.y === p.y && c.z === p.z) return k; }
+  return null;
+}
+
+function pgDrawRoad(parent, road) {
+  const { px: cx, py: cy } = axialToPixel(road.x, road.y);
+  const eIdx = EDGE_Z_TO_IDX[road.z] ?? road.z;
+  const v0 = hexVertex(cx, cy, eIdx);
+  const v1 = hexVertex(cx, cy, (eIdx + 1) % 6);
+  const colorName = PLAYER_COLOR_NAMES[road.owner];
+  const href = colorName ? `./data/images/road_${colorName}.svg` : "";
+  const edgeLength = Math.hypot(v1.x - v0.x, v1.y - v0.y) || 1;
+  const p = { x: (v0.x + v1.x) / 2, y: (v0.y + v1.y) / 2 };
+  const width = Math.max(18, edgeLength - 16);
+  const height = 48;
+  const angle = edgeRotationDeg(cx, cy, eIdx) + 90;
+  const transform = `rotate(${angle} ${p.x} ${p.y})`;
+  parent.appendChild(svgEl("image", { href, x: p.x - width / 2, y: p.y - height / 2, width, height, preserveAspectRatio: "none", transform, class: "piece-road" }));
+}
+
+// ── PICKER OVERLAY
+function pgClosePicker() {
+  document.querySelectorAll(".pg-picker-overlay").forEach(el => el.remove());
+}
+
+function pgOpenPicker(anchorEvent, options, onPick) {
+  pgClosePicker();
+  const overlay = document.createElement("div");
+  overlay.className = "pg-picker-overlay";
+  options.forEach(opt => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = opt.label;
+    b.onclick = () => { onPick(opt.val); pgClosePicker(); };
+    overlay.appendChild(b);
+  });
+  document.body.appendChild(overlay);
+  const rect = overlay.getBoundingClientRect();
+  overlay.style.left = `${Math.min(window.innerWidth - rect.width - 8, anchorEvent.clientX + 8)}px`;
+  overlay.style.top = `${Math.min(window.innerHeight - rect.height - 8, anchorEvent.clientY + 8)}px`;
+  setTimeout(() => {
+    document.addEventListener("click", function once(e) {
+      // Close only when the click is outside ALL current overlays AND not on a
+      // board element that would open a fresh picker.
+      const overlays = document.querySelectorAll(".pg-picker-overlay");
+      if (!overlays.length) { document.removeEventListener("click", once); return; }
+      for (const o of overlays) if (o.contains(e.target)) return;
+      const onBoard = e.target.closest && e.target.closest("#playgroundBoard");
+      if (onBoard) return; // let the new-picker logic handle replacement
+      pgClosePicker();
+      document.removeEventListener("click", once);
+    });
+  }, 50);
+}
+
+function pgOpenHexPicker(idx, ev) {
+  pgOpenPicker(ev, PG_HEX_TYPE_OPTIONS, (val) => {
+    pgPushHistory("hex");
+    pg.mapState.tileHexStates[idx].type = val;
+    if (val === 0) pg.mapState.tileHexStates[idx].diceNumber = 0;
+    pgRenderAll();
+  });
+}
+function pgOpenDicePicker(tile, ev) {
+  pgOpenPicker(ev, PG_DICE_NUMBERS.map(n => ({ val: n, label: String(n) })), (val) => {
+    pgPushHistory("dice");
+    tile.diceNumber = val;
+    pgRenderAll();
+  });
+}
+function pgOpenPortPicker(idx, ev) {
+  pgOpenPicker(ev, PG_PORT_TYPE_OPTIONS, (val) => {
+    pgPushHistory("port");
+    Object.values(pg.mapState.portEdgeStates)[idx].type = val;
+    pgRenderAll();
+  });
+}
+
+// ── RANDOMIZE BOARD (standard Catan distribution)
+function pgShuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pgRandomizeBoard() {
+  if (pg.phase !== "board") return;
+  pgPushHistory("randomize");
+  // Standard Catan: 4 wood, 3 brick, 4 sheep, 4 wheat, 3 ore, 1 desert
+  const hexPool = pgShuffle([
+    1, 1, 1, 1,
+    2, 2, 2,
+    3, 3, 3, 3,
+    4, 4, 4, 4,
+    5, 5, 5,
+    0,
+  ]);
+  // Standard number tokens: 2,12 once; 3,4,5,6,8,9,10,11 twice (18 total for 18 non-desert hexes)
+  const numberPool = pgShuffle([2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12]);
+  const hexKeys = Object.keys(pg.mapState.tileHexStates);
+  let nIdx = 0;
+  hexKeys.forEach((k, i) => {
+    const type = hexPool[i] ?? 0;
+    pg.mapState.tileHexStates[k].type = type;
+    pg.mapState.tileHexStates[k].diceNumber = type === 0 ? 0 : (numberPool[nIdx++] ?? 0);
+  });
+  // Standard ports: 4 generic (3:1) + 5 specific (2:1 for each resource)
+  const portPool = pgShuffle([1, 1, 1, 1, 2, 3, 4, 5, 6]);
+  const portKeys = Object.keys(pg.mapState.portEdgeStates);
+  portKeys.forEach((k, i) => {
+    pg.mapState.portEdgeStates[k].type = portPool[i] ?? 1;
+  });
+  pgRenderAll();
+}
+
+// ── CONFIRM BOARD → INITIAL PLACEMENT
+function pgConfirmBoard() {
+  // Validate all hexes & ports assigned
+  const hexBlank = Object.values(pg.mapState.tileHexStates).some(h => h.type === -1);
+  const numBlank = Object.values(pg.mapState.tileHexStates).some(h => h.type > 0 && h.diceNumber === 0);
+  const portBlank = Object.values(pg.mapState.portEdgeStates).some(p => p.type === -1);
+  if (hexBlank || portBlank) { alert("Assign a terrain to every hex and a type to every port."); return; }
+  if (numBlank) { alert("Every non-desert hex needs a dice number."); return; }
+  pgPushHistory("confirm-board");
+  pg.phase = "initial";
+  // Snake: 1,2,3,4,4,3,2,1
+  const order = [...pg.turnOrder, ...[...pg.turnOrder].reverse()];
+  pg.initial = { stepIdx: 0, order, expecting: "settlement", lastSettlementKey: null };
+  pgRenderAll();
+}
+
+// ── PLACEMENT VALIDITY
+function pgCornerKeysAdjacentOccupied(cornerKey) {
+  for (const adj of pgAdjacentCornersToCorner(cornerKey)) {
+    if (pg.settlements[adj]) return true;
+  }
+  return false;
+}
+
+function pgCanPlaceSettlementOnCorner(cornerKey) {
+  if (pg.phase !== "initial" && pg.phase !== "play") return false;
+  if (pg.settlements[cornerKey]) return false;
+  if (pgCornerKeysAdjacentOccupied(cornerKey)) return false;
+  if (pg.phase === "initial") {
+    return pg.initial.expecting === "settlement";
+  }
+  // play phase: must be connected to active player's road network
+  const activeId = pg.players[pg.currentTurnIdx % pg.players.length]?.id;
+  const edges = pgEdgesAtCorner(cornerKey);
+  return edges.some(ek => pg.roads[ek]?.owner === activeId);
+}
+
+function pgCanPlaceRoadOnEdge(edgeKey) {
+  if (pg.phase !== "initial" && pg.phase !== "play") return false;
+  if (pg.roads[edgeKey]) return false;
+  if (pg.phase === "initial") {
+    if (pg.initial.expecting !== "road") return false;
+    // Must touch the just-placed settlement
+    const e = pg.mapState.tileEdgeStates[edgeKey];
+    if (!e) return false;
+    const [a, b] = pgEdgeEnds(e);
+    const ka = pgFindCornerKeyNearPx(a);
+    const kb = pgFindCornerKeyNearPx(b);
+    return ka === pg.initial.lastSettlementKey || kb === pg.initial.lastSettlementKey;
+  }
+  // play: edge must touch active player's road or settlement
+  const activeId = pg.players[pg.currentTurnIdx % pg.players.length]?.id;
+  const e = pg.mapState.tileEdgeStates[edgeKey];
+  const [a, b] = pgEdgeEnds(e);
+  const ka = pgFindCornerKeyNearPx(a);
+  const kb = pgFindCornerKeyNearPx(b);
+  if (pg.settlements[ka]?.owner === activeId || pg.settlements[kb]?.owner === activeId) return true;
+  // also touch own road at endpoint (not blocked by opponent settlement)
+  const touchesOwnRoad = (cornerK, otherK) => {
+    if (pg.settlements[cornerK] && pg.settlements[cornerK].owner !== activeId) return false;
+    return pgEdgesAtCorner(cornerK).some(ek2 => ek2 !== edgeKey && pg.roads[ek2]?.owner === activeId);
+  };
+  return touchesOwnRoad(ka, kb) || touchesOwnRoad(kb, ka);
+}
+
+// ── PLACEMENT HANDLERS
+function pgClickCorner(cornerKey) {
+  if (pg.phase === "initial") {
+    pgPushHistory("place-settlement");
+    const activeId = pg.initial.order[pg.initial.stepIdx];
+    const corner = pg.mapState.tileCornerStates[cornerKey];
+    pg.settlements[cornerKey] = { x: corner.x, y: corner.y, z: corner.z, owner: activeId, buildingType: 1 };
+    const player = pg.players.find(p => p.id === activeId);
+    if (player) {
+      player.settlementsLeft = Math.max(0, player.settlementsLeft - 1);
+      player.vp += 1;
+    }
+    pg.initial.lastSettlementKey = cornerKey;
+    pg.initial.expecting = "road";
+    pg.eventLog.push({ type: "placeSettlement", player: activeId, cornerKey });
+    // Second settlement → grant adjacent hex resources
+    const placedSoFarByPlayer = pg.initial.order.slice(0, pg.initial.stepIdx + 1).filter(id => id === activeId).length;
+    if (placedSoFarByPlayer === 2) {
+      pgGrantStarterResources(activeId, cornerKey);
+    }
+    pgRenderAll();
+    return;
+  }
+  if (pg.phase === "play") {
+    // Build settlement at corner (player from selector)
+    const playerId = Number(document.getElementById("playerSelector")?.value) || pg.players[0].id;
+    const player = pg.players.find(p => p.id === playerId);
+    if (!player) return;
+    if (!pgHasResources(player, PG_BUILD_COSTS.settlement)) { alert("Not enough resources for a settlement."); return; }
+    if (player.settlementsLeft <= 0) { alert("No settlements left."); return; }
+    pgPushHistory("build-settlement");
+    pgSpendResources(player, PG_BUILD_COSTS.settlement);
+    const corner = pg.mapState.tileCornerStates[cornerKey];
+    pg.settlements[cornerKey] = { x: corner.x, y: corner.y, z: corner.z, owner: playerId, buildingType: 1 };
+    player.settlementsLeft -= 1;
+    player.vp += 1;
+    pg.eventLog.push({ type: "buildingPurchased", player: playerId, building: "settlement", count: 1 });
+    pgRenderAll();
+  }
+}
+
+function pgClickEdge(edgeKey) {
+  if (pg.phase === "initial") {
+    pgPushHistory("place-road");
+    const activeId = pg.initial.order[pg.initial.stepIdx];
+    const edge = pg.mapState.tileEdgeStates[edgeKey];
+    pg.roads[edgeKey] = { x: edge.x, y: edge.y, z: edge.z, owner: activeId, type: 1 };
+    const player = pg.players.find(p => p.id === activeId);
+    if (player) player.roadsLeft = Math.max(0, player.roadsLeft - 1);
+    pg.eventLog.push({ type: "placeRoad", player: activeId, edgeKey });
+    pg.initial.stepIdx += 1;
+    pg.initial.expecting = "settlement";
+    pg.initial.lastSettlementKey = null;
+    if (pg.initial.stepIdx >= pg.initial.order.length) {
+      // Done with initial placement
+      pg.phase = "play";
+      pg.eventLog.push({ type: "phaseChange", note: "Main game started" });
+      pgSnapshotTurn();
+    }
+    pgRenderAll();
+    return;
+  }
+  if (pg.phase === "play") {
+    const playerId = Number(document.getElementById("playerSelector")?.value) || pg.players[0].id;
+    const player = pg.players.find(p => p.id === playerId);
+    if (!player) return;
+    if (!pgHasResources(player, PG_BUILD_COSTS.road)) { alert("Not enough resources for a road."); return; }
+    if (player.roadsLeft <= 0) { alert("No roads left."); return; }
+    pgPushHistory("build-road");
+    pgSpendResources(player, PG_BUILD_COSTS.road);
+    const edge = pg.mapState.tileEdgeStates[edgeKey];
+    pg.roads[edgeKey] = { x: edge.x, y: edge.y, z: edge.z, owner: playerId, type: 1 };
+    player.roadsLeft -= 1;
+    pg.eventLog.push({ type: "buildingPurchased", player: playerId, building: "road", count: 1 });
+    pgRenderAll();
+  }
+}
+
+function pgTryUpgradeCity(cornerKey) {
+  if (pg.phase !== "play") return;
+  const piece = pg.settlements[cornerKey];
+  if (!piece || piece.buildingType !== 1) return;
+  const playerId = Number(document.getElementById("playerSelector")?.value) || pg.players[0].id;
+  if (piece.owner !== playerId) return;
+  const player = pg.players.find(p => p.id === playerId);
+  if (!player) return;
+  if (!pgHasResources(player, PG_BUILD_COSTS.city)) { alert("Not enough resources for a city."); return; }
+  if (player.citiesLeft <= 0) { alert("No cities left."); return; }
+  if (!confirm(`Upgrade ${player.name}'s settlement to a city?`)) return;
+  pgPushHistory("upgrade-city");
+  pgSpendResources(player, PG_BUILD_COSTS.city);
+  piece.buildingType = 2;
+  player.citiesLeft -= 1;
+  player.settlementsLeft += 1; // returns to supply
+  player.vp += 1; // 2 total for city, was 1 for settlement
+  pg.eventLog.push({ type: "buildingPurchased", player: playerId, building: "city", count: 1 });
+  pgRenderAll();
+}
+
+function pgGrantStarterResources(playerId, cornerKey) {
+  const player = pg.players.find(p => p.id === playerId);
+  if (!player) return;
+  const hexes = pgHexesTouchingCorner(cornerKey);
+  const gained = [];
+  for (const { hex } of hexes) {
+    const resName = PG_RES_TYPE_TO_NAME[hex.type];
+    if (!resName) continue;
+    if (pg.bank[hex.type] > 0) {
+      player.resources[resName] += 1;
+      pg.bank[hex.type] -= 1;
+      gained.push(hex.type);
+    }
+  }
+  if (gained.length) pg.eventLog.push({ type: "gain", player: playerId, resources: gained.sort() });
+}
+
+// ── DICE ROLL → AUTO RESOURCES
+function pgLogRoll(value) {
+  if (pg.phase !== "play") { alert("Finish initial placement first."); return; }
+  pgPushHistory("roll");
+  const activePlayer = pg.players[pg.currentTurnIdx % pg.players.length];
+  pg.rollHistory.push({ value, playerId: activePlayer?.id, playerName: activePlayer?.name });
+  pg.eventLog.push({ type: "dice", player: activePlayer?.id, value });
+  if (value !== 7) {
+    // For each settlement/city, add resources of matching hexes
+    for (const [ck, piece] of Object.entries(pg.settlements)) {
+      if (!piece.owner) continue;
+      const player = pg.players.find(p => p.id === piece.owner);
+      if (!player) continue;
+      const hexes = pgHexesTouchingCorner(ck);
+      const gainedByType = {};
+      for (const { hex } of hexes) {
+        if (hex.diceNumber !== value) continue;
+        const resName = PG_RES_TYPE_TO_NAME[hex.type];
+        if (!resName) continue;
+        const yield_ = piece.buildingType === 2 ? 2 : 1;
+        for (let i = 0; i < yield_; i++) {
+          if (pg.bank[hex.type] > 0) {
+            player.resources[resName] += 1;
+            pg.bank[hex.type] -= 1;
+            gainedByType[hex.type] = (gainedByType[hex.type] || 0) + 1;
+          }
+        }
+      }
+      const gainArr = [];
+      for (const [t, c] of Object.entries(gainedByType)) for (let i = 0; i < c; i++) gainArr.push(Number(t));
+      if (gainArr.length) pg.eventLog.push({ type: "gain", player: piece.owner, resources: gainArr.sort() });
+    }
+  }
+  pgSnapshotTurn();
+  pgRenderAll();
+}
+
+// ── BUILD / PURCHASE (without immediate placement, for dev card; bare buy)
+function pgBuyDevCard(playerId) {
+  const player = pg.players.find(p => p.id === playerId);
+  if (!player) return;
+  if (!pgHasResources(player, PG_BUILD_COSTS.devcard)) { alert("Not enough resources for a dev card."); return; }
+  pgPushHistory("buy-devcard");
+  pgSpendResources(player, PG_BUILD_COSTS.devcard);
+  // Don't reveal which card; user picks via manual adjust if they want
+  pg.eventLog.push({ type: "devCardBought", player: playerId, count: 1 });
+  pgRenderAll();
+}
+
+function pgHasResources(player, cost) {
+  return Object.entries(cost).every(([r, c]) => (player.resources[r] || 0) >= c);
+}
+function pgSpendResources(player, cost) {
+  for (const [r, c] of Object.entries(cost)) {
+    player.resources[r] -= c;
+    const t = PG_RES_NAME_TO_TYPE[r];
+    if (t) pg.bank[t] = (pg.bank[t] || 0) + c;
+  }
+}
+
+// ── TURN SNAPSHOTS (for slider navigation)
+function pgSnapshotTurn() {
+  pg.turns.push({
+    currentTurnIdx: pg.currentTurnIdx,
+    eventLogLen: pg.eventLog.length,
+    rollLen: pg.rollHistory.length,
+    players: pgClone(pg.players),
+    bank: { ...pg.bank },
+    settlements: pgClone(pg.settlements),
+    roads: pgClone(pg.roads),
+  });
+  pg.viewTurn = pg.turns.length - 1;
+}
+
+function pgNextTurn() {
+  if (pg.phase !== "play") return;
+  pgPushHistory("next-turn");
+  pg.currentTurnIdx += 1;
+  pgSnapshotTurn();
+  pgRenderAll();
+}
+
+// ── SIDEBAR RENDERS
+function pgRenderTurnNav() {
+  const slider = document.getElementById("pgTurnSlider");
+  const info = document.getElementById("pgTurnInfo");
+  const active = document.getElementById("pgActivePlayer");
+  if (!slider || !info) return;
+  const max = Math.max(0, pg.turns.length - 1);
+  slider.max = max;
+  if (pg.viewTurn > max) pg.viewTurn = max;
+  slider.value = pg.viewTurn;
+  info.textContent = `Turn ${pg.viewTurn} / ${max}`;
+  if (pg.phase === "play" && pg.players.length) {
+    const ap = pg.players[pg.currentTurnIdx % pg.players.length];
+    const colorName = PLAYER_COLOR_NAMES[ap?.id] || "white";
+    active.innerHTML = `Active: <img src="./data/images/player_bg_${colorName}.svg" width="16" height="16" style="vertical-align:middle;"> ${ap?.name || ""}`;
+  } else {
+    active.textContent = pg.phase === "setup" ? "Configure players to begin." :
+      pg.phase === "board" ? "Set hexes, numbers, and ports." :
+      pg.phase === "initial" ? `${pg.players.find(p => p.id === pg.initial.order[pg.initial.stepIdx])?.name || ""} — place ${pg.initial.expecting}` : "";
+  }
+}
+
+function pgRenderPhaseBanner() {
+  const el = document.getElementById("playgroundPhaseBanner");
+  if (!el) return;
+  if (pg.phase === "setup") {
+    el.textContent = "Pick players and colors to begin.";
+  } else if (pg.phase === "board") {
+    el.textContent = "Click hexes, ports, and number tokens to assign them — or hit Randomize. Confirm Board when finished.";
+  } else if (pg.phase === "initial") {
+    const p = pg.players.find(x => x.id === pg.initial.order[pg.initial.stepIdx]);
+    el.textContent = `${p?.name || ""} — place ${pg.initial.expecting}.`;
+  } else {
+    const ap = pg.players[pg.currentTurnIdx % Math.max(1, pg.players.length)];
+    el.textContent = `${ap?.name || ""}'s turn — log a dice roll, click the board to build, or hit Next.`;
+  }
+}
+
+function pgRenderPlayerSelector() {
+  const sel = document.getElementById("playerSelector");
+  if (!sel) return;
+  const prev = sel.value;
+  sel.innerHTML = "";
+  pg.players.forEach(p => {
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.textContent = p.name;
+    sel.appendChild(opt);
+  });
+  // Default to active player
+  const ap = pg.players[pg.currentTurnIdx % Math.max(1, pg.players.length)];
+  sel.value = prev || ap?.id || "";
+}
+
+function pgRenderBank() {
+  const el = document.getElementById("pgBankTracker");
+  if (!el) return;
+  const html = [1, 2, 3, 4, 5].map(t => {
+    const name = PG_RES_TYPE_TO_NAME[t];
+    return `<div class="resource-item" style="display:inline-flex;align-items:center;gap:4px;margin-right:8px;">
+      <img src="${RESOURCE_IMAGES[name]}" alt="${name}" style="width:16px;height:16px;"><span>${pg.bank[t]}</span>
+    </div>`;
+  }).join("");
+  el.innerHTML = `<div style="font-size:11px;color:#cbd5e1;"><strong>Resources:</strong><br>${html}</div>`;
+}
+
+function pgRenderPlayers() {
+  const el = document.getElementById("pgPlayerTracker");
+  if (!el) return;
+  if (!pg.players.length) { el.innerHTML = "<p style='color:#94a3b8;font-size:12px;'>No players yet</p>"; return; }
+  el.innerHTML = pg.players.map(p => {
+    const colorName = PLAYER_COLOR_NAMES[p.id] || "white";
+    const playerIcon = `./data/images/player_bg_${colorName}.svg`;
+    const settlementImage = `./data/images/settlement_${colorName}.svg`;
+    const roadImage = `./data/images/road_${colorName}.svg`;
+    const cityImage = `./data/images/city_${colorName}.svg`;
+    const isActive = pg.phase === "play" && pg.players[pg.currentTurnIdx % pg.players.length]?.id === p.id;
+    const settlementsBuilt = 5 - p.settlementsLeft;
+    const citiesBuilt = 4 - p.citiesLeft;
+    const roadsBuilt = 15 - p.roadsLeft;
+    const resHtml = RESOURCE_TYPES.map(t => `<div class="resource-item" style="display:inline-flex;align-items:center;gap:4px;margin-right:8px;">
+      <img src="${RESOURCE_IMAGES[t]}" alt="${t}" style="width:16px;height:16px;"><span>${p.resources[t] || 0}</span></div>`).join("");
+    const devHtml = DEV_CARD_TYPES.map(t => `<div class="resource-item" style="display:inline-flex;align-items:center;gap:4px;margin-right:8px;">
+      <img src="${DEV_CARD_IMAGES[t]}" alt="${t}" style="width:16px;height:16px;"><span>${p.devCards[t] || 0}</span></div>`).join("");
+    return `<div class="player-card${isActive ? " active-turn" : ""}">
+      <div class="player-header"><img src="${playerIcon}" class="player-settlement-icon"><h3>${p.name}</h3>
+        <span style="margin-left:auto;font-weight:bold;color:gold;">${p.vp} VP</span></div>
+      <div style="font-size:11px;color:#cbd5e1;margin-bottom:4px;">
+        Roads: <b>${roadsBuilt}</b> <img src="${roadImage}" width="18" height="18" style="vertical-align:middle;">
+        Settlements: <b>${settlementsBuilt}</b> <img src="${settlementImage}" width="18" height="18" style="vertical-align:middle;">
+        Cities: <b>${citiesBuilt}</b> <img src="${cityImage}" width="18" height="18" style="vertical-align:middle;">
+      </div>
+      <div style="font-size:11px;"><strong>Resources:</strong><br>${resHtml}</div>
+      <div style="font-size:11px;margin-top:4px;"><strong>Dev Cards:</strong><br>${devHtml}</div>
+    </div>`;
+  }).join("");
+}
+
+function pgRenderEventLog() {
+  const el = document.getElementById("pgEventLog");
+  if (!el) return;
+  if (!pg.eventLog.length) { el.innerHTML = "<p style='color:#94a3b8;font-size:12px;'>No events yet</p>"; return; }
+  const playerIcon = id => `<img src="./data/images/player_bg_${PLAYER_COLOR_NAMES[id] || "white"}.svg" width="18" height="18" style="vertical-align:middle;margin-right:4px;">`;
+  const resImgs = arr => (arr || []).map(r => `<img src="${RESOURCE_IMAGES[PG_RES_TYPE_TO_NAME[r]]}" width="18" height="24" style="vertical-align:middle;margin:0 1px;">`).join("");
+  const html = pg.eventLog.slice().reverse().map(log => {
+    let text = "";
+    switch (log.type) {
+      case "dice": text = `${playerIcon(log.player)} rolled <b>${log.value}</b>`; break;
+      case "gain": text = `${playerIcon(log.player)} gained: ${resImgs(log.resources)}`; break;
+      case "placeSettlement": text = `${playerIcon(log.player)} placed a settlement`; break;
+      case "placeRoad": text = `${playerIcon(log.player)} placed a road`; break;
+      case "buildingPurchased": text = `${playerIcon(log.player)} built a <b>${log.building}</b>`; break;
+      case "devCardBought": text = `${playerIcon(log.player)} bought a dev card`; break;
+      case "phaseChange": text = `<em>${log.note}</em>`; break;
+      default: text = JSON.stringify(log);
+    }
+    return `<div style="margin-bottom:4px;font-size:11px;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:3px;">${text}</div>`;
+  }).join("");
+  el.innerHTML = html;
+}
+
+function pgRenderDiceSummary() {
+  const el = document.getElementById("diceSummary");
+  if (!el) return;
+  if (!pg.rollHistory.length) { el.textContent = "No rolls recorded yet."; return; }
+  const last = pg.rollHistory[pg.rollHistory.length - 1];
+  el.textContent = `Rolls: ${pg.rollHistory.length} · Latest: ${last.value} (${last.playerName || ""})`;
+}
+
+function pgSyncToolbar() {
+  const show = (id, on) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = on ? "" : "none";
+  };
+  show("pgRandomBoardBtn", pg.phase === "board");
+  show("pgConfirmBoardBtn", pg.phase === "board");
+}
+
+function pgRenderAll() {
+  pgRenderBoard();
+  pgRenderTurnNav();
+  pgRenderPhaseBanner();
+  pgRenderPlayerSelector();
+  pgRenderBank();
+  pgRenderPlayers();
+  pgRenderEventLog();
+  pgRenderDiceSummary();
+  pgSyncToolbar();
+  if (typeof updateDiceRollChart === "function") updateDiceRollChart();
+}
+
+// ── INIT
+async function pgInit() {
+  await pgLoadMapTemplate();
+  // Wire toolbar buttons
+  document.getElementById("pgConfirmBoardBtn")?.addEventListener("click", pgConfirmBoard);
+  document.getElementById("pgRandomBoardBtn")?.addEventListener("click", pgRandomizeBoard);
+  document.getElementById("pgUndoBtn")?.addEventListener("click", pgUndo);
+  document.getElementById("pgResetBtn")?.addEventListener("click", () => {
+    if (!confirm("Reset the whole game? All progress will be lost.")) return;
+    pg.phase = "setup";
+    pg.players = [];
+    pg.turnOrder = [];
+    pg.mapState = null;
+    pg.settlements = {};
+    pg.roads = {};
+    pg.rollHistory = [];
+    pg.eventLog = [];
+    pg.turns = [];
+    pg.history = [];
+    pg._setupDraft = null;
+    document.getElementById("pgUndoBtn").disabled = true;
+    pgShowSetupModal();
+    pgRenderAll();
+  });
+
+  // Turn navigation buttons (just move slider for log inspection)
+  document.getElementById("pgNextTurnBtn")?.addEventListener("click", pgNextTurn);
+  document.getElementById("pgPrevTurnBtn")?.addEventListener("click", () => {
+    // "Previous Turn" navigates the snapshot slider
+    if (pg.viewTurn > 0) pg.viewTurn -= 1;
+    pgRenderTurnNav();
+  });
+  document.getElementById("pgTurnSlider")?.addEventListener("input", (e) => {
+    pg.viewTurn = Number(e.target.value);
+    pgRenderTurnNav();
+  });
+
+  // Dice
+  document.getElementById("addRollBtn")?.addEventListener("click", () => {
+    const v = Number(document.getElementById("diceValue")?.value);
+    if (!Number.isInteger(v) || v < 2 || v > 12) return;
+    pgLogRoll(v);
+  });
+
+  // Build button
+  document.getElementById("pgBuildBtn")?.addEventListener("click", () => {
+    const type = document.getElementById("buildType")?.value;
+    const playerId = Number(document.getElementById("playerSelector")?.value);
+    if (type === "devcard") pgBuyDevCard(playerId);
+    else alert(`Click a valid ${type} spot on the board after selecting Buy. Resources will be deducted on placement.`);
+  });
+
+  // Manual adjusters
+  document.getElementById("addResourceBtn")?.addEventListener("click", () => pgManualAdjust("resources", 1));
+  document.getElementById("removeResourceBtn")?.addEventListener("click", () => pgManualAdjust("resources", -1));
+  document.getElementById("addDevCardBtn")?.addEventListener("click", () => pgManualAdjust("devCards", 1));
+  document.getElementById("removeDevCardBtn")?.addEventListener("click", () => pgManualAdjust("devCards", -1));
+
+  // Trigger setup modal when playground tab is opened (or now if already active)
+  const pgTabBtn = document.getElementById("playgroundTabBtn");
+  pgTabBtn?.addEventListener("click", () => {
+    if (pg.phase === "setup") pgShowSetupModal();
+  });
+  if (document.getElementById("playgroundTab")?.classList.contains("active") && pg.phase === "setup") {
+    pgShowSetupModal();
+  }
+
+  initDiceRollChart();
+  pgRenderAll();
+}
+
+function pgManualAdjust(kind, delta) {
+  const playerId = Number(document.getElementById("playerSelector")?.value);
+  const player = pg.players.find(p => p.id === playerId);
+  if (!player) return;
+  const typeId = kind === "resources" ? "resourceType" : "devCardType";
+  const amountId = kind === "resources" ? "resourceAmount" : "devCardAmount";
+  const cardType = document.getElementById(typeId)?.value;
+  const amt = Number(document.getElementById(amountId)?.value || 1);
+  if (!cardType || !Number.isFinite(amt) || amt <= 0) return;
+  pgPushHistory(`manual-${kind}`);
+  player[kind][cardType] = Math.max(0, (player[kind][cardType] || 0) + delta * amt);
+  if (kind === "resources") {
+    const t = PG_RES_NAME_TO_TYPE[cardType];
+    if (t) pg.bank[t] = Math.max(0, pg.bank[t] - delta * amt);
+  }
+  pgRenderAll();
 }

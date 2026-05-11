@@ -33,6 +33,64 @@ body {
   border-color: #60a5fa;
 }
 
+/* iOS-style coordinate toggle in the tab bar */
+.coord-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  color: #e2e8f0;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+.coord-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.coord-toggle-slider {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 11px;
+  transition: background 0.15s ease;
+}
+
+.coord-toggle-slider::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  transition: transform 0.15s ease;
+}
+
+.coord-toggle input:checked + .coord-toggle-slider {
+  background: #2563eb;
+  border-color: #60a5fa;
+}
+
+.coord-toggle input:checked + .coord-toggle-slider::after {
+  transform: translateX(16px);
+}
+
+/* When toggle is off, hide every coordinate label in both boards. */
+body.coords-hidden .coord-label,
+body.coords-hidden .vertex-label,
+body.coords-hidden .edge-label {
+  display: none;
+}
+
 .tab-panel {
   display: none;
 }
@@ -44,6 +102,9 @@ body {
 #analyticsTab {
   position: relative;
   min-height: 730px;
+}
+
+#analyticsTab.active {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -75,7 +136,7 @@ svg#catanBoard {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  width: 300px;
+  width: 320px;
   max-height: 730px;
   overflow-y: auto;
 }
@@ -177,16 +238,227 @@ svg#catanBoard {
   margin-bottom: 0;
 }
 
-/* 1. Hide ONLY the Analytics-specific versions of components in the playground */
-#playgroundTab .turn-controls,
-#playgroundTab .dice-section,
-#playgroundTab .player-tracker-section {
-  display: none !important;
-}
-
-/* 2. Hide the Analytics Sidebar entirely if the Analytics Tab isn't active */
+/* Hide the Analytics Sidebar entirely if the Analytics Tab isn't active */
 #analyticsTab:not(.active) .analytics-sidebar {
   display: none;
+}
+
+/* Playground tab uses analytics-style layout */
+#playgroundTab {
+  position: relative;
+  min-height: 730px;
+}
+
+#playgroundTab svg#playgroundBoard {
+  background: #4790bd;
+  border-radius: 50%;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Blank hex placeholder while user assigns terrain */
+#playgroundBoard .hex.hex-blank {
+  fill: #2c4e6a;
+  stroke: rgba(255, 255, 255, 0.3);
+  stroke-dasharray: 4 3;
+  cursor: pointer;
+}
+
+#playgroundBoard .port.port-blank {
+  fill: #2c4e6a;
+  stroke: rgba(255, 255, 255, 0.4);
+  stroke-dasharray: 3 2;
+  cursor: pointer;
+}
+
+#playgroundBoard .vertex-point.placeable {
+  fill: #facc15;
+  cursor: pointer;
+  r: 7;
+}
+
+#playgroundBoard .edge-point.placeable {
+  fill: #facc15;
+  cursor: pointer;
+  r: 6;
+}
+
+#playgroundBoard .hex.hex-clickable {
+  cursor: pointer;
+}
+
+#playgroundBoard .hex.hex-clickable:hover {
+  stroke: #facc15;
+  stroke-width: 3px;
+}
+
+#playgroundBoard .dice-bg.dice-clickable {
+  cursor: pointer;
+}
+
+#playgroundBoard .port.port-clickable {
+  cursor: pointer;
+}
+
+#playgroundBoard .port.port-clickable:hover {
+  stroke: #facc15;
+  stroke-width: 3px;
+}
+
+.phase-banner-card {
+  background: rgba(20, 30, 60, 0.9);
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  border-radius: 10px;
+  padding: 12px 14px 14px;
+  box-sizing: border-box;
+  /* Card height grows to fit content; no fixed min-height so wrapped text isn't clipped. */
+}
+
+.phase-banner-card h3 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: #facc15;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.phase-banner {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #e2e8f0;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.playground-toolbar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.playground-toolbar button {
+  padding: 6px 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Playground sidebar: keep board on the left, sidebar on the right, no wrap. */
+.playground-container {
+  flex-wrap: nowrap !important;
+  align-items: flex-start;
+}
+
+.playground-container .board-section {
+  flex: 0 0 auto;
+}
+
+.playground-container .analytics-sidebar {
+  flex: 0 0 320px;
+  width: 320px;
+  max-height: 730px;
+  overflow-y: auto;
+}
+
+/* Stable widths for each sidebar card so number changes don't shift width. */
+.playground-container .analytics-sidebar > * {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Pin scrollable areas to fixed heights so contents grow inside, not outward. */
+.playground-container #pgEventLog {
+  height: 200px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.playground-container #pgPlayerTracker {
+  height: 280px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.playground-container #diceRollVis {
+  width: 100%;
+  overflow: hidden;
+}
+
+.playground-container #diceRollVis svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.playground-container #pgTurnInfo,
+.playground-container #pgActivePlayer,
+.playground-container #diceSummary {
+  min-height: 16px;
+}
+
+/* Setup modal */
+.pg-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pg-modal {
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  width: min(520px, 92vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+
+.pg-setup-row {
+  display: grid;
+  grid-template-columns: 24px 1fr 110px auto;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pg-setup-row:last-child {
+  border-bottom: 0;
+}
+
+.pg-color-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  display: inline-block;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.pg-picker-overlay {
+  position: fixed;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 6px;
+  z-index: 50;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 4px;
+}
+
+.pg-picker-overlay button {
+  font-size: 11px;
+  padding: 4px 8px;
+  white-space: nowrap;
 }
 
 /* ─── CONTROLS ───────────────────────────────────────────────────────────── */

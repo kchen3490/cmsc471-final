@@ -14,6 +14,11 @@
     <div class="tab-bar">
       <button id="analyticsTabBtn" class="tab-btn active" type="button">Analytics</button>
       <button id="playgroundTabBtn" class="tab-btn" type="button">Playground</button>
+      <label class="coord-toggle">
+        <span class="coord-toggle-label">Coordinates</span>
+        <input id="coordToggle" type="checkbox" checked>
+        <span class="coord-toggle-slider" aria-hidden="true"></span>
+      </label>
     </div>
 
     <section id="analyticsTab" class="tab-panel active">
@@ -84,83 +89,144 @@
     </section>
 
     <section id="playgroundTab" class="tab-panel">
-      <div class="playground-grid">
-        <div class="card">
-          <h2>Setup</h2>
-          <div class="field-row">
-            <label for="playerCount">Players</label>
-            <input id="playerCount" type="number" min="2" max="8" value="4">
-            <button id="createGameBtn" type="button">Create / Reset</button>
-          </div>
-          <p class="muted">Use the controls below to track your own live game.</p>
+      <div class="analytics-container playground-container">
+        <div class="board-section">
+          <svg id="playgroundBoard" width="700" height="700" viewBox="-350 -350 700 700"></svg>
         </div>
 
-        <div class="card">
-          <h2>Turn Order</h2>
-          <div id="turnOrderList"></div>
-          <div class="field-row">
-            <button id="prevTurnBtn" type="button">Previous Turn</button>
-            <button id="nextTurnBtn" type="button">Next Turn</button>
-            <button id="confirmTurnOrderBtn" type="button">Confirm Turn Order</button>
+        <div class="analytics-sidebar">
+          <div class="phase-banner-card">
+            <h3>Next Step</h3>
+            <div id="playgroundPhaseBanner" class="phase-banner"></div>
           </div>
-          <p id="turnStatus" class="status-line">No game initialized.</p>
-        </div>
 
-        <div class="card">
-          <h2>Dice Roll Frequency Visualization</h2>
-          <div id="diceRollVis"></div>
-          <div class="field-row">
-            <label for="diceValue">Roll</label>
-            <input id="diceValue" type="number" min="2" max="12" value="7">
-            <button id="addRollBtn" type="button">Add Roll</button>
+          <div class="playground-toolbar">
+            <button id="pgUndoBtn" class="tab-btn" type="button" disabled>Undo</button>
+            <button id="pgResetBtn" class="tab-btn" type="button">Reset Game</button>
+            <button id="pgRandomBoardBtn" class="tab-btn" type="button" style="display:none;">Randomize Board</button>
+            <button id="pgConfirmBoardBtn" class="tab-btn" type="button" style="display:none;">Confirm Board</button>
           </div>
-          <p id="diceSummary" class="status-line">No rolls recorded yet.</p>
-          <div id="playgroundRollHistory" class="history-box"></div>
-        </div>
 
-        <div class="card">
-          <h2>Resources & Development Cards</h2>
-          <div class="field-row">
-            <label for="playerSelector">Player</label>
-            <select id="playerSelector"></select>
+          <div class="turn-controls">
+            <h3>Turn Navigation</h3>
+            <div class="slider-container" style="display: flex; align-items: center; gap: 8px;">
+              <input type="range" id="pgTurnSlider" min="0" max="0" value="0" style="flex-grow: 1;">
+            </div>
+            <div class="button-row" style="display: flex; justify-content: center; gap: 10px;">
+              <button id="pgPrevTurnBtn" class="tab-btn" style="padding: 8px 16px; flex: 1; max-width: 120px;">&lt; Previous</button>
+              <button id="pgNextTurnBtn" class="tab-btn" style="padding: 8px 16px; flex: 1; max-width: 120px;">Next &gt;</button>
+            </div>
+            <p id="pgTurnInfo" style="text-align: center; margin-top: 4px;">Turn 0 / 0</p>
+            <p id="pgActivePlayer" style="text-align:center;margin:0;font-size:12px;color:#cbd5e1;"></p>
           </div>
+
+          <div class="dice-section">
+            <h3>Dice Distribution</h3>
+            <div id="diceRollVis"></div>
+            <div class="field-row" style="margin-top:8px;">
+              <label for="diceValue" style="min-width:auto;">Roll</label>
+              <input id="diceValue" type="number" min="2" max="12" value="7" style="width:60px;">
+              <button id="addRollBtn" type="button">Log Roll</button>
+            </div>
+            <p id="diceSummary" class="status-line" style="font-size:11px;">No rolls recorded yet.</p>
+          </div>
+
+          <div class="event-log-section">
+            <h3>Game Log</h3>
+            <div id="pgEventLog" class="history-box" style="max-height: 250px;"></div>
+          </div>
+
+          <div class="bank-state-section">
+            <h3>Bank <img src="./data/images/bank.svg" alt="Bank" style="width: 20px; height: 20px;"> </h3>
+            <div id="pgBankTracker" class="player-card" style="padding: 10px;"></div>
+          </div>
+
+          <div class="player-tracker-section">
+            <h3>Players</h3>
+            <div id="pgPlayerTracker" style="max-height: 320px; overflow-y:auto;"></div>
+            <div class="field-row" style="margin-top:8px;">
+              <label for="playerSelector" style="min-width:60px;font-size:11px;">Player</label>
+              <select id="playerSelector" style="flex:1;"></select>
+            </div>
+            <div class="field-row">
+              <label for="buildType" style="min-width:60px;font-size:11px;">Build</label>
+              <select id="buildType">
+                <option value="road">Road</option>
+                <option value="settlement">Settlement</option>
+                <option value="city">City</option>
+                <option value="devcard">Dev Card</option>
+              </select>
+              <button id="pgBuildBtn" type="button">Buy</button>
+            </div>
+            <details style="margin-top:6px;">
+              <summary style="font-size:11px;cursor:pointer;color:#94a3b8;">Manual adjust (escape hatch)</summary>
+              <div class="field-row">
+                <label for="resourceType" style="min-width:60px;font-size:11px;">Resource</label>
+                <select id="resourceType">
+                  <option value="wood">Wood</option>
+                  <option value="brick">Brick</option>
+                  <option value="sheep">Sheep</option>
+                  <option value="wheat">Wheat</option>
+                  <option value="ore">Ore</option>
+                </select>
+                <input id="resourceAmount" type="number" min="1" value="1" style="width:50px;">
+                <button id="addResourceBtn" type="button">+</button>
+                <button id="removeResourceBtn" type="button">-</button>
+              </div>
+              <div class="field-row">
+                <label for="devCardType" style="min-width:60px;font-size:11px;">Dev Card</label>
+                <select id="devCardType">
+                  <option value="knight">Knight</option>
+                  <option value="victoryPoint">Victory Point</option>
+                  <option value="roadBuilding">Road Building</option>
+                  <option value="yearOfPlenty">Year of Plenty</option>
+                  <option value="monopoly">Monopoly</option>
+                </select>
+                <input id="devCardAmount" type="number" min="1" value="1" style="width:50px;">
+                <button id="addDevCardBtn" type="button">+</button>
+                <button id="removeDevCardBtn" type="button">-</button>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+
+      <!-- Setup modal: colors + turn order -->
+      <div id="playgroundSetupModal" class="pg-modal-backdrop" style="display:none;">
+        <div class="pg-modal">
+          <h2 style="margin:0 0 10px;">Set up your game</h2>
           <div class="field-row">
-            <label for="resourceType">Resource</label>
-            <select id="resourceType">
-              <option value="wood">Wood</option>
-              <option value="brick">Brick</option>
-              <option value="sheep">Sheep</option>
-              <option value="wheat">Wheat</option>
-              <option value="ore">Ore</option>
+            <label for="pgPlayerCount">Number of players</label>
+            <select id="pgPlayerCount">
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4" selected>4</option>
             </select>
-            <input id="resourceAmount" type="number" min="1" value="1">
-            <button id="addResourceBtn" type="button">+</button>
-            <button id="removeResourceBtn" type="button">-</button>
           </div>
-          <div class="field-row">
-            <label for="devCardType">Dev Card</label>
-            <select id="devCardType">
-              <option value="knight">Knight</option>
-              <option value="victoryPoint">Victory Point</option>
-              <option value="roadBuilding">Road Building</option>
-              <option value="yearOfPlenty">Year of Plenty</option>
-              <option value="monopoly">Monopoly</option>
-            </select>
-            <input id="devCardAmount" type="number" min="1" value="1">
-            <button id="addDevCardBtn" type="button">+</button>
-            <button id="removeDevCardBtn" type="button">-</button>
+          <p class="muted" style="font-size:12px;">Pick a color for each player. The first row is the starting player; drag the order with the Up/Down buttons.</p>
+          <div id="pgSetupPlayers"></div>
+          <div class="field-row" style="justify-content:flex-end;">
+            <button id="pgSetupConfirmBtn" type="button">Confirm</button>
           </div>
         </div>
+      </div>
 
-        <div class="card card-wide">
-          <h2>Player Tracker</h2>
-          <div id="playerTracker"></div>
-        </div>
+      <!-- Hidden bits the existing code references (kept for compatibility) -->
+      <div style="display:none;">
+        <div id="turnOrderList"></div>
+        <p id="turnStatus"></p>
+        <div id="playgroundRollHistory"></div>
+        <div id="playerTracker"></div>
+        <button id="prevTurnBtn"></button>
+        <button id="nextTurnBtn"></button>
+        <button id="confirmTurnOrderBtn"></button>
+        <button id="createGameBtn"></button>
+        <input id="playerCount" type="number" value="4">
       </div>
     </section>
     <p class="small text-muted border-top pt-3 mt-4 mb-0">
       AI disclaimer: This visualization was largely generated by AI coding tools (GitHub Copilot, Cursor,
-      Antigravity).
+      Antigravity, Claude Code).
       <br>
       Data disclaimer: This visualization is powered by data from Colonist.io. The data used is for
       educational purposes only and is not available for redistribution.
