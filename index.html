@@ -91,6 +91,7 @@
     <section id="playgroundTab" class="tab-panel">
       <div class="analytics-container playground-container">
         <div class="board-section">
+          <div id="pgStatus" class="pg-status" style="display:none;" role="status" aria-live="polite"></div>
           <svg id="playgroundBoard" width="700" height="700" viewBox="-350 -350 700 700"></svg>
         </div>
 
@@ -102,6 +103,8 @@
 
           <div class="playground-toolbar">
             <button id="pgUndoBtn" class="tab-btn" type="button" disabled>Undo</button>
+            <button id="pgRedoBtn" class="tab-btn" type="button" disabled>Redo</button>
+            <button id="pgRandomMoveBtn" class="tab-btn" type="button">Random Move</button>
             <button id="pgResetBtn" class="tab-btn" type="button">Reset Game</button>
             <button id="pgRandomBoardBtn" class="tab-btn" type="button" style="display:none;">Randomize Board</button>
             <button id="pgConfirmBoardBtn" class="tab-btn" type="button" style="display:none;">Confirm Board</button>
@@ -159,6 +162,59 @@
               <button id="pgBuildBtn" type="button">Buy</button>
             </div>
             <details style="margin-top:6px;">
+              <summary style="font-size:11px;cursor:pointer;color:#94a3b8;">Trade</summary>
+              <div style="font-size:11px;margin-top:4px;color:#94a3b8;"><strong>Bank trade</strong> (current selected player)</div>
+              <div class="field-row">
+                <label style="min-width:30px;font-size:11px;">Give</label>
+                <input id="bankTradeGiveAmt" type="number" min="0" value="4" style="width:42px;">
+                <select id="bankTradeGiveRes">
+                  <option value="wood">Wood</option>
+                  <option value="brick">Brick</option>
+                  <option value="sheep">Sheep</option>
+                  <option value="wheat">Wheat</option>
+                  <option value="ore">Ore</option>
+                </select>
+                <label style="min-width:30px;font-size:11px;">Get</label>
+                <input id="bankTradeGetAmt" type="number" min="0" value="1" style="width:42px;">
+                <select id="bankTradeGetRes">
+                  <option value="wood">Wood</option>
+                  <option value="brick">Brick</option>
+                  <option value="sheep">Sheep</option>
+                  <option value="wheat">Wheat</option>
+                  <option value="ore">Ore</option>
+                </select>
+                <button id="bankTradeBtn" type="button">Trade</button>
+              </div>
+              <div style="font-size:11px;margin-top:6px;color:#94a3b8;"><strong>Player trade / gift</strong> (current → partner; 0 on one side = gift)</div>
+              <div class="field-row">
+                <label style="min-width:30px;font-size:11px;">Give</label>
+                <input id="playerTradeGiveAmt" type="number" min="0" value="1" style="width:42px;">
+                <select id="playerTradeGiveRes">
+                  <option value="wood">Wood</option>
+                  <option value="brick">Brick</option>
+                  <option value="sheep">Sheep</option>
+                  <option value="wheat">Wheat</option>
+                  <option value="ore">Ore</option>
+                </select>
+              </div>
+              <div class="field-row">
+                <label style="min-width:30px;font-size:11px;">Get</label>
+                <input id="playerTradeGetAmt" type="number" min="0" value="1" style="width:42px;">
+                <select id="playerTradeGetRes">
+                  <option value="wood">Wood</option>
+                  <option value="brick">Brick</option>
+                  <option value="sheep">Sheep</option>
+                  <option value="wheat">Wheat</option>
+                  <option value="ore">Ore</option>
+                </select>
+              </div>
+              <div class="field-row">
+                <label style="min-width:30px;font-size:11px;">With</label>
+                <select id="playerTradePartner" style="flex:1;"></select>
+                <button id="playerTradeBtn" type="button">Trade</button>
+              </div>
+            </details>
+            <details style="margin-top:6px;">
               <summary style="font-size:11px;cursor:pointer;color:#94a3b8;">Manual adjust (escape hatch)</summary>
               <div class="field-row">
                 <label for="resourceType" style="min-width:60px;font-size:11px;">Resource</label>
@@ -203,7 +259,7 @@
               <option value="4" selected>4</option>
             </select>
           </div>
-          <p class="muted" style="font-size:12px;">Pick a color for each player. The first row is the starting player; drag the order with the Up/Down buttons.</p>
+          <p class="muted" style="font-size:12px;">Pick a color for each player. The first row is the starting player; change the order with the Up/Down buttons.</p>
           <div id="pgSetupPlayers"></div>
           <div class="field-row" style="justify-content:flex-end;">
             <button id="pgSetupConfirmBtn" type="button">Confirm</button>

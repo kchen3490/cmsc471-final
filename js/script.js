@@ -3248,45 +3248,107 @@ const pg = {
   settlements: {},  // cornerKey -> {x,y,z,owner,buildingType (1=set,2=city)}
   roads: {},        // edgeKey -> {x,y,z,owner,type:1}
   bank: { 1: 19, 2: 19, 3: 19, 4: 19, 5: 19 },
+  bankDevCards: 25, // 14 knight + 5 VP + 2 RB + 2 YoP + 2 Mono
   rollHistory: [],
   eventLog: [],
   turns: [],        // snapshots taken after each "Next Turn"; each = {currentTurnIdx, eventLogLen, snapshotIdx}
   viewTurn: 0,      // for slider
   initial: { stepIdx: 0, order: [], expecting: "settlement", lastSettlementKey: null, snake: [] },
   history: [],      // undo stack
+  redoStack: [],    // redo stack
   _mapTemplate: null,
 };
 
+let _pgStatusTimer = null;
+function pgStatus(msg, type = "info") {
+  const el = document.getElementById("pgStatus");
+  if (!el) return;
+  if (!msg) { el.style.display = "none"; el.textContent = ""; return; }
+  el.className = "pg-status" + (type && type !== "info" ? " " + type : "");
+  el.textContent = msg;
+  el.style.display = "block";
+  if (_pgStatusTimer) clearTimeout(_pgStatusTimer);
+  _pgStatusTimer = setTimeout(() => {
+    el.style.display = "none";
+    el.textContent = "";
+  }, 6000);
+}
+
+function pgIsViewingLatest() {
+  return pg.viewTurn >= pg.turns.length - 1;
+}
+
+function pgRolledThisTurn() {
+  const last = pg.turns[pg.turns.length - 1];
+  const startLen = last?.rollLen ?? 0;
+  return pg.rollHistory.length > startLen;
+}
+
+function pgLogEvent(ev) {
+  pg.eventLog.push({ ...ev, turn: pg.turns.length });
+}
+
+function pgRequireLatestView(label) {
+  if (!pgIsViewingLatest()) {
+    pgStatus(`Viewing a past turn — return to the latest turn before ${label || "making changes"}.`, "warn");
+    return false;
+  }
+  return true;
+}
+
 function pgClone(o) { return JSON.parse(JSON.stringify(o)); }
 
-function pgPushHistory(label) {
-  pg.history.push({
-    label,
-    snap: pgClone({
-      phase: pg.phase,
-      mapState: pg.mapState,
-      players: pg.players,
-      turnOrder: pg.turnOrder,
-      currentTurnIdx: pg.currentTurnIdx,
-      settlements: pg.settlements,
-      roads: pg.roads,
-      bank: pg.bank,
-      rollHistory: pg.rollHistory,
-      eventLog: pg.eventLog,
-      turns: pg.turns,
-      viewTurn: pg.viewTurn,
-      initial: pg.initial,
-    }),
+function pgCaptureSnap() {
+  return pgClone({
+    phase: pg.phase,
+    mapState: pg.mapState,
+    players: pg.players,
+    turnOrder: pg.turnOrder,
+    currentTurnIdx: pg.currentTurnIdx,
+    settlements: pg.settlements,
+    roads: pg.roads,
+    bank: pg.bank,
+    bankDevCards: pg.bankDevCards,
+    rollHistory: pg.rollHistory,
+    eventLog: pg.eventLog,
+    turns: pg.turns,
+    viewTurn: pg.viewTurn,
+    initial: pg.initial,
   });
+}
+
+function pgSyncHistoryButtons() {
+  const undoBtn = document.getElementById("pgUndoBtn");
+  const redoBtn = document.getElementById("pgRedoBtn");
+  if (undoBtn) undoBtn.disabled = !pg.history.length;
+  if (redoBtn) redoBtn.disabled = !pg.redoStack || !pg.redoStack.length;
+}
+
+function pgPushHistory(label) {
+  pg.history.push({ label, snap: pgCaptureSnap() });
+  // Any new action invalidates the redo stack.
+  pg.redoStack = [];
   if (pg.history.length > 40) pg.history.shift();
-  document.getElementById("pgUndoBtn").disabled = false;
+  pgSyncHistoryButtons();
 }
 
 function pgUndo() {
   if (!pg.history.length) return;
-  const last = pg.history.pop();
-  Object.assign(pg, last.snap);
-  if (!pg.history.length) document.getElementById("pgUndoBtn").disabled = true;
+  const prev = pg.history.pop();
+  pg.redoStack = pg.redoStack || [];
+  pg.redoStack.push({ label: prev.label, snap: pgCaptureSnap() });
+  if (pg.redoStack.length > 40) pg.redoStack.shift();
+  Object.assign(pg, prev.snap);
+  pgSyncHistoryButtons();
+  pgRenderAll();
+}
+
+function pgRedo() {
+  if (!pg.redoStack || !pg.redoStack.length) return;
+  const next = pg.redoStack.pop();
+  pg.history.push({ label: next.label, snap: pgCaptureSnap() });
+  Object.assign(pg, next.snap);
+  pgSyncHistoryButtons();
   pgRenderAll();
 }
 
@@ -3415,8 +3477,10 @@ function pgRenderSetupRows(count) {
   pg._setupDraft.forEach((p, idx) => {
     const row = document.createElement("div");
     row.className = "pg-setup-row";
+    const colorName = PLAYER_COLOR_NAMES[p.colorKey] || "white";
     row.innerHTML = `
       <span style="font-weight:600;color:#94a3b8;">${idx + 1}.</span>
+      <img src="./data/images/settlement_${colorName}.svg" alt="${colorName}" style="width:22px;height:22px;vertical-align:middle;">
       <input type="text" value="${p.name.replace(/"/g, "&quot;")}" data-idx="${idx}" class="pg-name-input" style="padding:4px 6px;">
       <select data-idx="${idx}" class="pg-color-input">
         ${PG_AVAILABLE_COLORS.map(ck => `<option value="${ck}" ${ck === p.colorKey ? "selected" : ""}>${PLAYER_COLOR_NAMES[ck]}</option>`).join("")}
@@ -3431,7 +3495,10 @@ function pgRenderSetupRows(count) {
     el.oninput = () => { pg._setupDraft[Number(el.dataset.idx)].name = el.value || `Player ${Number(el.dataset.idx) + 1}`; };
   });
   box.querySelectorAll(".pg-color-input").forEach(el => {
-    el.onchange = () => { pg._setupDraft[Number(el.dataset.idx)].colorKey = Number(el.value); };
+    el.onchange = () => {
+      pg._setupDraft[Number(el.dataset.idx)].colorKey = Number(el.value);
+      pgRenderSetupRows(count);
+    };
   });
   box.querySelectorAll("button[data-up]").forEach(b => {
     b.onclick = () => { const i = Number(b.dataset.up); [pg._setupDraft[i - 1], pg._setupDraft[i]] = [pg._setupDraft[i], pg._setupDraft[i - 1]]; pgRenderSetupRows(count); };
@@ -3456,6 +3523,7 @@ function pgConfirmSetup() {
     settlementsLeft: 5,
     citiesLeft: 4,
     roadsLeft: 15,
+    knightsPlayed: 0,
     vp: 0,
   }));
   pg.turnOrder = pg.players.map(p => p.id);
@@ -3464,14 +3532,16 @@ function pgConfirmSetup() {
   pg.settlements = {};
   pg.roads = {};
   pg.bank = { 1: 19, 2: 19, 3: 19, 4: 19, 5: 19 };
+  pg.bankDevCards = 25;
   pg.rollHistory = [];
   pg.eventLog = [];
   pg.turns = [];
   pg.viewTurn = 0;
   pg.phase = "board";
   pg.history = [];
+  pg.redoStack = [];
   document.getElementById("playgroundSetupModal").style.display = "none";
-  document.getElementById("pgUndoBtn").disabled = true;
+  pgSyncHistoryButtons();
   pgRenderAll();
 }
 
@@ -3758,8 +3828,8 @@ function pgConfirmBoard() {
   const hexBlank = Object.values(pg.mapState.tileHexStates).some(h => h.type === -1);
   const numBlank = Object.values(pg.mapState.tileHexStates).some(h => h.type > 0 && h.diceNumber === 0);
   const portBlank = Object.values(pg.mapState.portEdgeStates).some(p => p.type === -1);
-  if (hexBlank || portBlank) { alert("Assign a terrain to every hex and a type to every port."); return; }
-  if (numBlank) { alert("Every non-desert hex needs a dice number."); return; }
+  if (hexBlank || portBlank) { pgStatus("Assign a terrain to every hex and a type to every port.", "warn"); return; }
+  if (numBlank) { pgStatus("Every non-desert hex needs a dice number.", "warn"); return; }
   pgPushHistory("confirm-board");
   pg.phase = "initial";
   // Snake: 1,2,3,4,4,3,2,1
@@ -3831,7 +3901,7 @@ function pgClickCorner(cornerKey) {
     }
     pg.initial.lastSettlementKey = cornerKey;
     pg.initial.expecting = "road";
-    pg.eventLog.push({ type: "placeSettlement", player: activeId, cornerKey });
+    pgLogEvent({ type: "placeSettlement", player: activeId, cornerKey });
     // Second settlement → grant adjacent hex resources
     const placedSoFarByPlayer = pg.initial.order.slice(0, pg.initial.stepIdx + 1).filter(id => id === activeId).length;
     if (placedSoFarByPlayer === 2) {
@@ -3841,19 +3911,20 @@ function pgClickCorner(cornerKey) {
     return;
   }
   if (pg.phase === "play") {
+    if (!pgRequireLatestView("building")) return;
     // Build settlement at corner (player from selector)
     const playerId = Number(document.getElementById("playerSelector")?.value) || pg.players[0].id;
     const player = pg.players.find(p => p.id === playerId);
     if (!player) return;
-    if (!pgHasResources(player, PG_BUILD_COSTS.settlement)) { alert("Not enough resources for a settlement."); return; }
-    if (player.settlementsLeft <= 0) { alert("No settlements left."); return; }
+    if (!pgHasResources(player, PG_BUILD_COSTS.settlement)) { pgStatus("Not enough resources for a settlement.", "warn"); return; }
+    if (player.settlementsLeft <= 0) { pgStatus("No settlements left.", "warn"); return; }
     pgPushHistory("build-settlement");
     pgSpendResources(player, PG_BUILD_COSTS.settlement);
     const corner = pg.mapState.tileCornerStates[cornerKey];
     pg.settlements[cornerKey] = { x: corner.x, y: corner.y, z: corner.z, owner: playerId, buildingType: 1 };
     player.settlementsLeft -= 1;
     player.vp += 1;
-    pg.eventLog.push({ type: "buildingPurchased", player: playerId, building: "settlement", count: 1 });
+    pgLogEvent({ type: "buildingPurchased", player: playerId, building: "settlement", count: 1 });
     pgRenderAll();
   }
 }
@@ -3866,53 +3937,54 @@ function pgClickEdge(edgeKey) {
     pg.roads[edgeKey] = { x: edge.x, y: edge.y, z: edge.z, owner: activeId, type: 1 };
     const player = pg.players.find(p => p.id === activeId);
     if (player) player.roadsLeft = Math.max(0, player.roadsLeft - 1);
-    pg.eventLog.push({ type: "placeRoad", player: activeId, edgeKey });
+    pgLogEvent({ type: "placeRoad", player: activeId, edgeKey });
     pg.initial.stepIdx += 1;
     pg.initial.expecting = "settlement";
     pg.initial.lastSettlementKey = null;
     if (pg.initial.stepIdx >= pg.initial.order.length) {
       // Done with initial placement
       pg.phase = "play";
-      pg.eventLog.push({ type: "phaseChange", note: "Main game started" });
+      pgLogEvent({ type: "phaseChange", note: "Main game started" });
       pgSnapshotTurn();
     }
     pgRenderAll();
     return;
   }
   if (pg.phase === "play") {
+    if (!pgRequireLatestView("building")) return;
     const playerId = Number(document.getElementById("playerSelector")?.value) || pg.players[0].id;
     const player = pg.players.find(p => p.id === playerId);
     if (!player) return;
-    if (!pgHasResources(player, PG_BUILD_COSTS.road)) { alert("Not enough resources for a road."); return; }
-    if (player.roadsLeft <= 0) { alert("No roads left."); return; }
+    if (!pgHasResources(player, PG_BUILD_COSTS.road)) { pgStatus("Not enough resources for a road.", "warn"); return; }
+    if (player.roadsLeft <= 0) { pgStatus("No roads left.", "warn"); return; }
     pgPushHistory("build-road");
     pgSpendResources(player, PG_BUILD_COSTS.road);
     const edge = pg.mapState.tileEdgeStates[edgeKey];
     pg.roads[edgeKey] = { x: edge.x, y: edge.y, z: edge.z, owner: playerId, type: 1 };
     player.roadsLeft -= 1;
-    pg.eventLog.push({ type: "buildingPurchased", player: playerId, building: "road", count: 1 });
+    pgLogEvent({ type: "buildingPurchased", player: playerId, building: "road", count: 1 });
     pgRenderAll();
   }
 }
 
 function pgTryUpgradeCity(cornerKey) {
   if (pg.phase !== "play") return;
+  if (!pgRequireLatestView("upgrading a city")) return;
   const piece = pg.settlements[cornerKey];
   if (!piece || piece.buildingType !== 1) return;
   const playerId = Number(document.getElementById("playerSelector")?.value) || pg.players[0].id;
   if (piece.owner !== playerId) return;
   const player = pg.players.find(p => p.id === playerId);
   if (!player) return;
-  if (!pgHasResources(player, PG_BUILD_COSTS.city)) { alert("Not enough resources for a city."); return; }
-  if (player.citiesLeft <= 0) { alert("No cities left."); return; }
-  if (!confirm(`Upgrade ${player.name}'s settlement to a city?`)) return;
+  if (!pgHasResources(player, PG_BUILD_COSTS.city)) { pgStatus("Not enough resources for a city.", "warn"); return; }
+  if (player.citiesLeft <= 0) { pgStatus("No cities left.", "warn"); return; }
   pgPushHistory("upgrade-city");
   pgSpendResources(player, PG_BUILD_COSTS.city);
   piece.buildingType = 2;
   player.citiesLeft -= 1;
   player.settlementsLeft += 1; // returns to supply
   player.vp += 1; // 2 total for city, was 1 for settlement
-  pg.eventLog.push({ type: "buildingPurchased", player: playerId, building: "city", count: 1 });
+  pgLogEvent({ type: "buildingPurchased", player: playerId, building: "city", count: 1 });
   pgRenderAll();
 }
 
@@ -3930,16 +4002,21 @@ function pgGrantStarterResources(playerId, cornerKey) {
       gained.push(hex.type);
     }
   }
-  if (gained.length) pg.eventLog.push({ type: "gain", player: playerId, resources: gained.sort() });
+  if (gained.length) pgLogEvent({ type: "gain", player: playerId, resources: gained.sort() });
 }
 
 // ── DICE ROLL → AUTO RESOURCES
 function pgLogRoll(value) {
-  if (pg.phase !== "play") { alert("Finish initial placement first."); return; }
+  if (pg.phase !== "play") { pgStatus("Finish initial placement first.", "warn"); return; }
+  if (!pgRequireLatestView("logging a roll")) return;
+  if (pgRolledThisTurn()) {
+    pgStatus("Already rolled this turn — press Next to end the turn.", "warn");
+    return;
+  }
   pgPushHistory("roll");
   const activePlayer = pg.players[pg.currentTurnIdx % pg.players.length];
   pg.rollHistory.push({ value, playerId: activePlayer?.id, playerName: activePlayer?.name });
-  pg.eventLog.push({ type: "dice", player: activePlayer?.id, value });
+  pgLogEvent({ type: "dice", player: activePlayer?.id, value });
   if (value !== 7) {
     // For each settlement/city, add resources of matching hexes
     for (const [ck, piece] of Object.entries(pg.settlements)) {
@@ -3963,22 +4040,24 @@ function pgLogRoll(value) {
       }
       const gainArr = [];
       for (const [t, c] of Object.entries(gainedByType)) for (let i = 0; i < c; i++) gainArr.push(Number(t));
-      if (gainArr.length) pg.eventLog.push({ type: "gain", player: piece.owner, resources: gainArr.sort() });
+      if (gainArr.length) pgLogEvent({ type: "gain", player: piece.owner, resources: gainArr.sort() });
     }
   }
-  pgSnapshotTurn();
   pgRenderAll();
 }
 
 // ── BUILD / PURCHASE (without immediate placement, for dev card; bare buy)
 function pgBuyDevCard(playerId) {
+  if (!pgRequireLatestView("buying a dev card")) return;
   const player = pg.players.find(p => p.id === playerId);
   if (!player) return;
-  if (!pgHasResources(player, PG_BUILD_COSTS.devcard)) { alert("Not enough resources for a dev card."); return; }
+  if (!pgHasResources(player, PG_BUILD_COSTS.devcard)) { pgStatus("Not enough resources for a dev card.", "warn"); return; }
+  if (pg.bankDevCards <= 0) { pgStatus("No dev cards left in the bank.", "warn"); return; }
   pgPushHistory("buy-devcard");
   pgSpendResources(player, PG_BUILD_COSTS.devcard);
+  pg.bankDevCards -= 1;
   // Don't reveal which card; user picks via manual adjust if they want
-  pg.eventLog.push({ type: "devCardBought", player: playerId, count: 1 });
+  pgLogEvent({ type: "devCardBought", player: playerId, count: 1 });
   pgRenderAll();
 }
 
@@ -4001,14 +4080,126 @@ function pgSnapshotTurn() {
     rollLen: pg.rollHistory.length,
     players: pgClone(pg.players),
     bank: { ...pg.bank },
+    bankDevCards: pg.bankDevCards,
     settlements: pgClone(pg.settlements),
     roads: pgClone(pg.roads),
   });
   pg.viewTurn = pg.turns.length - 1;
 }
 
+function pgRandomMove() {
+  if (pg.phase === "setup" || pg.phase === "board") {
+    pgStatus("Random Move is available once the game starts (initial placement or main play).", "warn");
+    return;
+  }
+  if (!pgRequireLatestView("playing a random move")) return;
+  // Initial placement: randomly pick a legal corner/edge for the current expected piece.
+  if (pg.phase === "initial") {
+    if (pg.initial.expecting === "settlement") {
+      const valid = Object.keys(pg.mapState.tileCornerStates || {}).filter(ck => pgCanPlaceSettlementOnCorner(ck));
+      if (!valid.length) { pgStatus("No legal settlement spots found.", "warn"); return; }
+      pgClickCorner(valid[Math.floor(Math.random() * valid.length)]);
+    } else {
+      const valid = Object.keys(pg.mapState.tileEdgeStates || {}).filter(ek => pgCanPlaceRoadOnEdge(ek));
+      if (!valid.length) { pgStatus("No legal road edges found.", "warn"); return; }
+      pgClickEdge(valid[Math.floor(Math.random() * valid.length)]);
+    }
+    return;
+  }
+  // 1) If we haven't rolled yet this turn, just roll 2d6.
+  if (!pgRolledThisTurn()) {
+    const v = 1 + Math.floor(Math.random() * 6) + 1 + Math.floor(Math.random() * 6);
+    pgLogRoll(v);
+    pgStatus(`Rolled ${v}.`, "info");
+    return;
+  }
+  const activeId = pg.players[pg.currentTurnIdx % pg.players.length]?.id;
+  const player = pg.players.find(p => p.id === activeId);
+  if (!player) return;
+  // 2) Otherwise, gather all candidate actions, then pick one at random.
+  const actions = [];
+  if (pgHasResources(player, PG_BUILD_COSTS.settlement) && player.settlementsLeft > 0) {
+    const wasSelected = document.getElementById("playerSelector")?.value;
+    // pgCanPlaceSettlementOnCorner uses the playerSelector for active-id heuristic
+    // during the play phase. We momentarily set it to the active player so the
+    // validity helpers work for the active player.
+    const sel = document.getElementById("playerSelector");
+    if (sel) sel.value = String(activeId);
+    for (const ck of Object.keys(pg.mapState.tileCornerStates || {})) {
+      if (pgCanPlaceSettlementOnCorner(ck)) actions.push({ type: "settlement", target: ck });
+    }
+    if (sel && wasSelected != null) sel.value = wasSelected;
+  }
+  if (pgHasResources(player, PG_BUILD_COSTS.road) && player.roadsLeft > 0) {
+    const sel = document.getElementById("playerSelector");
+    const wasSelected = sel?.value;
+    if (sel) sel.value = String(activeId);
+    for (const ek of Object.keys(pg.mapState.tileEdgeStates || {})) {
+      if (pgCanPlaceRoadOnEdge(ek)) actions.push({ type: "road", target: ek });
+    }
+    if (sel && wasSelected != null) sel.value = wasSelected;
+  }
+  if (pgHasResources(player, PG_BUILD_COSTS.city) && player.citiesLeft > 0) {
+    for (const [ck, piece] of Object.entries(pg.settlements)) {
+      if (piece.owner === activeId && piece.buildingType === 1) actions.push({ type: "city", target: ck });
+    }
+  }
+  if (pgHasResources(player, PG_BUILD_COSTS.devcard) && pg.bankDevCards > 0) {
+    actions.push({ type: "devcard" });
+  }
+  actions.push({ type: "endturn" });
+  const choice = actions[Math.floor(Math.random() * actions.length)];
+  if (choice.type === "settlement") {
+    pgPushHistory("random-settlement");
+    pgSpendResources(player, PG_BUILD_COSTS.settlement);
+    const c = pg.mapState.tileCornerStates[choice.target];
+    pg.settlements[choice.target] = { x: c.x, y: c.y, z: c.z, owner: activeId, buildingType: 1 };
+    player.settlementsLeft -= 1;
+    player.vp += 1;
+    pgLogEvent({ type: "buildingPurchased", player: activeId, building: "settlement", count: 1 });
+    pgStatus(`${player.name} built a settlement.`, "success");
+    pgRenderAll();
+  } else if (choice.type === "road") {
+    pgPushHistory("random-road");
+    pgSpendResources(player, PG_BUILD_COSTS.road);
+    const e = pg.mapState.tileEdgeStates[choice.target];
+    pg.roads[choice.target] = { x: e.x, y: e.y, z: e.z, owner: activeId, type: 1 };
+    player.roadsLeft -= 1;
+    pgLogEvent({ type: "buildingPurchased", player: activeId, building: "road", count: 1 });
+    pgStatus(`${player.name} built a road.`, "success");
+    pgRenderAll();
+  } else if (choice.type === "city") {
+    pgPushHistory("random-city");
+    pgSpendResources(player, PG_BUILD_COSTS.city);
+    const piece = pg.settlements[choice.target];
+    piece.buildingType = 2;
+    player.citiesLeft -= 1;
+    player.settlementsLeft += 1;
+    player.vp += 1;
+    pgLogEvent({ type: "buildingPurchased", player: activeId, building: "city", count: 1 });
+    pgStatus(`${player.name} upgraded to a city.`, "success");
+    pgRenderAll();
+  } else if (choice.type === "devcard") {
+    pgBuyDevCard(activeId);
+    pgStatus(`${player.name} bought a dev card.`, "success");
+  } else {
+    pgNextTurn();
+    pgStatus("Turn ended.", "info");
+  }
+}
+
 function pgNextTurn() {
   if (pg.phase !== "play") return;
+  // While viewing a past turn, the Next button just scrubs the slider forward.
+  if (!pgIsViewingLatest()) {
+    pg.viewTurn += 1;
+    pgRenderTurnNav();
+    return;
+  }
+  if (!pgRolledThisTurn()) {
+    pgStatus("Roll the dice before ending the turn.", "warn");
+    return;
+  }
   pgPushHistory("next-turn");
   pg.currentTurnIdx += 1;
   pgSnapshotTurn();
@@ -4025,7 +4216,7 @@ function pgRenderTurnNav() {
   slider.max = max;
   if (pg.viewTurn > max) pg.viewTurn = max;
   slider.value = pg.viewTurn;
-  info.textContent = `Turn ${pg.viewTurn} / ${max}`;
+  info.textContent = pg.turns.length ? `Turn ${pg.viewTurn + 1} / ${pg.turns.length}` : "Turn 0 / 0";
   if (pg.phase === "play" && pg.players.length) {
     const ap = pg.players[pg.currentTurnIdx % pg.players.length];
     const colorName = PLAYER_COLOR_NAMES[ap?.id] || "white";
@@ -4048,6 +4239,10 @@ function pgRenderPhaseBanner() {
     const p = pg.players.find(x => x.id === pg.initial.order[pg.initial.stepIdx]);
     el.textContent = `${p?.name || ""} — place ${pg.initial.expecting}.`;
   } else {
+    if (!pgIsViewingLatest()) {
+      el.textContent = `Viewing past turn ${pg.viewTurn + 1} / ${pg.turns.length} — actions are disabled. Use Next/slider to return to the latest turn.`;
+      return;
+    }
     const ap = pg.players[pg.currentTurnIdx % Math.max(1, pg.players.length)];
     el.textContent = `${ap?.name || ""}'s turn — log a dice roll, click the board to build, or hit Next.`;
   }
@@ -4067,6 +4262,103 @@ function pgRenderPlayerSelector() {
   // Default to active player
   const ap = pg.players[pg.currentTurnIdx % Math.max(1, pg.players.length)];
   sel.value = prev || ap?.id || "";
+  // Partner selector for player trades — everyone except the selected player
+  const partnerSel = document.getElementById("playerTradePartner");
+  if (partnerSel) {
+    const prevPartner = partnerSel.value;
+    partnerSel.innerHTML = "";
+    const selectedId = Number(sel.value);
+    pg.players.filter(p => p.id !== selectedId).forEach(p => {
+      const opt = document.createElement("option");
+      opt.value = p.id;
+      opt.textContent = p.name;
+      partnerSel.appendChild(opt);
+    });
+    if ([...partnerSel.options].some(o => o.value === prevPartner)) partnerSel.value = prevPartner;
+  }
+}
+
+function pgBankTrade() {
+  if (!pgRequireLatestView("trading")) return;
+  if (pg.phase !== "play") { pgStatus("Trades only available during the main game.", "warn"); return; }
+  const playerId = Number(document.getElementById("playerSelector")?.value);
+  const player = pg.players.find(p => p.id === playerId);
+  if (!player) return;
+  const giveRes = document.getElementById("bankTradeGiveRes")?.value;
+  const getRes = document.getElementById("bankTradeGetRes")?.value;
+  const giveAmt = Number(document.getElementById("bankTradeGiveAmt")?.value || 0);
+  const getAmt = Number(document.getElementById("bankTradeGetAmt")?.value || 0);
+  if (!giveRes || !getRes) return;
+  if (!Number.isFinite(giveAmt) || giveAmt < 0 || !Number.isFinite(getAmt) || getAmt < 0) {
+    pgStatus("Give and Get amounts must be non-negative.", "warn");
+    return;
+  }
+  if (giveAmt === 0 && getAmt === 0) { pgStatus("At least one side of the trade must be > 0.", "warn"); return; }
+  if (giveAmt > 0 && getAmt > 0 && giveRes === getRes) { pgStatus("Pick two different resources.", "warn"); return; }
+  if ((player.resources[giveRes] || 0) < giveAmt) { pgStatus(`${player.name} doesn't have ${giveAmt} ${giveRes}.`, "warn"); return; }
+  const giveType = PG_RES_NAME_TO_TYPE[giveRes];
+  const getType = PG_RES_NAME_TO_TYPE[getRes];
+  if (getAmt > 0 && (pg.bank[getType] || 0) < getAmt) { pgStatus("Bank doesn't have that many to give out.", "warn"); return; }
+  pgPushHistory("bank-trade");
+  if (giveAmt > 0) {
+    player.resources[giveRes] -= giveAmt;
+    pg.bank[giveType] = (pg.bank[giveType] || 0) + giveAmt;
+  }
+  if (getAmt > 0) {
+    player.resources[getRes] = (player.resources[getRes] || 0) + getAmt;
+    pg.bank[getType] -= getAmt;
+  }
+  pgLogEvent({
+    type: "bankTrade",
+    player: playerId,
+    given: giveAmt > 0 ? Array(giveAmt).fill(giveType) : [],
+    received: getAmt > 0 ? Array(getAmt).fill(getType) : [],
+  });
+  pgRenderAll();
+  pgStatus("Bank trade completed.", "success");
+}
+
+function pgPlayerTrade() {
+  if (!pgRequireLatestView("trading")) return;
+  if (pg.phase !== "play") { pgStatus("Trades only available during the main game.", "warn"); return; }
+  const playerId = Number(document.getElementById("playerSelector")?.value);
+  const partnerId = Number(document.getElementById("playerTradePartner")?.value);
+  const player = pg.players.find(p => p.id === playerId);
+  const partner = pg.players.find(p => p.id === partnerId);
+  if (!player || !partner) return;
+  if (player.id === partner.id) { pgStatus("Pick a different partner.", "warn"); return; }
+  const giveRes = document.getElementById("playerTradeGiveRes")?.value;
+  const getRes = document.getElementById("playerTradeGetRes")?.value;
+  const giveAmt = Number(document.getElementById("playerTradeGiveAmt")?.value || 0);
+  const getAmt = Number(document.getElementById("playerTradeGetAmt")?.value || 0);
+  if (!giveRes || !getRes) return;
+  if (!Number.isFinite(giveAmt) || giveAmt < 0 || !Number.isFinite(getAmt) || getAmt < 0) {
+    pgStatus("Give and Get amounts must be non-negative.", "warn");
+    return;
+  }
+  if (giveAmt === 0 && getAmt === 0) { pgStatus("At least one side of the trade must be > 0 (gifts allowed).", "warn"); return; }
+  if (giveAmt > 0 && (player.resources[giveRes] || 0) < giveAmt) { pgStatus(`${player.name} doesn't have ${giveAmt} ${giveRes}.`, "warn"); return; }
+  if (getAmt > 0 && (partner.resources[getRes] || 0) < getAmt) { pgStatus(`${partner.name} doesn't have ${getAmt} ${getRes}.`, "warn"); return; }
+  pgPushHistory("player-trade");
+  if (giveAmt > 0) {
+    player.resources[giveRes] -= giveAmt;
+    partner.resources[giveRes] = (partner.resources[giveRes] || 0) + giveAmt;
+  }
+  if (getAmt > 0) {
+    partner.resources[getRes] -= getAmt;
+    player.resources[getRes] = (player.resources[getRes] || 0) + getAmt;
+  }
+  const giveType = PG_RES_NAME_TO_TYPE[giveRes];
+  const getType = PG_RES_NAME_TO_TYPE[getRes];
+  pgLogEvent({
+    type: "playerTrade",
+    player: playerId,
+    partner: partnerId,
+    given: giveAmt > 0 ? Array(giveAmt).fill(giveType) : [],
+    received: getAmt > 0 ? Array(getAmt).fill(getType) : [],
+  });
+  pgRenderAll();
+  pgStatus(giveAmt === 0 || getAmt === 0 ? "Gift completed." : "Player trade completed.", "success");
 }
 
 function pgRenderBank() {
@@ -4078,13 +4370,35 @@ function pgRenderBank() {
       <img src="${RESOURCE_IMAGES[name]}" alt="${name}" style="width:16px;height:16px;"><span>${pg.bank[t]}</span>
     </div>`;
   }).join("");
-  el.innerHTML = `<div style="font-size:11px;color:#cbd5e1;"><strong>Resources:</strong><br>${html}</div>`;
+  el.innerHTML = `<div style="font-size:11px;color:#cbd5e1;"><strong>Resources:</strong><br>${html}</div>
+    <div style="font-size:11px;color:#cbd5e1;margin-top:6px;">
+      <strong>Dev Cards:</strong> ${pg.bankDevCards} <img src="./data/images/card_devcardback.svg" width="20" height="20" style="margin-right:4px;vertical-align:middle;">
+    </div>`;
+}
+
+function pgBuildEdgeEndpointsByKey() {
+  const map = new Map();
+  if (!pg.mapState?.tileEdgeStates) return map;
+  for (const [ek, e] of Object.entries(pg.mapState.tileEdgeStates)) {
+    const [a, b] = pgEdgeEnds(e);
+    const ka = pgFindCornerKeyNearPx(a);
+    const kb = pgFindCornerKeyNearPx(b);
+    if (ka && kb) map.set(ek, [ka, kb]);
+  }
+  return map;
+}
+
+function pgLongestRoadByPlayer() {
+  if (!pg.mapState) return {};
+  const endpoints = pgBuildEdgeEndpointsByKey();
+  return computeLongestRoadLengthsByPlayer({ settlements: pg.settlements, roads: pg.roads }, endpoints);
 }
 
 function pgRenderPlayers() {
   const el = document.getElementById("pgPlayerTracker");
   if (!el) return;
   if (!pg.players.length) { el.innerHTML = "<p style='color:#94a3b8;font-size:12px;'>No players yet</p>"; return; }
+  const longest = pgLongestRoadByPlayer();
   el.innerHTML = pg.players.map(p => {
     const colorName = PLAYER_COLOR_NAMES[p.id] || "white";
     const playerIcon = `./data/images/player_bg_${colorName}.svg`;
@@ -4095,6 +4409,8 @@ function pgRenderPlayers() {
     const settlementsBuilt = 5 - p.settlementsLeft;
     const citiesBuilt = 4 - p.citiesLeft;
     const roadsBuilt = 15 - p.roadsLeft;
+    const longestRoad = longest[p.id] || 0;
+    const knightsPlayed = p.knightsPlayed || 0;
     const resHtml = RESOURCE_TYPES.map(t => `<div class="resource-item" style="display:inline-flex;align-items:center;gap:4px;margin-right:8px;">
       <img src="${RESOURCE_IMAGES[t]}" alt="${t}" style="width:16px;height:16px;"><span>${p.resources[t] || 0}</span></div>`).join("");
     const devHtml = DEV_CARD_TYPES.map(t => `<div class="resource-item" style="display:inline-flex;align-items:center;gap:4px;margin-right:8px;">
@@ -4107,10 +4423,28 @@ function pgRenderPlayers() {
         Settlements: <b>${settlementsBuilt}</b> <img src="${settlementImage}" width="18" height="18" style="vertical-align:middle;">
         Cities: <b>${citiesBuilt}</b> <img src="${cityImage}" width="18" height="18" style="vertical-align:middle;">
       </div>
+      <div style="font-size:11px;color:#cbd5e1;margin-bottom:4px;">
+        <strong>Stats:</strong><br>
+        Longest Road: <b>${longestRoad}</b> <img src="./data/images/icon_longest_road.svg" width="18" height="18" style="vertical-align:middle;margin-right:4px;">
+        Knights Played: <b>${knightsPlayed}</b> <img src="./data/images/icon_largest_army.svg" width="18" height="18" style="vertical-align:middle;margin-right:4px;">
+        <button type="button" data-knight="${p.id}" style="font-size:10px;padding:1px 5px;margin-left:4px;">+ Knight</button>
+      </div>
       <div style="font-size:11px;"><strong>Resources:</strong><br>${resHtml}</div>
       <div style="font-size:11px;margin-top:4px;"><strong>Dev Cards:</strong><br>${devHtml}</div>
     </div>`;
   }).join("");
+  el.querySelectorAll("button[data-knight]").forEach(btn => {
+    btn.onclick = () => {
+      if (!pgRequireLatestView("playing a knight")) return;
+      const id = Number(btn.dataset.knight);
+      const player = pg.players.find(x => x.id === id);
+      if (!player) return;
+      pgPushHistory("play-knight");
+      player.knightsPlayed = (player.knightsPlayed || 0) + 1;
+      pgLogEvent({ type: "knightPlayed", player: id });
+      pgRenderAll();
+    };
+  });
 }
 
 function pgRenderEventLog() {
@@ -4128,10 +4462,16 @@ function pgRenderEventLog() {
       case "placeRoad": text = `${playerIcon(log.player)} placed a road`; break;
       case "buildingPurchased": text = `${playerIcon(log.player)} built a <b>${log.building}</b>`; break;
       case "devCardBought": text = `${playerIcon(log.player)} bought a dev card`; break;
+      case "bankTrade": text = `${playerIcon(log.player)} traded ${resImgs(log.given)} for ${resImgs(log.received)} with bank`; break;
+      case "playerTrade": text = `${playerIcon(log.player)} traded ${resImgs(log.given)} with ${playerIcon(log.partner)} for ${resImgs(log.received)}`; break;
+      case "knightPlayed": text = `${playerIcon(log.player)} played a <b>Knight</b>`; break;
       case "phaseChange": text = `<em>${log.note}</em>`; break;
       default: text = JSON.stringify(log);
     }
-    return `<div style="margin-bottom:4px;font-size:11px;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:3px;">${text}</div>`;
+    const turnLabel = (log.turn !== undefined)
+      ? `<span style="color:#ffffff;"><strong>Turn ${log.turn}:</strong></span> `
+      : "";
+    return `<div style="margin-bottom:4px;font-size:11px;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:3px;">${turnLabel}${text}</div>`;
   }).join("");
   el.innerHTML = html;
 }
@@ -4151,6 +4491,8 @@ function pgSyncToolbar() {
   };
   show("pgRandomBoardBtn", pg.phase === "board");
   show("pgConfirmBoardBtn", pg.phase === "board");
+  show("pgRandomMoveBtn", true);
+  pgSyncHistoryButtons();
 }
 
 function pgRenderAll() {
@@ -4173,6 +4515,8 @@ async function pgInit() {
   document.getElementById("pgConfirmBoardBtn")?.addEventListener("click", pgConfirmBoard);
   document.getElementById("pgRandomBoardBtn")?.addEventListener("click", pgRandomizeBoard);
   document.getElementById("pgUndoBtn")?.addEventListener("click", pgUndo);
+  document.getElementById("pgRedoBtn")?.addEventListener("click", pgRedo);
+  document.getElementById("pgRandomMoveBtn")?.addEventListener("click", pgRandomMove);
   document.getElementById("pgResetBtn")?.addEventListener("click", () => {
     if (!confirm("Reset the whole game? All progress will be lost.")) return;
     pg.phase = "setup";
@@ -4181,12 +4525,15 @@ async function pgInit() {
     pg.mapState = null;
     pg.settlements = {};
     pg.roads = {};
+    pg.bank = { 1: 19, 2: 19, 3: 19, 4: 19, 5: 19 };
+    pg.bankDevCards = 25;
     pg.rollHistory = [];
     pg.eventLog = [];
     pg.turns = [];
     pg.history = [];
+    pg.redoStack = [];
     pg._setupDraft = null;
-    document.getElementById("pgUndoBtn").disabled = true;
+    pgSyncHistoryButtons();
     pgShowSetupModal();
     pgRenderAll();
   });
@@ -4215,8 +4562,13 @@ async function pgInit() {
     const type = document.getElementById("buildType")?.value;
     const playerId = Number(document.getElementById("playerSelector")?.value);
     if (type === "devcard") pgBuyDevCard(playerId);
-    else alert(`Click a valid ${type} spot on the board after selecting Buy. Resources will be deducted on placement.`);
+    else pgStatus(`Click a valid ${type} spot on the board to place it. Resources will be deducted on placement.`);
   });
+
+  // Trades
+  document.getElementById("bankTradeBtn")?.addEventListener("click", pgBankTrade);
+  document.getElementById("playerTradeBtn")?.addEventListener("click", pgPlayerTrade);
+  document.getElementById("playerSelector")?.addEventListener("change", pgRenderPlayerSelector);
 
   // Manual adjusters
   document.getElementById("addResourceBtn")?.addEventListener("click", () => pgManualAdjust("resources", 1));
@@ -4238,6 +4590,7 @@ async function pgInit() {
 }
 
 function pgManualAdjust(kind, delta) {
+  if (!pgRequireLatestView("adjusting resources")) return;
   const playerId = Number(document.getElementById("playerSelector")?.value);
   const player = pg.players.find(p => p.id === playerId);
   if (!player) return;
