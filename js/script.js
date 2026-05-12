@@ -682,7 +682,7 @@ function simulate(state, playerToMove, weights) {
 const SIZE = 55;
 const svg = document.getElementById("catanBoard");
 const LABEL_MAX_DIST = 195; // px — hide EDGE labels beyond this (vertex labels always shown)
-const PLAYER_COLOR_NAMES = { 1: "red", 2: "blue", 3: "orange", 4: "green", 5: "black", 6: "bronze", 7: "silver", 8: "yellow", 9: "white", 10: "purple", 11: "mysticblue", 12: "pink" };
+const PLAYER_COLOR_NAMES = { 1: "red", 2: "blue", 3: "orange", 4: "green", 5: "black", 6: "bronze", 7: "silver", 8: "gold", 9: "white", 10: "purple", 11: "mysticblue", 12: "pink" };
 const RESOURCE_TYPES = ["wood", "brick", "sheep", "wheat", "ore"];
 const DEV_CARD_TYPES = ["knight", "victoryPoint", "roadBuilding", "yearOfPlenty", "monopoly"];
 const RESOURCE_IMAGES = {
@@ -2930,14 +2930,14 @@ window.addEventListener("DOMContentLoaded", () => {
         moveDiv.style.background = "#1e293b";
         moveDiv.style.borderRadius = "4px";
         moveDiv.style.border = "1px solid #475569";
-        
+
         moveDiv.innerHTML = `<strong>#${i + 1}</strong>: ${desc} <span style="color:#94a3b8; font-size:12px;">(Score: ${move.score.toFixed(2)})</span>`;
-        
+
         const statsStr = Object.entries(move.stats)
           .map(([k, v]) => `${k.charAt(0).toUpperCase() + k.slice(1)}: ${v.toFixed(2)}`)
           .join('\n');
         moveDiv.title = `Heuristic Stats:\n----------------\n${statsStr}`;
-        
+
         moveDiv.addEventListener("mouseenter", () => {
           const hlGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
           hlGroup.id = "predictionHighlight";
@@ -2948,7 +2948,7 @@ window.addEventListener("DOMContentLoaded", () => {
             const { px, py } = axialToPixel(move.corner.x, move.corner.y);
             const vIdx = CORNER_Z_TO_VERTEX[move.corner.z] ?? move.corner.z;
             const pt = hexVertex(px, py, vIdx);
-            
+
             const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
             const size = 40;
             const bType = move.type === "upgrade_city" ? "city" : "settlement";
@@ -2964,7 +2964,7 @@ window.addEventListener("DOMContentLoaded", () => {
             const eIdx = EDGE_Z_TO_IDX[move.edge.z] ?? move.edge.z;
             const pt1 = hexVertex(px, py, eIdx);
             const pt2 = hexVertex(px, py, (eIdx + 1) % 6);
-            
+
             const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
             line.setAttribute("x1", pt1.x);
             line.setAttribute("y1", pt1.y);
@@ -3212,7 +3212,7 @@ function updateEventLogDisplay(turnIndex) {
 // PLAYGROUND v2 — live game tracker
 // ════════════════════════════════════════════════════════════════════════════
 
-const PG_AVAILABLE_COLORS = [1, 2, 3, 5, 8, 4, 10, 6, 12]; // red, blue, orange, black, yellow, green, purple, bronze, pink
+const PG_AVAILABLE_COLORS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; // red, blue, orange, green, black, bronze, silver, gold, white, purple, mysticblue, pink
 const PG_HEX_TYPE_OPTIONS = [
   { val: 1, label: "Wood" },
   { val: 2, label: "Brick" },
@@ -3474,23 +3474,46 @@ function pgRenderSetupRows(count) {
       colorKey: PG_AVAILABLE_COLORS[i] || PG_AVAILABLE_COLORS[0],
     }));
   }
+
   pg._setupDraft.forEach((p, idx) => {
     const row = document.createElement("div");
     row.className = "pg-setup-row";
+
+    // Flex layout with a smaller gap
+    row.style.display = "flex";
+    row.style.alignItems = "center";
+    row.style.gap = "6px";
+    row.style.marginBottom = "8px";
+
     const colorName = PLAYER_COLOR_NAMES[p.colorKey] || "white";
+
     row.innerHTML = `
-      <span style="font-weight:600;color:#94a3b8;">${idx + 1}.</span>
-      <img src="./data/images/settlement_${colorName}.svg" alt="${colorName}" style="width:22px;height:22px;vertical-align:middle;">
-      <input type="text" value="${p.name.replace(/"/g, "&quot;")}" data-idx="${idx}" class="pg-name-input" style="padding:4px 6px;">
-      <select data-idx="${idx}" class="pg-color-input">
+      <span style="font-weight:600;color:#94a3b8;min-width:20px;">${idx + 1}.</span>
+      
+      <img src="./data/images/settlement_${colorName}.svg" 
+           alt="${colorName}" 
+           style="width:22px;height:22px;">
+      
+      <!-- Added max-width here to keep the text field compact -->
+      <input type="text" 
+             value="${p.name.replace(/"/g, "&quot;")}" 
+             data-idx="${idx}" 
+             class="pg-name-input" 
+             style="padding:4px 6px; width: 140px; max-width: 180px;">
+      
+      <select data-idx="${idx}" class="pg-color-input" style="padding:4px;">
         ${PG_AVAILABLE_COLORS.map(ck => `<option value="${ck}" ${ck === p.colorKey ? "selected" : ""}>${PLAYER_COLOR_NAMES[ck]}</option>`).join("")}
       </select>
-      <span>
-        <button data-up="${idx}" type="button" ${idx === 0 ? "disabled" : ""}>↑</button>
-        <button data-down="${idx}" type="button" ${idx === count - 1 ? "disabled" : ""}>↓</button>
+      
+      <span style="display:flex; gap:2px; flex-shrink: 0;">
+        <button data-up="${idx}" type="button" ${idx === 0 ? "disabled" : ""} style="padding:2px 6px;">↑</button>
+        <button data-down="${idx}" type="button" ${idx === count - 1 ? "disabled" : ""} style="padding:2px 6px;">↓</button>
       </span>`;
+
     box.appendChild(row);
   });
+
+  // ... (rest of your event listener logic remains the same)
   box.querySelectorAll(".pg-name-input").forEach(el => {
     el.oninput = () => { pg._setupDraft[Number(el.dataset.idx)].name = el.value || `Player ${Number(el.dataset.idx) + 1}`; };
   });
@@ -3501,10 +3524,10 @@ function pgRenderSetupRows(count) {
     };
   });
   box.querySelectorAll("button[data-up]").forEach(b => {
-    b.onclick = () => { const i = Number(b.dataset.up); [pg._setupDraft[i - 1], pg._setupDraft[i]] = [pg._setupDraft[i], pg._setupDraft[i - 1]]; pgRenderSetupRows(count); };
+    b.onclick = () => { const i = Number(b.dataset.up);[pg._setupDraft[i - 1], pg._setupDraft[i]] = [pg._setupDraft[i], pg._setupDraft[i - 1]]; pgRenderSetupRows(count); };
   });
   box.querySelectorAll("button[data-down]").forEach(b => {
-    b.onclick = () => { const i = Number(b.dataset.down); [pg._setupDraft[i + 1], pg._setupDraft[i]] = [pg._setupDraft[i], pg._setupDraft[i + 1]]; pgRenderSetupRows(count); };
+    b.onclick = () => { const i = Number(b.dataset.down);[pg._setupDraft[i + 1], pg._setupDraft[i]] = [pg._setupDraft[i], pg._setupDraft[i + 1]]; pgRenderSetupRows(count); };
   });
 }
 
@@ -4224,7 +4247,7 @@ function pgRenderTurnNav() {
   } else {
     active.textContent = pg.phase === "setup" ? "Configure players to begin." :
       pg.phase === "board" ? "Set hexes, numbers, and ports." :
-      pg.phase === "initial" ? `${pg.players.find(p => p.id === pg.initial.order[pg.initial.stepIdx])?.name || ""} — place ${pg.initial.expecting}` : "";
+        pg.phase === "initial" ? `${pg.players.find(p => p.id === pg.initial.order[pg.initial.stepIdx])?.name || ""} — place ${pg.initial.expecting}` : "";
   }
 }
 
