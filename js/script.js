@@ -4402,31 +4402,57 @@ function pgMoveRobberToHex(hexKey) {
   pgRenderAll();
 }
 
-function pgStealFrom(thiefId, victimId) {
+function pgStealFrom(thiefId, victimId, resourceName, anchorEvent) {
   const thief = pg.players.find(p => p.id === thiefId);
   const victim = pg.players.find(p => p.id === victimId);
   if (!thief || !victim) return;
-  const pool = [];
-  for (const [r, c] of Object.entries(victim.resources || {})) for (let i = 0; i < c; i++) pool.push(r);
-  if (!pool.length) {
-    pg.pendingSteal = null;
-    pgStatus(`${victim.name} has nothing to steal.`, "info");
+  
+  // If no resource specified, show picker
+  if (!resourceName) {
+    const victimResources = victim.resources || {};
+    const available = [];
+    for (const [r, c] of Object.entries(victimResources)) {
+      if (c > 0) available.push(r);
+    }
+    if (!available.length) {
+      pg.pendingSteal = null;
+      pgStatus(`${victim.name} has nothing to steal.`, "info");
+      pgRenderAll();
+      return;
+    }
+    // Create a dummy event if not provided
+    if (!anchorEvent) {
+      anchorEvent = { clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 };
+    }
+    // Open picker for thief to choose which resource to steal
+    const options = available.map(r => ({
+      label: `${r.charAt(0).toUpperCase() + r.slice(1)} (${victimResources[r]})`,
+      val: r
+    }));
+    pgOpenPicker(anchorEvent, options, (chosen) => {
+      pgStealFrom(thiefId, victimId, chosen, anchorEvent);
+      pgRenderAll();
+    });
     return;
   }
-  const r = pool[Math.floor(Math.random() * pool.length)];
-  victim.resources[r] -= 1;
-  thief.resources[r] = (thief.resources[r] || 0) + 1;
+  
+  // Execute the steal with the chosen resource
+  if (!victim.resources[resourceName] || victim.resources[resourceName] <= 0) {
+    pgStatus(`${victim.name} doesn't have any ${resourceName} to steal.`, "warn");
+    return;
+  }
+  victim.resources[resourceName] -= 1;
+  thief.resources[resourceName] = (thief.resources[resourceName] || 0) + 1;
   pg.pendingSteal = null;
-  pgLogEvent({ type: "steal", player: thiefId, victim: victimId, resource: PG_RES_NAME_TO_TYPE[r] });
-  pgStatus(`${thief.name} stole 1 ${r} from ${victim.name}.`, "success");
+  pgLogEvent({ type: "steal", player: thiefId, victim: victimId, resource: PG_RES_NAME_TO_TYPE[resourceName] });
+  pgStatus(`${thief.name} stole 1 ${resourceName} from ${victim.name}.`, "success");
 }
 
-function pgPickStealVictim(victimId) {
+function pgPickStealVictim(victimId, event) {
   if (!pg.pendingSteal) return;
   if (!pg.pendingSteal.candidates.includes(victimId)) return;
   pgPushHistory("steal");
-  pgStealFrom(pg.pendingSteal.playerId, victimId);
-  pgRenderAll();
+  pgStealFrom(pg.pendingSteal.playerId, victimId, null, event);
 }
 
 // Dev card plays
@@ -4561,15 +4587,57 @@ function pgBuyDevCard(playerId) {
   if (!player) return;
   if (!pgHasResources(player, PG_BUILD_COSTS.devcard)) { pgStatus("Not enough resources for a dev card.", "warn"); return; }
   if (pg.bankDevCards <= 0) { pgStatus("No dev cards left in the bank.", "warn"); return; }
-  if (!pg.devCardDeck || !pg.devCardDeck.length) { pgStatus("Dev card deck is empty.", "warn"); return; }
+  
+  // Count available dev cards in the bank by type
+  const bankCounts = { knight: 14, victoryPoint: 5, roadBuilding: 2, yearOfPlenty: 2, monopoly: 2 };
+  const deckCounts = { knight: 0, victoryPoint: 0, roadBuilding: 0, yearOfPlenty: 0, monopoly: 0 };
+  if (pg.devCardDeck && pg.devCardDeck.length) {
+    for (const card of pg.devCardDeck) {
+      deckCounts[card] = (deckCounts[card] || 0) + 1;
+    }
+  }
+  
+  // Check if any cards are available
+  const available = [];
+  for (const [cardType, count] of Object.entries(deckCounts)) {
+    if (count > 0) available.push(cardType);
+  }
+  
+  if (!available.length) {
+    pgStatus("No dev cards left in the bank.", "warn");
+    return;
+  }
+  
+  // Show picker for player to choose which dev card to draw
+  const options = available.map(cardType => ({
+    label: `${DEV_CARD_LABEL(cardType)} (${deckCounts[cardType]} left)`,
+    val: cardType
+  }));
+  
+  pgOpenPicker(event, options, (chosen) => {
+    pgDrawDevCard(playerId, chosen);
+  });
+}
+
+function pgDrawDevCard(playerId, cardType) {
+  const player = pg.players.find(p => p.id === playerId);
+  if (!player) return;
+  if (!pgHasResources(player, PG_BUILD_COSTS.devcard)) { pgStatus("Not enough resources for a dev card.", "warn"); return; }
+  
   pgPushHistory("buy-devcard");
   pgSpendResources(player, PG_BUILD_COSTS.devcard);
-  const drawn = pg.devCardDeck.pop();
+  
+  // Remove the chosen card type from the deck
+  const idx = pg.devCardDeck.indexOf(cardType);
+  if (idx !== -1) {
+    pg.devCardDeck.splice(idx, 1);
+  }
   pg.bankDevCards = pg.devCardDeck.length;
-  player.devCards[drawn] = (player.devCards[drawn] || 0) + 1;
-  if (drawn === "victoryPoint") player.vp += 1;
+  
+  player.devCards[cardType] = (player.devCards[cardType] || 0) + 1;
+  if (cardType === "victoryPoint") player.vp += 1;
   pgLogEvent({ type: "devCardBought", player: playerId, count: 1 });
-  pgStatus(`${player.name} drew a ${DEV_CARD_LABEL(drawn)}.`, "success");
+  pgStatus(`${player.name} drew a ${DEV_CARD_LABEL(cardType)}.`, "success");
   pgRenderAll();
 }
 
@@ -5106,7 +5174,7 @@ function pgRenderPlayers() {
     };
   });
   el.querySelectorAll("button[data-steal-victim]").forEach(btn => {
-    btn.onclick = () => pgPickStealVictim(Number(btn.dataset.stealVictim));
+    btn.onclick = (e) => pgPickStealVictim(Number(btn.dataset.stealVictim), e);
   });
 }
 
@@ -5385,7 +5453,7 @@ function pgRenderActivePlayerCard() {
   });
   el.querySelector('[data-action="buy-devcard"]')?.addEventListener("click", () => pgBuyDevCard(ap.id));
   el.querySelector('[data-action="random-robber"]')?.addEventListener("click", () => pgRandomMove());
-  el.querySelectorAll('[data-steal]').forEach(b => b.onclick = () => pgPickStealVictim(Number(b.dataset.steal)));
+  el.querySelectorAll('[data-steal]').forEach(b => b.onclick = (e) => pgPickStealVictim(Number(b.dataset.steal), e));
 }
 
 // ── INIT
