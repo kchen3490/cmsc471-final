@@ -1687,6 +1687,71 @@ function updateAnalyticsView(turnIndex) {
 
   // Update player tracker for analytics
   updateAnalyticsPlayerTracker(turn);
+
+  // Show the playground-style win popup when navigating to the final turn.
+  analyticsMaybeShowWinnerModal(turnIndex);
+}
+
+function analyticsGetPlayerName(playerId) {
+  const players = currentGameData?.data?.playerUserStates;
+  const player = players?.[playerId] ?? players?.[String(playerId)];
+  return player?.displayName || player?.name || `Player ${playerId}`;
+}
+
+function analyticsGetWinnerFromTurn(turn) {
+  if (!turn?.playerStats) return null;
+
+  const gameEndLog = (turn.eventLogs || []).find(log => log.type === "gameEnd" && log.winner != null);
+  if (gameEndLog) {
+    return { winnerId: Number(gameEndLog.winner), vp: Number(gameEndLog.vp || 0) };
+  }
+
+  const vps = Object.entries(turn.playerStats)
+    .map(([id, stats]) => ({ playerId: Number(id), vp: Number(stats.vp || 0) }))
+    .filter(p => Number.isFinite(p.playerId));
+  if (!vps.length) return null;
+
+  const sorted = vps.sort((a, b) => b.vp - a.vp || a.playerId - b.playerId);
+  const winner = sorted[0];
+  if (winner.vp < 10) return null;
+  return { winnerId: winner.playerId, vp: winner.vp };
+}
+
+function analyticsMaybeShowWinnerModal(turnIndex) {
+  if (!currentGameData || !turnStates || turnIndex !== turnStates.length - 1) return;
+  const turn = turnStates[turnIndex];
+  const winnerData = analyticsGetWinnerFromTurn(turn);
+  if (!winnerData) return;
+  const modal = document.getElementById("playgroundWinModal");
+  const body = document.getElementById("pgWinModalBody");
+  if (!modal || !body) return;
+
+  const playOrder = currentGameData?.data?.playOrder || [];
+  const playerStats = turn.playerStats || {};
+  const standings = Object.entries(playerStats)
+    .map(([id, stats]) => ({
+      playerId: Number(id),
+      vp: Number(stats.vp || 0)
+    }))
+    .filter(p => Number.isFinite(p.playerId))
+    .sort((a, b) => b.vp - a.vp || a.playerId - b.playerId);
+
+  const stabilized = standings.map((p, idx) => {
+    const colorName = PLAYER_COLOR_NAMES[p.playerId] || "white";
+    const playerName = analyticsGetPlayerName(p.playerId);
+    const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "  ";
+    return `<div class="pg-row">${medal} <img src="./data/images/player_bg_${colorName}.svg"> <span>${playerName}</span> — <b>${p.vp} VP</b></div>`;
+  }).join("");
+
+  const winner = analyticsGetPlayerName(winnerData.winnerId);
+  const winnerColor = PLAYER_COLOR_NAMES[winnerData.winnerId] || "white";
+
+  body.innerHTML = `<div class="pg-winner-line">
+    <img src="./data/images/player_bg_${winnerColor}.svg"> <span>${winner} wins!</span>
+  </div>
+  <div style="color:#facc15;font-weight:600;">${winnerData.vp} Victory Points</div>
+  <div class="pg-final-standings"><strong>Final Standings:</strong>${stabilized}</div>`;
+  modal.style.display = "flex";
 }
 
 function updateAnalyticsPlayerTracker(turn) {
