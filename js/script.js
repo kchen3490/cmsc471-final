@@ -855,10 +855,13 @@ function updateDiceRollChart() {
     .domain([0, yMax])
     .range([diceRollChart.innerHeight, 0]);
 
+  // Only show ticks at the distinct bar heights (plus 0 and the max). Keeps the axis clean
+  // when most bars share the same count.
+  const distinctCounts = Array.from(new Set([0, yMax, ...data.map((d) => d.count)])).sort((a, b) => a - b);
   diceRollChart.yAxisGroup
     .call(
       d3.axisLeft(y)
-        .tickValues(d3.range(0, yMax + 1, 1))
+        .tickValues(distinctCounts)
         .tickFormat(d3.format("d"))
     );
 
@@ -3249,6 +3252,7 @@ const pg = {
   roads: {},        // edgeKey -> {x,y,z,owner,type:1}
   bank: { 1: 19, 2: 19, 3: 19, 4: 19, 5: 19 },
   bankDevCards: 25, // 14 knight + 5 VP + 2 RB + 2 YoP + 2 Mono
+  devCardDeck: [],  // shuffled deck of dev card type strings
   rollHistory: [],
   eventLog: [],
   turns: [],        // snapshots taken after each "Next Turn"; each = {currentTurnIdx, eventLogLen, snapshotIdx}
@@ -3257,7 +3261,26 @@ const pg = {
   history: [],      // undo stack
   redoStack: [],    // redo stack
   _mapTemplate: null,
+  robberHex: null,           // hex key the robber sits on
+  pendingRobber: null,       // { playerId, source: 'roll7'|'knight' } — awaiting hex click
+  pendingSteal: null,        // { playerId, hexKey, candidates: [victimId,...] }
+  pendingRoadBuilding: null, // { playerId, remaining: 2 }
+  longestRoadOwner: null,    // playerId or null — current holder of Longest Road (+2 VP)
+  largestArmyOwner: null,    // playerId or null — current holder of Largest Army (+2 VP)
+  winner: null,              // playerId of the first player to reach 10 VP
 };
+
+const PG_DEV_CARD_COMPOSITION = { knight: 14, victoryPoint: 5, roadBuilding: 2, yearOfPlenty: 2, monopoly: 2 };
+function pgBuildDevDeck() {
+  const deck = [];
+  for (const [type, n] of Object.entries(PG_DEV_CARD_COMPOSITION)) for (let i = 0; i < n; i++) deck.push(type);
+  // Fisher-Yates shuffle
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  return deck;
+}
 
 let _pgStatusTimer = null;
 function pgStatus(msg, type = "info") {
@@ -3309,11 +3332,19 @@ function pgCaptureSnap() {
     roads: pg.roads,
     bank: pg.bank,
     bankDevCards: pg.bankDevCards,
+    devCardDeck: pg.devCardDeck,
     rollHistory: pg.rollHistory,
     eventLog: pg.eventLog,
     turns: pg.turns,
     viewTurn: pg.viewTurn,
     initial: pg.initial,
+    robberHex: pg.robberHex,
+    pendingRobber: pg.pendingRobber,
+    pendingSteal: pg.pendingSteal,
+    pendingRoadBuilding: pg.pendingRoadBuilding,
+    longestRoadOwner: pg.longestRoadOwner,
+    largestArmyOwner: pg.largestArmyOwner,
+    winner: pg.winner,
   });
 }
 
@@ -3339,6 +3370,7 @@ function pgUndo() {
   pg.redoStack.push({ label: prev.label, snap: pgCaptureSnap() });
   if (pg.redoStack.length > 40) pg.redoStack.shift();
   Object.assign(pg, prev.snap);
+  if (pg.winner == null) pgHideWinnerModal();
   pgSyncHistoryButtons();
   pgRenderAll();
 }
@@ -3348,6 +3380,7 @@ function pgRedo() {
   const next = pg.redoStack.pop();
   pg.history.push({ label: next.label, snap: pgCaptureSnap() });
   Object.assign(pg, next.snap);
+  if (pg.winner == null) pgHideWinnerModal();
   pgSyncHistoryButtons();
   pgRenderAll();
 }
@@ -3555,7 +3588,8 @@ function pgConfirmSetup() {
   pg.settlements = {};
   pg.roads = {};
   pg.bank = { 1: 19, 2: 19, 3: 19, 4: 19, 5: 19 };
-  pg.bankDevCards = 25;
+  pg.devCardDeck = pgBuildDevDeck();
+  pg.bankDevCards = pg.devCardDeck.length;
   pg.rollHistory = [];
   pg.eventLog = [];
   pg.turns = [];
@@ -3563,6 +3597,14 @@ function pgConfirmSetup() {
   pg.phase = "board";
   pg.history = [];
   pg.redoStack = [];
+  pg.robberHex = null;
+  pg.pendingRobber = null;
+  pg.pendingSteal = null;
+  pg.pendingRoadBuilding = null;
+  pg.longestRoadOwner = null;
+  pg.largestArmyOwner = null;
+  pg.winner = null;
+  pgHideWinnerModal();
   document.getElementById("playgroundSetupModal").style.display = "none";
   pgSyncHistoryButtons();
   pgRenderAll();
@@ -3597,18 +3639,86 @@ function pgRenderBoard() {
     if (p.buildingType === 2) pgDrawCity(svgEl_, p);
     else pgDrawSettlement(svgEl_, p);
   }
+  // Robber piece
+  if (pg.robberHex && pg.mapState.tileHexStates[pg.robberHex]) {
+    pgDrawRobber(svgEl_, pg.mapState.tileHexStates[pg.robberHex]);
+  }
+}
+
+function pgDrawRobber(parent, hex) {
+  const { px, py } = axialToPixel(hex.x, hex.y);
+  const size = 32;
+  parent.appendChild(svgEl("image", {
+    href: "./data/images/icon_robber.svg",
+    x: px - size / 2 - 24,
+    y: py - size / 2 + 6,
+    width: size,
+    height: size,
+    class: "piece-robber",
+    style: "pointer-events:none;",
+  }));
 }
 
 function pgDrawHex(parent, idx, tile) {
   const { px, py } = axialToPixel(tile.x, tile.y);
   const isBlank = tile.type === -1;
-  const clickable = pg.phase === "board";
+  const boardEdit = pg.phase === "board";
+  const robberMove = pg.phase === "play" && !!pg.pendingRobber && !pg.pendingSteal && idx !== pg.robberHex;
+  const clickable = boardEdit || robberMove;
   const cls = isBlank ? "hex hex-blank" : `hex hex-type-${tile.type}${clickable ? " hex-clickable" : ""}`;
-  const poly = svgEl("polygon", { points: hexPolyPoints(px, py), class: cls });
-  if (clickable) {
+  const poly = svgEl("polygon", { points: hexPolyPoints(px, py), class: cls, style: "cursor:pointer;" });
+  if (boardEdit) {
     poly.addEventListener("click", (e) => pgOpenHexPicker(idx, e));
+  } else if (robberMove) {
+    poly.addEventListener("click", () => pgMoveRobberToHex(idx));
   }
+  poly.addEventListener("mouseenter", (e) => showTooltip(pgBuildHexTooltipHtml(tile, idx), e));
+  poly.addEventListener("mousemove", positionTooltip);
+  poly.addEventListener("mouseleave", hideTooltip);
   parent.appendChild(poly);
+}
+
+function pgBuildPortTooltipHtml(port) {
+  const info = PORT_TYPES[port.type] ?? { label: "?", name: "Unknown" };
+  const icon = port.type === 1 ? "🔀" : (PORT_RESOURCE_ICONS?.[port.type] || "");
+  let html = `<div style="font-weight:bold;">⚓ ${info.name}</div>`;
+  html += `<div>Rate: <b>${info.label}</b></div>`;
+  if (port.type > 1) {
+    html += `<div>${icon} ${PORT_RESOURCE_NAMES?.[port.type] || ""} trades cheaper</div>`;
+  } else if (port.type === 1) {
+    html += `<div>Trade any 3 same resource for 1 of choice</div>`;
+  }
+  return html;
+}
+
+function pgBuildHexTooltipHtml(tile, idx) {
+  const icon = HEX_TYPE_ICONS[tile.type] ?? "❓";
+  const name = HEX_TYPES[tile.type] ?? "Unknown";
+  const hasRobber = pg.robberHex === idx;
+  const corners = pgCornerKeysOnHex(idx);
+  const ownerSet = new Set();
+  for (const ck of corners) {
+    const piece = pg.settlements[ck];
+    if (piece?.owner != null) ownerSet.add(piece.owner);
+  }
+  const playerNums = {};
+  pg.turnOrder.forEach((id, i) => { playerNums[id] = i + 1; });
+  let html = `<div style="font-weight:bold;">${icon} ${name}</div>`;
+  if (tile.diceNumber > 0) {
+    const pips = 6 - Math.abs(tile.diceNumber - 7);
+    html += `<div>Dice: <b>${tile.diceNumber}</b> · ${pips}/36</div>`;
+  } else if (tile.type === 0) {
+    html += `<div style="color:#cbd5e1;">No dice number (Desert)</div>`;
+  }
+  if (hasRobber) {
+    html += `<div style="color:#facc15;font-weight:bold;">🚷 Robber is here — production blocked</div>`;
+  }
+  if (ownerSet.size) {
+    html += `<div style="margin-top:5px;display:flex;align-items:center;">Players on hex:<span style="margin-left:5px;">${buildPlayerAccessListHtml(ownerSet, playerNums, hasRobber)}</span></div>`;
+  } else {
+    html += `<div style="margin-top:5px;color:#94a3b8;">No players on this hex yet.</div>`;
+  }
+  return html;
 }
 
 function pgDrawHexLabels(parent, tile) {
@@ -3617,7 +3727,8 @@ function pgDrawHexLabels(parent, tile) {
   if (tile.diceNumber > 0) {
     const isHot = tile.diceNumber === 6 || tile.diceNumber === 8;
     const clickable = pg.phase === "board" && tile.type !== 0;
-    const bg = svgEl("circle", { cx: px, cy: py, r: 15, class: `dice-bg${clickable ? " dice-clickable" : ""}` });
+    const passThrough = !clickable;
+    const bg = svgEl("circle", { cx: px, cy: py, r: 15, class: `dice-bg${clickable ? " dice-clickable" : ""}`, style: passThrough ? "pointer-events:none;" : "" });
     if (clickable) {
       bg.addEventListener("click", (e) => { e.stopPropagation(); pgOpenDicePicker(tile, e); });
     }
@@ -3659,11 +3770,20 @@ function pgDrawPort(parent, port, idx) {
   }
   const clickable = pg.phase === "board";
   const visCls = isBlank ? "port port-blank" : `port port-type-${port.type}${clickable ? " port-clickable" : ""}`;
-  const circle = svgEl("circle", { cx: ox, cy: oy, r: 16, class: visCls });
+  const circle = svgEl("circle", { cx: ox, cy: oy, r: 16, class: visCls, style: "cursor:pointer;" });
   if (clickable) circle.addEventListener("click", (e) => pgOpenPortPicker(idx, e));
+  const hit = svgEl("circle", { cx: ox, cy: oy, r: 22, fill: "transparent", style: "cursor:pointer;" });
+  const attachPortTooltip = (el) => {
+    el.addEventListener("mouseenter", (e) => showTooltip(pgBuildPortTooltipHtml(port), e));
+    el.addEventListener("mousemove", positionTooltip);
+    el.addEventListener("mouseleave", hideTooltip);
+  };
+  attachPortTooltip(circle);
+  attachPortTooltip(hit);
   parent.appendChild(circle);
+  parent.appendChild(hit);
   const info = PORT_TYPES[port.type];
-  parent.appendChild(svgText({ x: ox, y: oy, class: "port-label" }, info ? info.label : "?"));
+  parent.appendChild(svgText({ x: ox, y: oy, class: "port-label", style: "pointer-events:none;" }, info ? info.label : "?"));
 }
 
 function pgDrawEdge(parent, edge, idx) {
@@ -3673,10 +3793,10 @@ function pgDrawEdge(parent, edge, idx) {
   const ek = pgEdgeKeyOf(edge);
   if (pg.roads[ek]) return; // road piece will be drawn elsewhere
   const placeable = pgCanPlaceRoadOnEdge(ek);
-  const circ = svgEl("circle", { cx: x, cy: y, r: placeable ? 6 : 3, class: `edge-point${placeable ? " placeable" : ""}` });
-  if (placeable) circ.addEventListener("click", () => pgClickEdge(ek));
+  if (!placeable) return; // only show legal road spots
+  const circ = svgEl("circle", { cx: x, cy: y, r: 7, class: "edge-point placeable" });
+  circ.addEventListener("click", () => pgClickEdge(ek));
   parent.appendChild(circ);
-  parent.appendChild(svgText({ x, y: y + 10, class: "edge-label" }, `E(${edge.x},${edge.y},${edge.z})`));
 }
 
 function pgDrawCorner(parent, corner, idx) {
@@ -3684,10 +3804,10 @@ function pgDrawCorner(parent, corner, idx) {
   const { x, y } = pgCornerPx(corner);
   if (pg.settlements[ck]) return; // piece drawn elsewhere
   const placeable = pgCanPlaceSettlementOnCorner(ck);
-  const circ = svgEl("circle", { cx: x, cy: y, r: placeable ? 7 : 4, class: `vertex-point${placeable ? " placeable" : ""}` });
-  if (placeable) circ.addEventListener("click", () => pgClickCorner(ck));
+  if (!placeable) return; // only show legal settlement spots
+  const circ = svgEl("circle", { cx: x, cy: y, r: 8, class: "vertex-point placeable" });
+  circ.addEventListener("click", () => pgClickCorner(ck));
   parent.appendChild(circ);
-  parent.appendChild(svgText({ x, y: y - 7, class: "vertex-label" }, `V(${corner.x},${corner.y},${corner.z})`));
 }
 
 function pgCornerKeyOf(c) {
@@ -3855,6 +3975,9 @@ function pgConfirmBoard() {
   if (numBlank) { pgStatus("Every non-desert hex needs a dice number.", "warn"); return; }
   pgPushHistory("confirm-board");
   pg.phase = "initial";
+  // Place robber on the desert hex (type 0)
+  const desert = Object.entries(pg.mapState.tileHexStates).find(([, h]) => h.type === 0);
+  pg.robberHex = desert ? desert[0] : null;
   // Snake: 1,2,3,4,4,3,2,1
   const order = [...pg.turnOrder, ...[...pg.turnOrder].reverse()];
   pg.initial = { stepIdx: 0, order, expecting: "settlement", lastSettlementKey: null };
@@ -3935,6 +4058,7 @@ function pgClickCorner(cornerKey) {
   }
   if (pg.phase === "play") {
     if (!pgRequireLatestView("building")) return;
+    if (pgBlockedByPending("building a settlement")) return;
     // Build settlement at corner (player from selector)
     const playerId = Number(document.getElementById("playerSelector")?.value) || pg.players[0].id;
     const player = pg.players.find(p => p.id === playerId);
@@ -3948,6 +4072,7 @@ function pgClickCorner(cornerKey) {
     player.settlementsLeft -= 1;
     player.vp += 1;
     pgLogEvent({ type: "buildingPurchased", player: playerId, building: "settlement", count: 1 });
+    pgRecomputeAchievements(); // a settlement on an opponent road segment can break Longest Road
     pgRenderAll();
   }
 }
@@ -3975,6 +4100,34 @@ function pgClickEdge(edgeKey) {
   }
   if (pg.phase === "play") {
     if (!pgRequireLatestView("building")) return;
+    if (pg.winner != null) { pgStatus("The game is over.", "warn"); return; }
+    // Robber/steal must be resolved first (road-building is itself "pending" but it's the action we're resolving)
+    if (pg.pendingRobber || pg.pendingSteal) {
+      pgBlockedByPending("building a road");
+      return;
+    }
+    // Free roads from Road Building dev card
+    if (pg.pendingRoadBuilding && pg.pendingRoadBuilding.remaining > 0) {
+      const playerId = pg.pendingRoadBuilding.playerId;
+      const player = pg.players.find(p => p.id === playerId);
+      if (!player) return;
+      if (player.roadsLeft <= 0) { pgStatus("No roads left to place.", "warn"); return; }
+      pgPushHistory("road-building-place");
+      const edge = pg.mapState.tileEdgeStates[edgeKey];
+      pg.roads[edgeKey] = { x: edge.x, y: edge.y, z: edge.z, owner: playerId, type: 1 };
+      player.roadsLeft -= 1;
+      pg.pendingRoadBuilding.remaining -= 1;
+      pgLogEvent({ type: "buildingPurchased", player: playerId, building: "road", count: 1 });
+      if (pg.pendingRoadBuilding.remaining <= 0) {
+        pg.pendingRoadBuilding = null;
+        pgStatus("Road Building complete.", "success");
+      } else {
+        pgStatus(`Place ${pg.pendingRoadBuilding.remaining} more free road${pg.pendingRoadBuilding.remaining > 1 ? "s" : ""}.`, "info");
+      }
+      pgRecomputeAchievements();
+      pgRenderAll();
+      return;
+    }
     const playerId = Number(document.getElementById("playerSelector")?.value) || pg.players[0].id;
     const player = pg.players.find(p => p.id === playerId);
     if (!player) return;
@@ -3986,6 +4139,7 @@ function pgClickEdge(edgeKey) {
     pg.roads[edgeKey] = { x: edge.x, y: edge.y, z: edge.z, owner: playerId, type: 1 };
     player.roadsLeft -= 1;
     pgLogEvent({ type: "buildingPurchased", player: playerId, building: "road", count: 1 });
+    pgRecomputeAchievements();
     pgRenderAll();
   }
 }
@@ -3993,6 +4147,7 @@ function pgClickEdge(edgeKey) {
 function pgTryUpgradeCity(cornerKey) {
   if (pg.phase !== "play") return;
   if (!pgRequireLatestView("upgrading a city")) return;
+  if (pgBlockedByPending("upgrading a city")) return;
   const piece = pg.settlements[cornerKey];
   if (!piece || piece.buildingType !== 1) return;
   const playerId = Number(document.getElementById("playerSelector")?.value) || pg.players[0].id;
@@ -4032,6 +4187,7 @@ function pgGrantStarterResources(playerId, cornerKey) {
 function pgLogRoll(value) {
   if (pg.phase !== "play") { pgStatus("Finish initial placement first.", "warn"); return; }
   if (!pgRequireLatestView("logging a roll")) return;
+  if (pgBlockedByPending("rolling")) return;
   if (pgRolledThisTurn()) {
     pgStatus("Already rolled this turn — press Next to end the turn.", "warn");
     return;
@@ -4040,6 +4196,12 @@ function pgLogRoll(value) {
   const activePlayer = pg.players[pg.currentTurnIdx % pg.players.length];
   pg.rollHistory.push({ value, playerId: activePlayer?.id, playerName: activePlayer?.name });
   pgLogEvent({ type: "dice", player: activePlayer?.id, value });
+  if (value === 7) {
+    pgDiscardOnSeven();
+    pgStartRobberMove(activePlayer?.id, "roll7");
+    pgRenderAll();
+    return;
+  }
   if (value !== 7) {
     // For each settlement/city, add resources of matching hexes
     for (const [ck, piece] of Object.entries(pg.settlements)) {
@@ -4069,19 +4231,265 @@ function pgLogRoll(value) {
   pgRenderAll();
 }
 
+// ── ROBBER / 7 / DEV CARDS
+
+function pgCornerKeysOnHex(hexKey) {
+  const hex = pg.mapState?.tileHexStates?.[hexKey];
+  if (!hex) return [];
+  const { px, py } = axialToPixel(hex.x, hex.y);
+  const vertexPts = [];
+  for (let v = 0; v < 6; v++) vertexPts.push(hexVertex(px, py, v));
+  const eps2 = (SIZE * 0.1) ** 2;
+  const out = [];
+  for (const [ck, c] of pgCornerEntries()) {
+    const cp = pgCornerPx(c);
+    for (const vp of vertexPts) {
+      if ((vp.x - cp.x) ** 2 + (vp.y - cp.y) ** 2 <= eps2) { out.push(ck); break; }
+    }
+  }
+  return out;
+}
+
+function pgPlayerTotalCards(player) {
+  return Object.values(player.resources || {}).reduce((a, b) => a + (b || 0), 0);
+}
+
+function pgDiscardOnSeven() {
+  for (const player of pg.players) {
+    const total = pgPlayerTotalCards(player);
+    if (total <= 7) continue;
+    let toDiscard = Math.floor(total / 2);
+    // Build a multiset of resource names and discard randomly
+    const pool = [];
+    for (const [r, c] of Object.entries(player.resources || {})) for (let i = 0; i < c; i++) pool.push(r);
+    const discarded = [];
+    while (toDiscard > 0 && pool.length) {
+      const idx = Math.floor(Math.random() * pool.length);
+      const r = pool.splice(idx, 1)[0];
+      player.resources[r] -= 1;
+      const t = PG_RES_NAME_TO_TYPE[r];
+      if (t) pg.bank[t] = (pg.bank[t] || 0) + 1;
+      discarded.push(t);
+      toDiscard -= 1;
+    }
+    if (discarded.length) {
+      pgLogEvent({ type: "discard", player: player.id, resources: discarded.sort() });
+    }
+  }
+}
+
+function pgStartRobberMove(playerId, source) {
+  pg.pendingRobber = { playerId, source };
+  pg.pendingSteal = null;
+  pgStatus("Click a hex to move the robber.", "info");
+}
+
+function pgMoveRobberToHex(hexKey) {
+  if (!pg.pendingRobber) return;
+  if (hexKey === pg.robberHex) { pgStatus("Robber must move to a different hex.", "warn"); return; }
+  pgPushHistory("move-robber");
+  const movedBy = pg.pendingRobber.playerId;
+  pg.robberHex = hexKey;
+  pgLogEvent({ type: "robberMoved", player: movedBy, hexKey });
+  // Find steal candidates: other players with a settlement/city on this hex and at least 1 resource
+  const corners = pgCornerKeysOnHex(hexKey);
+  const candidateIds = new Set();
+  for (const ck of corners) {
+    const piece = pg.settlements[ck];
+    if (!piece) continue;
+    if (piece.owner === movedBy) continue;
+    const victim = pg.players.find(p => p.id === piece.owner);
+    if (!victim) continue;
+    if (pgPlayerTotalCards(victim) <= 0) continue;
+    candidateIds.add(victim.id);
+  }
+  const candidates = [...candidateIds];
+  pg.pendingRobber = null;
+  if (candidates.length === 0) {
+    pg.pendingSteal = null;
+    pgStatus("Robber moved. No one to steal from.", "info");
+  } else if (candidates.length === 1) {
+    pgStealFrom(movedBy, candidates[0]);
+  } else {
+    pg.pendingSteal = { playerId: movedBy, hexKey, candidates };
+    pgStatus("Choose a victim to steal from in the player panel.", "info");
+  }
+  pgRenderAll();
+}
+
+function pgStealFrom(thiefId, victimId) {
+  const thief = pg.players.find(p => p.id === thiefId);
+  const victim = pg.players.find(p => p.id === victimId);
+  if (!thief || !victim) return;
+  const pool = [];
+  for (const [r, c] of Object.entries(victim.resources || {})) for (let i = 0; i < c; i++) pool.push(r);
+  if (!pool.length) {
+    pg.pendingSteal = null;
+    pgStatus(`${victim.name} has nothing to steal.`, "info");
+    return;
+  }
+  const r = pool[Math.floor(Math.random() * pool.length)];
+  victim.resources[r] -= 1;
+  thief.resources[r] = (thief.resources[r] || 0) + 1;
+  pg.pendingSteal = null;
+  pgLogEvent({ type: "steal", player: thiefId, victim: victimId, resource: PG_RES_NAME_TO_TYPE[r] });
+  pgStatus(`${thief.name} stole 1 ${r} from ${victim.name}.`, "success");
+}
+
+function pgPickStealVictim(victimId) {
+  if (!pg.pendingSteal) return;
+  if (!pg.pendingSteal.candidates.includes(victimId)) return;
+  pgPushHistory("steal");
+  pgStealFrom(pg.pendingSteal.playerId, victimId);
+  pgRenderAll();
+}
+
+// Dev card plays
+
+function pgCanPlayDevCardThisTurn() {
+  if (pg.phase !== "play") { pgStatus("Dev cards play during the main game.", "warn"); return false; }
+  if (!pgIsViewingLatest()) { pgStatus("Return to the latest turn to play a card.", "warn"); return false; }
+  if (pgBlockedByPending("playing a dev card")) return false;
+  return true;
+}
+
+// Returns true (and shows a status) if any robber/steal/road-building flow is mid-resolution.
+// While pending, the only allowed actions are: resolving the pending step, undo/redo, navigation.
+function pgBlockedByPending(actionLabel) {
+  if (pg.winner != null) {
+    pgStatus("The game is over. Undo to keep exploring, or hit Reset Game.", "warn");
+    return true;
+  }
+  if (pg.pendingRobber) {
+    pgStatus(`Place the robber before ${actionLabel || "doing anything else"} (use Random Move or click a hex).`, "warn");
+    return true;
+  }
+  if (pg.pendingSteal) {
+    pgStatus(`Pick a victim to steal from before ${actionLabel || "doing anything else"}.`, "warn");
+    return true;
+  }
+  if (pg.pendingRoadBuilding) {
+    pgStatus(`Finish placing your free roads before ${actionLabel || "doing anything else"}.`, "warn");
+    return true;
+  }
+  return false;
+}
+
+function pgPlayKnight(playerId) {
+  if (!pgCanPlayDevCardThisTurn()) return;
+  const player = pg.players.find(p => p.id === playerId);
+  if (!player) return;
+  const activeId = pg.players[pg.currentTurnIdx % pg.players.length]?.id;
+  if (player.id !== activeId) { pgStatus("Only the active player can play a dev card.", "warn"); return; }
+  if ((player.devCards.knight || 0) <= 0) { pgStatus("No knight cards.", "warn"); return; }
+  pgPushHistory("play-knight");
+  player.devCards.knight -= 1;
+  player.knightsPlayed = (player.knightsPlayed || 0) + 1;
+  pgLogEvent({ type: "knightPlayed", player: playerId });
+  pgRecomputeAchievements();
+  pgStartRobberMove(playerId, "knight");
+  pgRenderAll();
+}
+
+function pgPlayRoadBuilding(playerId) {
+  if (!pgCanPlayDevCardThisTurn()) return;
+  const player = pg.players.find(p => p.id === playerId);
+  if (!player) return;
+  const activeId = pg.players[pg.currentTurnIdx % pg.players.length]?.id;
+  if (player.id !== activeId) { pgStatus("Only the active player can play a dev card.", "warn"); return; }
+  if ((player.devCards.roadBuilding || 0) <= 0) { pgStatus("No Road Building cards.", "warn"); return; }
+  pgPushHistory("play-road-building");
+  player.devCards.roadBuilding -= 1;
+  pg.pendingRoadBuilding = { playerId, remaining: 2 };
+  pgLogEvent({ type: "devCardPlayed", player: playerId, cardType: "roadBuilding" });
+  pgStatus("Place 2 free roads on the board.", "info");
+  pgRenderAll();
+}
+
+function pgPromptResourceName(promptText) {
+  const raw = prompt(`${promptText}\n(wood / brick / sheep / wheat / ore)`);
+  if (!raw) return null;
+  const r = raw.trim().toLowerCase();
+  if (!PG_RES_NAME_TO_TYPE[r]) { pgStatus(`Unknown resource "${raw}".`, "warn"); return null; }
+  return r;
+}
+
+function pgPlayYearOfPlenty(playerId) {
+  if (!pgCanPlayDevCardThisTurn()) return;
+  const player = pg.players.find(p => p.id === playerId);
+  if (!player) return;
+  const activeId = pg.players[pg.currentTurnIdx % pg.players.length]?.id;
+  if (player.id !== activeId) { pgStatus("Only the active player can play a dev card.", "warn"); return; }
+  if ((player.devCards.yearOfPlenty || 0) <= 0) { pgStatus("No Year of Plenty cards.", "warn"); return; }
+  const r1 = pgPromptResourceName("Year of Plenty — pick the FIRST resource:");
+  if (!r1) return;
+  const r2 = pgPromptResourceName("Year of Plenty — pick the SECOND resource:");
+  if (!r2) return;
+  const t1 = PG_RES_NAME_TO_TYPE[r1], t2 = PG_RES_NAME_TO_TYPE[r2];
+  // Need at least 1 in bank of each (count distinct)
+  const need = { [t1]: 0, [t2]: 0 };
+  need[t1] += 1; need[t2] += 1;
+  for (const [t, n] of Object.entries(need)) {
+    if ((pg.bank[t] || 0) < n) { pgStatus(`Bank doesn't have enough ${PG_RES_TYPE_TO_NAME[t]}.`, "warn"); return; }
+  }
+  pgPushHistory("play-year-of-plenty");
+  player.devCards.yearOfPlenty -= 1;
+  player.resources[r1] += 1; pg.bank[t1] -= 1;
+  player.resources[r2] += 1; pg.bank[t2] -= 1;
+  pgLogEvent({ type: "devCardPlayed", player: playerId, cardType: "yearOfPlenty", resources: [t1, t2].sort() });
+  pgLogEvent({ type: "gain", player: playerId, resources: [t1, t2].sort() });
+  pgStatus(`${player.name} took ${r1} and ${r2}.`, "success");
+  pgRenderAll();
+}
+
+function pgPlayMonopoly(playerId) {
+  if (!pgCanPlayDevCardThisTurn()) return;
+  const player = pg.players.find(p => p.id === playerId);
+  if (!player) return;
+  const activeId = pg.players[pg.currentTurnIdx % pg.players.length]?.id;
+  if (player.id !== activeId) { pgStatus("Only the active player can play a dev card.", "warn"); return; }
+  if ((player.devCards.monopoly || 0) <= 0) { pgStatus("No Monopoly cards.", "warn"); return; }
+  const r = pgPromptResourceName("Monopoly — pick a resource to take from all opponents:");
+  if (!r) return;
+  pgPushHistory("play-monopoly");
+  player.devCards.monopoly -= 1;
+  let total = 0;
+  for (const other of pg.players) {
+    if (other.id === playerId) continue;
+    const taken = other.resources[r] || 0;
+    if (taken > 0) {
+      other.resources[r] = 0;
+      total += taken;
+    }
+  }
+  player.resources[r] = (player.resources[r] || 0) + total;
+  pgLogEvent({ type: "devCardPlayed", player: playerId, cardType: "monopoly", resource: PG_RES_NAME_TO_TYPE[r], amount: total });
+  pgStatus(`${player.name} took ${total} ${r} from opponents.`, "success");
+  pgRenderAll();
+}
+
 // ── BUILD / PURCHASE (without immediate placement, for dev card; bare buy)
 function pgBuyDevCard(playerId) {
   if (!pgRequireLatestView("buying a dev card")) return;
+  if (pgBlockedByPending("buying a dev card")) return;
   const player = pg.players.find(p => p.id === playerId);
   if (!player) return;
   if (!pgHasResources(player, PG_BUILD_COSTS.devcard)) { pgStatus("Not enough resources for a dev card.", "warn"); return; }
   if (pg.bankDevCards <= 0) { pgStatus("No dev cards left in the bank.", "warn"); return; }
+  if (!pg.devCardDeck || !pg.devCardDeck.length) { pgStatus("Dev card deck is empty.", "warn"); return; }
   pgPushHistory("buy-devcard");
   pgSpendResources(player, PG_BUILD_COSTS.devcard);
-  pg.bankDevCards -= 1;
-  // Don't reveal which card; user picks via manual adjust if they want
+  const drawn = pg.devCardDeck.pop();
+  pg.bankDevCards = pg.devCardDeck.length;
+  player.devCards[drawn] = (player.devCards[drawn] || 0) + 1;
+  if (drawn === "victoryPoint") player.vp += 1;
   pgLogEvent({ type: "devCardBought", player: playerId, count: 1 });
+  pgStatus(`${player.name} drew a ${DEV_CARD_LABEL(drawn)}.`, "success");
   pgRenderAll();
+}
+
+function DEV_CARD_LABEL(t) {
+  return { knight: "Knight", victoryPoint: "Victory Point", roadBuilding: "Road Building", yearOfPlenty: "Year of Plenty", monopoly: "Monopoly" }[t] || t;
 }
 
 function pgHasResources(player, cost) {
@@ -4106,6 +4514,7 @@ function pgSnapshotTurn() {
     bankDevCards: pg.bankDevCards,
     settlements: pgClone(pg.settlements),
     roads: pgClone(pg.roads),
+    robberHex: pg.robberHex,
   });
   pg.viewTurn = pg.turns.length - 1;
 }
@@ -4115,6 +4524,7 @@ function pgRandomMove() {
     pgStatus("Random Move is available once the game starts (initial placement or main play).", "warn");
     return;
   }
+  if (pg.winner != null) { pgStatus("The game is over. Hit Reset Game to start over.", "warn"); return; }
   if (!pgRequireLatestView("playing a random move")) return;
   // Initial placement: randomly pick a legal corner/edge for the current expected piece.
   if (pg.phase === "initial") {
@@ -4129,11 +4539,38 @@ function pgRandomMove() {
     }
     return;
   }
+  // Resolve any pending robber/steal/road-building first. Robber → optional steal cascades in one click.
+  if (pg.pendingRobber) {
+    const hexKeys = Object.keys(pg.mapState.tileHexStates || {}).filter(k => k !== pg.robberHex);
+    if (hexKeys.length) pgMoveRobberToHex(hexKeys[Math.floor(Math.random() * hexKeys.length)]);
+    // pgMoveRobberToHex may have left a pendingSteal with 2+ candidates — resolve it now.
+    if (pg.pendingSteal) {
+      const c = pg.pendingSteal.candidates;
+      pgStealFrom(pg.pendingSteal.playerId, c[Math.floor(Math.random() * c.length)]);
+      pgRenderAll();
+    }
+    return;
+  }
+  if (pg.pendingSteal) {
+    const c = pg.pendingSteal.candidates;
+    pgPushHistory("steal-random");
+    pgStealFrom(pg.pendingSteal.playerId, c[Math.floor(Math.random() * c.length)]);
+    pgRenderAll();
+    return;
+  }
+  if (pg.pendingRoadBuilding) {
+    const valid = Object.keys(pg.mapState.tileEdgeStates || {}).filter(ek => pgCanPlaceRoadOnEdge(ek));
+    if (!valid.length) { pg.pendingRoadBuilding = null; pgStatus("No legal free-road spots; canceling.", "warn"); pgRenderAll(); return; }
+    pgClickEdge(valid[Math.floor(Math.random() * valid.length)]);
+    return;
+  }
   // 1) If we haven't rolled yet this turn, just roll 2d6.
   if (!pgRolledThisTurn()) {
     const v = 1 + Math.floor(Math.random() * 6) + 1 + Math.floor(Math.random() * 6);
     pgLogRoll(v);
     pgStatus(`Rolled ${v}.`, "info");
+    // A rolled 7 leaves a pending robber — cascade through it in the same click.
+    if (pg.pendingRobber || pg.pendingSteal) pgRandomMove();
     return;
   }
   const activeId = pg.players[pg.currentTurnIdx % pg.players.length]?.id;
@@ -4180,6 +4617,7 @@ function pgRandomMove() {
     player.settlementsLeft -= 1;
     player.vp += 1;
     pgLogEvent({ type: "buildingPurchased", player: activeId, building: "settlement", count: 1 });
+    pgRecomputeAchievements();
     pgStatus(`${player.name} built a settlement.`, "success");
     pgRenderAll();
   } else if (choice.type === "road") {
@@ -4189,6 +4627,7 @@ function pgRandomMove() {
     pg.roads[choice.target] = { x: e.x, y: e.y, z: e.z, owner: activeId, type: 1 };
     player.roadsLeft -= 1;
     pgLogEvent({ type: "buildingPurchased", player: activeId, building: "road", count: 1 });
+    pgRecomputeAchievements();
     pgStatus(`${player.name} built a road.`, "success");
     pgRenderAll();
   } else if (choice.type === "city") {
@@ -4206,24 +4645,40 @@ function pgRandomMove() {
     pgBuyDevCard(activeId);
     pgStatus(`${player.name} bought a dev card.`, "success");
   } else {
-    pgNextTurn();
+    pgConfirmEndTurn();
     pgStatus("Turn ended.", "info");
   }
 }
 
+// Turn-navigation "Next >" button — only scrubs the slider forward through past turns.
+// Ending a player's turn now lives in pgConfirmEndTurn.
 function pgNextTurn() {
   if (pg.phase !== "play") return;
-  // While viewing a past turn, the Next button just scrubs the slider forward.
   if (!pgIsViewingLatest()) {
     pg.viewTurn += 1;
     pgRenderTurnNav();
     return;
   }
+  pgStatus("Already at the latest turn. Use Confirm End Turn to end the current player's turn.", "info");
+}
+
+function pgConfirmEndTurn() {
+  if (pg.phase !== "play") { pgStatus("Confirm End Turn is only available during the main game.", "warn"); return; }
+  if (!pgRequireLatestView("ending the turn")) return;
+  if (pgBlockedByPending("ending the turn")) return;
   if (!pgRolledThisTurn()) {
     pgStatus("Roll the dice before ending the turn.", "warn");
     return;
   }
-  pgPushHistory("next-turn");
+  if (pg.pendingRobber || pg.pendingSteal) {
+    pgStatus("Resolve the robber before ending the turn.", "warn");
+    return;
+  }
+  if (pg.pendingRoadBuilding) {
+    pgStatus("Finish placing your free roads before ending the turn.", "warn");
+    return;
+  }
+  pgPushHistory("end-turn");
   pg.currentTurnIdx += 1;
   pgSnapshotTurn();
   pgRenderAll();
@@ -4267,6 +4722,21 @@ function pgRenderPhaseBanner() {
       return;
     }
     const ap = pg.players[pg.currentTurnIdx % Math.max(1, pg.players.length)];
+    if (pg.pendingRobber) {
+      const mover = pg.players.find(p => p.id === pg.pendingRobber.playerId);
+      el.textContent = `${mover?.name || ""} — click a hex to move the robber (${pg.pendingRobber.source === "knight" ? "Knight" : "rolled 7"}).`;
+      return;
+    }
+    if (pg.pendingSteal) {
+      const mover = pg.players.find(p => p.id === pg.pendingSteal.playerId);
+      el.textContent = `${mover?.name || ""} — choose a player to steal from (see player panel).`;
+      return;
+    }
+    if (pg.pendingRoadBuilding) {
+      const mover = pg.players.find(p => p.id === pg.pendingRoadBuilding.playerId);
+      el.textContent = `${mover?.name || ""} — Road Building: place ${pg.pendingRoadBuilding.remaining} free road${pg.pendingRoadBuilding.remaining > 1 ? "s" : ""}.`;
+      return;
+    }
     el.textContent = `${ap?.name || ""}'s turn — log a dice roll, click the board to build, or hit Next.`;
   }
 }
@@ -4304,6 +4774,7 @@ function pgRenderPlayerSelector() {
 function pgBankTrade() {
   if (!pgRequireLatestView("trading")) return;
   if (pg.phase !== "play") { pgStatus("Trades only available during the main game.", "warn"); return; }
+  if (pgBlockedByPending("trading with the bank")) return;
   const playerId = Number(document.getElementById("playerSelector")?.value);
   const player = pg.players.find(p => p.id === playerId);
   if (!player) return;
@@ -4344,6 +4815,7 @@ function pgBankTrade() {
 function pgPlayerTrade() {
   if (!pgRequireLatestView("trading")) return;
   if (pg.phase !== "play") { pgStatus("Trades only available during the main game.", "warn"); return; }
+  if (pgBlockedByPending("trading with a player")) return;
   const playerId = Number(document.getElementById("playerSelector")?.value);
   const partnerId = Number(document.getElementById("playerTradePartner")?.value);
   const player = pg.players.find(p => p.id === playerId);
@@ -4417,6 +4889,66 @@ function pgLongestRoadByPlayer() {
   return computeLongestRoadLengthsByPlayer({ settlements: pg.settlements, roads: pg.roads }, endpoints);
 }
 
+// Award/transfer Longest Road (min 5, strictly greater to take from a current holder) and
+// Largest Army (min 3 knights, strictly greater to take). Each is worth +2 VP. Mutates
+// player.vp on transfer so the displayed VP includes the bonus.
+function pgRecomputeAchievements() {
+  if (!pg.players.length) return;
+  // ── Longest Road ──
+  const lengths = pgLongestRoadByPlayer();
+  let lrCandidate = null;
+  let lrMax = pg.longestRoadOwner != null ? (lengths[pg.longestRoadOwner] || 0) : 0;
+  for (const p of pg.players) {
+    const L = lengths[p.id] || 0;
+    if (L < 5) continue;
+    if (pg.longestRoadOwner == null) {
+      if (L > lrMax || (lrCandidate == null && L >= 5)) { lrMax = L; lrCandidate = p.id; }
+    } else if (p.id !== pg.longestRoadOwner && L > lrMax) {
+      lrMax = L; lrCandidate = p.id;
+    }
+  }
+  // If current owner dropped below 5 (e.g., a settlement was placed in the middle of their
+  // road), the bonus is revoked.
+  if (pg.longestRoadOwner != null && (lengths[pg.longestRoadOwner] || 0) < 5) {
+    const old = pg.players.find(p => p.id === pg.longestRoadOwner);
+    if (old) old.vp = Math.max(0, old.vp - 2);
+    pgLogEvent({ type: "achievementLost", player: pg.longestRoadOwner, achievement: "longestRoad" });
+    pg.longestRoadOwner = null;
+  }
+  if (lrCandidate != null && lrCandidate !== pg.longestRoadOwner) {
+    if (pg.longestRoadOwner != null) {
+      const old = pg.players.find(p => p.id === pg.longestRoadOwner);
+      if (old) old.vp = Math.max(0, old.vp - 2);
+    }
+    const next = pg.players.find(p => p.id === lrCandidate);
+    if (next) next.vp += 2;
+    pgLogEvent({ type: "achievementGained", player: lrCandidate, achievement: "longestRoad", from: pg.longestRoadOwner });
+    pg.longestRoadOwner = lrCandidate;
+  }
+  // ── Largest Army ──
+  let laCandidate = null;
+  let laMax = pg.largestArmyOwner != null ? (pg.players.find(p => p.id === pg.largestArmyOwner)?.knightsPlayed || 0) : 0;
+  for (const p of pg.players) {
+    const K = p.knightsPlayed || 0;
+    if (K < 3) continue;
+    if (pg.largestArmyOwner == null) {
+      if (K > laMax || (laCandidate == null && K >= 3)) { laMax = K; laCandidate = p.id; }
+    } else if (p.id !== pg.largestArmyOwner && K > laMax) {
+      laMax = K; laCandidate = p.id;
+    }
+  }
+  if (laCandidate != null && laCandidate !== pg.largestArmyOwner) {
+    if (pg.largestArmyOwner != null) {
+      const old = pg.players.find(p => p.id === pg.largestArmyOwner);
+      if (old) old.vp = Math.max(0, old.vp - 2);
+    }
+    const next = pg.players.find(p => p.id === laCandidate);
+    if (next) next.vp += 2;
+    pgLogEvent({ type: "achievementGained", player: laCandidate, achievement: "largestArmy", from: pg.largestArmyOwner });
+    pg.largestArmyOwner = laCandidate;
+  }
+}
+
 function pgRenderPlayers() {
   const el = document.getElementById("pgPlayerTracker");
   if (!el) return;
@@ -4434,10 +4966,25 @@ function pgRenderPlayers() {
     const roadsBuilt = 15 - p.roadsLeft;
     const longestRoad = longest[p.id] || 0;
     const knightsPlayed = p.knightsPlayed || 0;
-    const resHtml = RESOURCE_TYPES.map(t => `<div class="resource-item" style="display:inline-flex;align-items:center;gap:4px;margin-right:8px;">
-      <img src="${RESOURCE_IMAGES[t]}" alt="${t}" style="width:16px;height:16px;"><span>${p.resources[t] || 0}</span></div>`).join("");
-    const devHtml = DEV_CARD_TYPES.map(t => `<div class="resource-item" style="display:inline-flex;align-items:center;gap:4px;margin-right:8px;">
-      <img src="${DEV_CARD_IMAGES[t]}" alt="${t}" style="width:16px;height:16px;"><span>${p.devCards[t] || 0}</span></div>`).join("");
+    const resHtml = RESOURCE_TYPES.map(t => `<div class="resource-item" title="${t} (${p.resources[t] || 0})" style="display:inline-flex;align-items:center;gap:4px;margin-right:10px;margin-bottom:4px;">
+      <img src="${RESOURCE_IMAGES[t]}" alt="${t}" style="width:28px;height:28px;"><span style="font-size:14px;font-weight:600;">${p.resources[t] || 0}</span></div>`).join("");
+    const devHtml = DEV_CARD_TYPES.map(t => {
+      const count = p.devCards[t] || 0;
+      return `<div class="resource-item" title="${DEV_CARD_LABEL(t)} (${count})" style="display:inline-flex;align-items:center;gap:4px;margin-right:10px;margin-bottom:4px;">
+        <img src="${DEV_CARD_IMAGES[t]}" alt="${t}" style="width:28px;height:28px;"><span style="font-size:14px;font-weight:600;">${count}</span></div>`;
+    }).join("");
+    // Steal victim picker
+    let stealHtml = "";
+    if (pg.pendingSteal && pg.pendingSteal.playerId === p.id && pg.pendingSteal.candidates.length) {
+      const btns = pg.pendingSteal.candidates.map(vid => {
+        const v = pg.players.find(x => x.id === vid);
+        if (!v) return "";
+        const vcn = PLAYER_COLOR_NAMES[v.id] || "white";
+        return `<button type="button" data-steal-victim="${vid}" style="font-size:10px;padding:2px 6px;margin-right:4px;display:inline-flex;align-items:center;gap:3px;">
+          <img src="./data/images/player_bg_${vcn}.svg" width="14" height="14"> ${v.name}</button>`;
+      }).join("");
+      stealHtml = `<div style="font-size:11px;color:#facc15;margin-top:4px;"><strong>Steal from:</strong> ${btns}</div>`;
+    }
     return `<div class="player-card${isActive ? " active-turn" : ""}">
       <div class="player-header"><img src="${playerIcon}" class="player-settlement-icon"><h3>${p.name}</h3>
         <span style="margin-left:auto;font-weight:bold;color:gold;">${p.vp} VP</span></div>
@@ -4448,25 +4995,27 @@ function pgRenderPlayers() {
       </div>
       <div style="font-size:11px;color:#cbd5e1;margin-bottom:4px;">
         <strong>Stats:</strong><br>
-        Longest Road: <b>${longestRoad}</b> <img src="./data/images/icon_longest_road.svg" width="18" height="18" style="vertical-align:middle;margin-right:4px;">
-        Knights Played: <b>${knightsPlayed}</b> <img src="./data/images/icon_largest_army.svg" width="18" height="18" style="vertical-align:middle;margin-right:4px;">
-        <button type="button" data-knight="${p.id}" style="font-size:10px;padding:1px 5px;margin-left:4px;">+ Knight</button>
+        Longest Road: <b>${longestRoad}</b> <img src="./data/images/icon_longest_road.svg" width="18" height="18" style="vertical-align:middle;margin-right:4px;">${pg.longestRoadOwner === p.id ? '<span style="color:#facc15;font-weight:bold;margin-left:2px;">★ +2 VP</span>' : ""}
+        <br>
+        Knights Played: <b>${knightsPlayed}</b> <img src="./data/images/icon_largest_army.svg" width="18" height="18" style="vertical-align:middle;margin-right:4px;">${pg.largestArmyOwner === p.id ? '<span style="color:#facc15;font-weight:bold;margin-left:2px;">★ +2 VP</span>' : ""}
       </div>
       <div style="font-size:11px;"><strong>Resources:</strong><br>${resHtml}</div>
       <div style="font-size:11px;margin-top:4px;"><strong>Dev Cards:</strong><br>${devHtml}</div>
+      ${stealHtml}
     </div>`;
   }).join("");
-  el.querySelectorAll("button[data-knight]").forEach(btn => {
+  el.querySelectorAll("button[data-play-card]").forEach(btn => {
     btn.onclick = () => {
-      if (!pgRequireLatestView("playing a knight")) return;
-      const id = Number(btn.dataset.knight);
-      const player = pg.players.find(x => x.id === id);
-      if (!player) return;
-      pgPushHistory("play-knight");
-      player.knightsPlayed = (player.knightsPlayed || 0) + 1;
-      pgLogEvent({ type: "knightPlayed", player: id });
-      pgRenderAll();
+      const t = btn.dataset.playCard;
+      const id = Number(btn.dataset.player);
+      if (t === "knight") pgPlayKnight(id);
+      else if (t === "roadBuilding") pgPlayRoadBuilding(id);
+      else if (t === "yearOfPlenty") pgPlayYearOfPlenty(id);
+      else if (t === "monopoly") pgPlayMonopoly(id);
     };
+  });
+  el.querySelectorAll("button[data-steal-victim]").forEach(btn => {
+    btn.onclick = () => pgPickStealVictim(Number(btn.dataset.stealVictim));
   });
 }
 
@@ -4488,6 +5037,27 @@ function pgRenderEventLog() {
       case "bankTrade": text = `${playerIcon(log.player)} traded ${resImgs(log.given)} for ${resImgs(log.received)} with bank`; break;
       case "playerTrade": text = `${playerIcon(log.player)} traded ${resImgs(log.given)} with ${playerIcon(log.partner)} for ${resImgs(log.received)}`; break;
       case "knightPlayed": text = `${playerIcon(log.player)} played a <b>Knight</b>`; break;
+      case "devCardPlayed": {
+        let extra = "";
+        if (log.cardType === "yearOfPlenty" && log.resources) extra = ` (${resImgs(log.resources)})`;
+        else if (log.cardType === "monopoly" && log.resource != null) extra = ` (${resImgs([log.resource])} ×${log.amount || 0})`;
+        text = `${playerIcon(log.player)} played a <b>${DEV_CARD_LABEL(log.cardType)}</b>${extra}`;
+        break;
+      }
+      case "robberMoved": text = `${playerIcon(log.player)} moved the robber`; break;
+      case "steal": text = `${playerIcon(log.player)} stole ${resImgs([log.resource])} from ${playerIcon(log.victim)}`; break;
+      case "discard": text = `${playerIcon(log.player)} discarded ${resImgs(log.resources)}`; break;
+      case "achievementGained": {
+        const name = log.achievement === "longestRoad" ? "Longest Road" : "Largest Army";
+        text = `${playerIcon(log.player)} earned <b>${name}</b> <span style="color:#facc15;">(+2 VP)</span>`;
+        break;
+      }
+      case "achievementLost": {
+        const name = log.achievement === "longestRoad" ? "Longest Road" : "Largest Army";
+        text = `${playerIcon(log.player)} lost <b>${name}</b> <span style="color:#94a3b8;">(−2 VP)</span>`;
+        break;
+      }
+      case "gameEnd": text = `🏆 ${playerIcon(log.winner)} <b>won the game</b> with ${log.vp} VP!`; break;
       case "phaseChange": text = `<em>${log.note}</em>`; break;
       default: text = JSON.stringify(log);
     }
@@ -4525,10 +5095,206 @@ function pgRenderAll() {
   pgRenderPlayerSelector();
   pgRenderBank();
   pgRenderPlayers();
+  pgRenderActivePlayerCard();
   pgRenderEventLog();
   pgRenderDiceSummary();
   pgSyncToolbar();
   if (typeof updateDiceRollChart === "function") updateDiceRollChart();
+  pgCheckWinner();
+}
+
+function pgCheckWinner() {
+  if (pg.winner != null) return;
+  if (pg.phase !== "play") return;
+  for (const p of pg.players) {
+    if ((p.vp || 0) >= 10) {
+      pg.winner = p.id;
+      pgLogEvent({ type: "gameEnd", winner: p.id, vp: p.vp });
+      pgRenderEventLog();
+      pgShowWinnerModal();
+      return;
+    }
+  }
+}
+
+function pgShowWinnerModal() {
+  const modal = document.getElementById("playgroundWinModal");
+  const body = document.getElementById("pgWinModalBody");
+  if (!modal || !body) return;
+  const winner = pg.players.find(p => p.id === pg.winner);
+  if (!winner) return;
+  const cn = PLAYER_COLOR_NAMES[winner.id] || "white";
+  const standings = [...pg.players].sort((a, b) => (b.vp || 0) - (a.vp || 0)).map((p, idx) => {
+    const pcn = PLAYER_COLOR_NAMES[p.id] || "white";
+    const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "  ";
+    return `<div class="pg-row">${medal} <img src="./data/images/player_bg_${pcn}.svg"> <span>${p.name}</span> — <b>${p.vp || 0} VP</b></div>`;
+  }).join("");
+  body.innerHTML = `<div class="pg-winner-line">
+    <img src="./data/images/player_bg_${cn}.svg"> <span>${winner.name} wins!</span>
+  </div>
+  <div style="color:#facc15;font-weight:600;">${winner.vp} Victory Points</div>
+  <div class="pg-final-standings"><strong>Final Standings:</strong>${standings}</div>`;
+  modal.style.display = "flex";
+}
+
+function pgHideWinnerModal() {
+  const modal = document.getElementById("playgroundWinModal");
+  if (modal) modal.style.display = "none";
+}
+
+function pgRenderActivePlayerCard() {
+  const el = document.getElementById("pgActivePlayerCard");
+  if (!el) return;
+  el.classList.remove("active-turn");
+  if (pg.phase === "setup") {
+    el.innerHTML = '<div class="pg-apc-empty">Configure players to begin.</div>';
+    return;
+  }
+  if (pg.phase === "board") {
+    el.innerHTML = '<div class="pg-apc-empty">Set up the board, then confirm.</div>';
+    return;
+  }
+  if (pg.winner != null) {
+    const w = pg.players.find(p => p.id === pg.winner);
+    const cn = PLAYER_COLOR_NAMES[w?.id] || "white";
+    el.innerHTML = `<div class="pg-apc-empty" style="color:#facc15;font-weight:600;">
+      <img src="./data/images/player_bg_${cn}.svg" style="width:32px;height:32px;vertical-align:middle;margin-right:8px;">
+      🏆 ${w?.name || ""} won the game. Undo to keep exploring, or hit Reset Game.
+    </div>`;
+    return;
+  }
+  // Determine active player & status messages
+  let ap, statusMsg = "";
+  if (pg.phase === "initial") {
+    ap = pg.players.find(x => x.id === pg.initial.order[pg.initial.stepIdx]);
+    statusMsg = `Place a <b>${pg.initial.expecting}</b> on the board.`;
+  } else {
+    ap = pg.players[pg.currentTurnIdx % pg.players.length];
+    if (!pgIsViewingLatest()) {
+      statusMsg = `Viewing a past turn — return to the latest turn to act.`;
+    } else if (pg.pendingRobber) {
+      statusMsg = `Click a hex to move the robber.`;
+    } else if (pg.pendingSteal) {
+      statusMsg = `Choose a victim to steal from below.`;
+    } else if (pg.pendingRoadBuilding) {
+      statusMsg = `Road Building: place ${pg.pendingRoadBuilding.remaining} free road${pg.pendingRoadBuilding.remaining > 1 ? "s" : ""}.`;
+    } else if (!pgRolledThisTurn()) {
+      statusMsg = `Roll the dice to start your turn.`;
+    } else {
+      statusMsg = `Build on the board, trade in the sidebar, play a dev card (highlighted), or end your turn.`;
+    }
+  }
+  if (!ap) { el.innerHTML = ""; return; }
+  el.classList.add("active-turn");
+  const cn = PLAYER_COLOR_NAMES[ap.id] || "white";
+  const playerIcon = `./data/images/player_bg_${cn}.svg`;
+  const settlementImage = `./data/images/settlement_${cn}.svg`;
+  const roadImage = `./data/images/road_${cn}.svg`;
+  const cityImage = `./data/images/city_${cn}.svg`;
+  const settlementsBuilt = 5 - ap.settlementsLeft;
+  const citiesBuilt = 4 - ap.citiesLeft;
+  const roadsBuilt = 15 - ap.roadsLeft;
+  const longest = pgLongestRoadByPlayer();
+  const longestRoad = longest[ap.id] || 0;
+  const knightsPlayed = ap.knightsPlayed || 0;
+  const onLatest = pgIsViewingLatest();
+  const canPlay = pg.phase === "play"
+    && onLatest
+    && !pg.pendingRobber && !pg.pendingSteal && !pg.pendingRoadBuilding
+    && pg.winner == null;
+  const playableTypes = new Set(["knight", "roadBuilding", "yearOfPlenty", "monopoly"]);
+  const isPlayablePhase = pg.phase === "play";
+
+  // ── Resources column ──
+  const resHtml = RESOURCE_TYPES.map(t => `
+    <div class="pg-apc-token" title="${t} (${ap.resources[t] || 0})">
+      <img src="${RESOURCE_IMAGES[t]}" alt="${t}">
+      <span>${ap.resources[t] || 0}</span>
+    </div>`).join("");
+
+  // ── Dev cards column with click-to-play border highlight ──
+  const devHtml = DEV_CARD_TYPES.map(t => {
+    const count = ap.devCards[t] || 0;
+    const playable = canPlay && count > 0 && playableTypes.has(t);
+    return `
+    <div class="pg-apc-token pg-apc-devcard${playable ? " playable" : ""}${count === 0 ? " empty" : ""}"
+         data-play-card="${t}" title="${DEV_CARD_LABEL(t)} (${count})${playable ? " — click to play" : ""}">
+      <img src="${DEV_CARD_IMAGES[t]}" alt="${t}">
+      <span>${count}</span>
+    </div>`;
+  }).join("");
+
+  // ── Pending action buttons (only when applicable) ──
+  let pendingHtml = "";
+  if (pg.pendingSteal && pg.pendingSteal.playerId === ap.id && pg.pendingSteal.candidates.length) {
+    const btns = pg.pendingSteal.candidates.map(vid => {
+      const v = pg.players.find(x => x.id === vid);
+      const vcn = PLAYER_COLOR_NAMES[v?.id] || "white";
+      return `<button class="pg-apc-btn" data-steal="${vid}">
+        <img src="./data/images/player_bg_${vcn}.svg"> Steal from ${v?.name || ""}
+      </button>`;
+    }).join("");
+    pendingHtml = `<div class="pg-apc-pending"><div class="pg-apc-pending-label">Pick a victim:</div>${btns}</div>`;
+  } else if (pg.pendingRobber && pg.pendingRobber.playerId === ap.id) {
+    pendingHtml = `<div class="pg-apc-pending"><button class="pg-apc-btn" data-action="random-robber">🎲 Random Hex</button></div>`;
+  } else if (isPlayablePhase && onLatest && !pg.pendingRobber && !pg.pendingSteal && !pg.pendingRoadBuilding && pg.winner == null) {
+    const buttons = [];
+    if (!pgRolledThisTurn()) {
+      buttons.push(`<button class="pg-apc-btn" data-action="roll">🎲 Roll Dice</button>`);
+    }
+    if (pgRolledThisTurn() && pgHasResources(ap, PG_BUILD_COSTS.devcard) && pg.bankDevCards > 0) {
+      buttons.push(`<button class="pg-apc-btn" data-action="buy-devcard">🃏 Buy Dev Card</button>`);
+    }
+    if (buttons.length) pendingHtml = `<div class="pg-apc-pending">${buttons.join("")}</div>`;
+  }
+
+  el.innerHTML = `
+    <div class="pg-apc-row">
+      <div class="pg-apc-identity">
+        <img src="${playerIcon}" alt="${ap.name}" class="pg-apc-player-icon">
+        <div class="pg-apc-name">${ap.name}${pg.phase === "initial" ? "" : "'s turn"}</div>
+        <div class="pg-apc-vp">${ap.vp} VP</div>
+        <div class="pg-apc-counts">
+          <span title="Roads built"><img src="${roadImage}"> ${roadsBuilt}</span>
+          <span title="Settlements built"><img src="${settlementImage}"> ${settlementsBuilt}</span>
+          <span title="Cities built"><img src="${cityImage}"> ${citiesBuilt}</span>
+        </div>
+        <div class="pg-apc-stats">
+          <span title="Longest Road"><img src="./data/images/icon_longest_road.svg"> ${longestRoad}${pg.longestRoadOwner === ap.id ? ' <span style="color:#facc15;font-weight:bold;">★</span>' : ""}</span>
+          <span title="Knights Played"><img src="./data/images/icon_largest_army.svg"> ${knightsPlayed}${pg.largestArmyOwner === ap.id ? ' <span style="color:#facc15;font-weight:bold;">★</span>' : ""}</span>
+        </div>
+      </div>
+      <div class="pg-apc-section">
+        <div class="pg-apc-section-label">Resources</div>
+        <div class="pg-apc-tokens">${resHtml}</div>
+      </div>
+      <div class="pg-apc-section">
+        <div class="pg-apc-section-label">Dev Cards</div>
+        <div class="pg-apc-tokens">${devHtml}</div>
+      </div>
+    </div>
+    <div class="pg-apc-status">${statusMsg}</div>
+    ${pendingHtml}
+  `;
+
+  // Wire dev card click-to-play
+  el.querySelectorAll('.pg-apc-devcard.playable').forEach(card => {
+    card.onclick = () => {
+      const t = card.dataset.playCard;
+      if (t === "knight") pgPlayKnight(ap.id);
+      else if (t === "roadBuilding") pgPlayRoadBuilding(ap.id);
+      else if (t === "yearOfPlenty") pgPlayYearOfPlenty(ap.id);
+      else if (t === "monopoly") pgPlayMonopoly(ap.id);
+    };
+  });
+  // Wire action / steal buttons
+  el.querySelector('[data-action="roll"]')?.addEventListener("click", () => {
+    const v = 1 + Math.floor(Math.random() * 6) + 1 + Math.floor(Math.random() * 6);
+    pgLogRoll(v);
+  });
+  el.querySelector('[data-action="buy-devcard"]')?.addEventListener("click", () => pgBuyDevCard(ap.id));
+  el.querySelector('[data-action="random-robber"]')?.addEventListener("click", () => pgRandomMove());
+  el.querySelectorAll('[data-steal]').forEach(b => b.onclick = () => pgPickStealVictim(Number(b.dataset.steal)));
 }
 
 // ── INIT
@@ -4540,15 +5306,21 @@ async function pgInit() {
   document.getElementById("pgUndoBtn")?.addEventListener("click", pgUndo);
   document.getElementById("pgRedoBtn")?.addEventListener("click", pgRedo);
   document.getElementById("pgRandomMoveBtn")?.addEventListener("click", pgRandomMove);
+  document.getElementById("pgConfirmEndTurnBtn")?.addEventListener("click", pgConfirmEndTurn);
+  document.getElementById("pgWinModalReviewBtn")?.addEventListener("click", pgHideWinnerModal);
+  document.getElementById("pgWinModalNewGameBtn")?.addEventListener("click", () => {
+    document.getElementById("pgResetBtn")?.click();
+  });
   document.getElementById("pgResetBtn")?.addEventListener("click", () => {
     if (!confirm("Reset the whole game? All progress will be lost.")) return;
     pg.phase = "setup";
     pg.players = [];
     pg.turnOrder = [];
-    pg.mapState = null;
+    pg.mapState = null; 
     pg.settlements = {};
     pg.roads = {};
     pg.bank = { 1: 19, 2: 19, 3: 19, 4: 19, 5: 19 };
+    pg.devCardDeck = [];
     pg.bankDevCards = 25;
     pg.rollHistory = [];
     pg.eventLog = [];
@@ -4556,6 +5328,14 @@ async function pgInit() {
     pg.history = [];
     pg.redoStack = [];
     pg._setupDraft = null;
+    pg.robberHex = null;
+    pg.pendingRobber = null;
+    pg.pendingSteal = null;
+    pg.pendingRoadBuilding = null;
+    pg.longestRoadOwner = null;
+    pg.largestArmyOwner = null;
+    pg.winner = null;
+    pgHideWinnerModal();
     pgSyncHistoryButtons();
     pgShowSetupModal();
     pgRenderAll();
@@ -4610,10 +5390,27 @@ async function pgInit() {
 
   initDiceRollChart();
   pgRenderAll();
+  pgInitSidebarSync();
+}
+
+// Keep the playground sidebar's max-height equal to the left column's height so the
+// sidebar scrolls internally instead of expanding the page taller than the board column.
+function pgInitSidebarSync() {
+  const board = document.querySelector(".playground-container .board-section");
+  const sidebar = document.querySelector(".playground-container .analytics-sidebar");
+  if (!board || !sidebar) return;
+  const sync = () => { sidebar.style.maxHeight = `${board.offsetHeight}px`; };
+  sync();
+  if (typeof ResizeObserver === "function") {
+    const ro = new ResizeObserver(sync);
+    ro.observe(board);
+  }
+  window.addEventListener("resize", sync);
 }
 
 function pgManualAdjust(kind, delta) {
   if (!pgRequireLatestView("adjusting resources")) return;
+  if (pgBlockedByPending("adjusting resources")) return;
   const playerId = Number(document.getElementById("playerSelector")?.value);
   const player = pg.players.find(p => p.id === playerId);
   if (!player) return;
