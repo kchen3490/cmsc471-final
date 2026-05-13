@@ -4063,8 +4063,17 @@ function pgClickCorner(cornerKey) {
     const playerId = Number(document.getElementById("playerSelector")?.value) || pg.players[0].id;
     const player = pg.players.find(p => p.id === playerId);
     if (!player) return;
-    if (!pgHasResources(player, PG_BUILD_COSTS.settlement)) { pgStatus("Not enough resources for a settlement.", "warn"); return; }
-    if (player.settlementsLeft <= 0) { pgStatus("No settlements left.", "warn"); return; }
+
+    // FIX: Check building limits BEFORE resources
+    if (player.settlementsLeft <= 0) { 
+      pgStatus("Already used the maximum number of settlements (5)", "warn"); 
+      return; 
+    }
+    if (!pgHasResources(player, PG_BUILD_COSTS.settlement)) { 
+      pgStatus("Not enough resources for a settlement.", "warn"); 
+      return; 
+    }
+
     pgPushHistory("build-settlement");
     pgSpendResources(player, PG_BUILD_COSTS.settlement);
     const corner = pg.mapState.tileCornerStates[cornerKey];
@@ -4072,7 +4081,7 @@ function pgClickCorner(cornerKey) {
     player.settlementsLeft -= 1;
     player.vp += 1;
     pgLogEvent({ type: "buildingPurchased", player: playerId, building: "settlement", count: 1 });
-    pgRecomputeAchievements(); // a settlement on an opponent road segment can break Longest Road
+    pgRecomputeAchievements(); 
     pgRenderAll();
   }
 }
@@ -4101,7 +4110,6 @@ function pgClickEdge(edgeKey) {
   if (pg.phase === "play") {
     if (!pgRequireLatestView("building")) return;
     if (pg.winner != null) { pgStatus("The game is over.", "warn"); return; }
-    // Robber/steal must be resolved first (road-building is itself "pending" but it's the action we're resolving)
     if (pg.pendingRobber || pg.pendingSteal) {
       pgBlockedByPending("building a road");
       return;
@@ -4111,7 +4119,10 @@ function pgClickEdge(edgeKey) {
       const playerId = pg.pendingRoadBuilding.playerId;
       const player = pg.players.find(p => p.id === playerId);
       if (!player) return;
-      if (player.roadsLeft <= 0) { pgStatus("No roads left to place.", "warn"); return; }
+      if (player.roadsLeft <= 0) { 
+        pgStatus("Already used the maximum number of roads (15)", "warn"); 
+        return; 
+      }
       pgPushHistory("road-building-place");
       const edge = pg.mapState.tileEdgeStates[edgeKey];
       pg.roads[edgeKey] = { x: edge.x, y: edge.y, z: edge.z, owner: playerId, type: 1 };
@@ -4131,8 +4142,17 @@ function pgClickEdge(edgeKey) {
     const playerId = Number(document.getElementById("playerSelector")?.value) || pg.players[0].id;
     const player = pg.players.find(p => p.id === playerId);
     if (!player) return;
-    if (!pgHasResources(player, PG_BUILD_COSTS.road)) { pgStatus("Not enough resources for a road.", "warn"); return; }
-    if (player.roadsLeft <= 0) { pgStatus("No roads left.", "warn"); return; }
+
+    // FIX: Check building limits BEFORE resources
+    if (player.roadsLeft <= 0) { 
+      pgStatus("Already used the maximum number of roads (15)", "warn"); 
+      return; 
+    }
+    if (!pgHasResources(player, PG_BUILD_COSTS.road)) { 
+      pgStatus("Not enough resources for a road.", "warn"); 
+      return; 
+    }
+
     pgPushHistory("build-road");
     pgSpendResources(player, PG_BUILD_COSTS.road);
     const edge = pg.mapState.tileEdgeStates[edgeKey];
@@ -4154,8 +4174,8 @@ function pgTryUpgradeCity(cornerKey) {
   if (piece.owner !== playerId) return;
   const player = pg.players.find(p => p.id === playerId);
   if (!player) return;
+  if (player.citiesLeft <= 0) { pgStatus("Already used the maximum number of cities (4)", "warn"); return; }
   if (!pgHasResources(player, PG_BUILD_COSTS.city)) { pgStatus("Not enough resources for a city.", "warn"); return; }
-  if (player.citiesLeft <= 0) { pgStatus("No cities left.", "warn"); return; }
   pgPushHistory("upgrade-city");
   pgSpendResources(player, PG_BUILD_COSTS.city);
   piece.buildingType = 2;
@@ -4495,6 +4515,12 @@ function DEV_CARD_LABEL(t) {
 function pgHasResources(player, cost) {
   return Object.entries(cost).every(([r, c]) => (player.resources[r] || 0) >= c);
 }
+
+function pgMaxBuildingWarning(building, max) {
+  const plural = building === "city" ? "cities" : `${building}s`;
+  return `Already used the maximum number of ${plural} (${max})`;
+}
+
 function pgSpendResources(player, cost) {
   for (const [r, c] of Object.entries(cost)) {
     player.resources[r] -= c;
