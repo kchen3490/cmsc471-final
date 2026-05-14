@@ -60,6 +60,8 @@ Jeff Liu:
 
 Tony Zheng:
 - Founded the heuristic function's skeleton code
+- Added predict feature
+- Board visualization for predicted moves
 
 Kai Chen:
 - Playground tab
