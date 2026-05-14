@@ -55,12 +55,13 @@
               <button id="nextAnalyticsTurnBtn" class="tab-btn"
                 style="padding: 8px 16px; flex: 1; max-width: 120px;">Next &gt;</button>
             </div>
-            <div class="button-row" style="display: flex; justify-content: center; margin-top: 8px;">
-              <button id="predictMoveBtn" class="tab-btn"
-                style="padding: 8px 16px; flex: 1; max-width: 250px;">Predict</button>
-            </div>
-            <div id="predictedMovesContainer" style="margin-top: 8px; font-size: 14px; text-align: left;"></div>
             <p id="turnInfo" style="text-align: center; margin-top: 4px;">Turn 0 / 0</p>
+          </div>
+
+          <div class="predicted-moves-section">
+            <h3>Predicted Moves</h3>
+            <div id="bestMoveSummary" style="font-size: 14px; text-align: left;"></div>
+            <div id="predictedMovesContainer" style="margin-top: 8px; font-size: 14px; text-align: left;"></div>
           </div>
 
           <div class="dice-section">
@@ -170,11 +171,17 @@
           <div class="playground-toolbar">
             <button id="pgUndoBtn" class="tab-btn" type="button" disabled>Undo</button>
             <button id="pgRedoBtn" class="tab-btn" type="button" disabled>Redo</button>
-            <button id="pgRandomMoveBtn" class="tab-btn" type="button">Random Move</button>
+            <button id="pgRandomMoveBtn" class="tab-btn" type="button">Best Move</button>
             <button id="pgResetBtn" class="tab-btn" type="button">Reset Game</button>
             <button id="pgConfirmEndTurnBtn" class="tab-btn" type="button" style="grid-column: 1 / -1;">Confirm End Turn</button>
             <button id="pgRandomBoardBtn" class="tab-btn" type="button" style="display:none;">Randomize Board</button>
             <button id="pgConfirmBoardBtn" class="tab-btn" type="button" style="display:none;">Confirm Board</button>
+          </div>
+
+          <div class="predicted-moves-section">
+            <h3>Predicted Moves</h3>
+            <div id="pgBestMoveSummary" style="font-size: 14px; text-align: left;"></div>
+            <div id="pgPredictedMovesContainer" style="margin-top: 8px; font-size: 14px; text-align: left;"></div>
           </div>
 
           <div class="turn-controls">

@@ -213,6 +213,18 @@ svg#catanBoard {
   font-size: 15px;
 }
 
+.predicted-moves-section {
+  background: rgba(20, 30, 60, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.predicted-moves-section h3 {
+  margin: 0 0 10px;
+  font-size: 15px;
+}
+
 .player-tracker-section {
   background: rgba(20, 30, 60, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.15);

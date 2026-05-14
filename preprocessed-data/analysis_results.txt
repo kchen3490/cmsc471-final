@@ -1,0 +1,97 @@
+
+Games analyzed: 40347
+Player-rows:    161388
+Base win rate:  0.250   (≈ 1 / avg_players_per_game)
+
+=== Achievement impact ===
+  Longest Road        P(win | holds)=0.326 (28959/88875)   P(win | not)=0.157 (11369/72513)   lift=+0.169
+  Largest Army        P(win | holds)=0.527 (18237/34604)   P(win | not)=0.174 (22091/126784)   lift=+0.353
+  Both achievements   P(win)=0.573  (13711/23916)
+  Neither             P(win)=0.111  (6843/61825)
+
+=== Knights played → P(win) ===
+
+  knights_played (capped 10)  n      wins   P(win)
+                            -----  -----  ------
+  0                         39346   7154   0.182
+  1                         39020   7352   0.188
+  2                         29071   4847   0.167
+  3                         27327  11475   0.420
+  4                         14811   5340   0.361
+  5                          7625   2806   0.368
+  6                          2941    980   0.333
+  7                           957    289   0.302
+  8                           227     67   0.295
+  9                            46     14   0.304
+  10                           17      4   0.235
+
+=== Cities built → P(win) ===
+
+  n_cities (capped 5)       n      wins   P(win)
+                            -----  -----  ------
+  0                         27027   1543   0.057
+  1                         57793   9066   0.157
+  2                         50287  15287   0.304
+  3                         21607  11100   0.514
+  4                          4674   3332   0.713
+
+=== Settlements remaining (on board) → P(win) ===
+
+  n_settlements (capped 5)  n      wins   P(win)
+                            -----  -----  ------
+  0                         10277   4112   0.400
+  1                         22644   6604   0.292
+  2                         34500   8597   0.249
+  3                         39549   7764   0.196
+  4                         35196   8555   0.243
+  5                         19222   4696   0.244
+
+=== VP development cards → P(win) ===
+
+  n_vp_cards (capped 4)     n      wins   P(win)
+                            -----  -----  ------
+  0                         122061  17458   0.143
+  1                         39327  22870   0.582
+
+=== Trade activity → P(win) ===
+
+  trades_completed          n      wins   P(win)
+                            -----  -----  ------
+  0                          1499    109   0.073
+  1-2                       15965   2007   0.126
+  11+                       12883   4811   0.373
+  3-5                       59089  12217   0.207
+  6-10                      71952  21184   0.294
+
+=== Knight cutoff (P(win | k >= K)) ===
+  K         n>=K   wins>=K   P(win|>=K)    P(win|<K)
+  0       161388     40328        0.250        0.000
+  1       122042     33174        0.272        0.182
+  2        83022     25822        0.311        0.185
+  3        53951     20975        0.389        0.180
+  4        26624      9500        0.357        0.229
+  5        11813      4160        0.352        0.242
+  6         4188      1354        0.323        0.248
+  7         1247       374        0.300        0.249
+
+=== Mix of settlement vs city counts among winners ===
+  (settlements, cities) → n_winners (P(win | that mix))
+   s=2 c=4   wins=  388 / n=   388   P(win)=1.000
+   s=4 c=3   wins=  179 / n=   179   P(win)=1.000
+   s=4 c=2   wins= 4366 / n=  6147   P(win)=0.710
+   s=1 c=4   wins=  976 / n=  1386   P(win)=0.704
+   s=0 c=4   wins= 1968 / n=  2900   P(win)=0.679
+   s=3 c=3   wins=  711 / n=  1089   P(win)=0.653
+   s=2 c=3   wins= 3871 / n=  5987   P(win)=0.647
+   s=5 c=2   wins=  242 / n=   411   P(win)=0.589
+   s=1 c=3   wins= 4301 / n=  9120   P(win)=0.472
+   s=5 c=1   wins= 3279 / n=  7923   P(win)=0.414
+   s=0 c=3   wins= 2038 / n=  5232   P(win)=0.390
+   s=3 c=2   wins= 5236 / n= 13538   P(win)=0.387
+
+=== Suggested weight-tuning takeaways ===
+  Longest Road lift: +0.169   (rel weight ≈ 0.48× of Largest Army)
+  Largest Army lift: +0.353
+  P(win | knights>=3): 0.389   P(win | knights>=4): 0.357   P(win | knights>=5): 0.352
+  If r3 ≈ r4 ≈ r5, marginal knights past 3 add little win-prob; capping
+  the army term at K=3 (clip K² at 9) may match the data better than unbounded K².

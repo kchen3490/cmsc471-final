@@ -1,20 +1,53 @@
 // ── HEURISTIC ──────────────────────────────────────────────────────────────
-// roll_probability[sum] = probability of rolling that; i.e. roll_probability[7] = 6/36
+// Linear-combination heuristic used by simulate() to score candidate moves.
+// For a state S and player p, we compute:
+//
+//   score(S, p) = w0 * income_sum
+//               + w1 * variety
+//               + w2 * expansion
+//               + w3 * dev_card_min
+//               + w4 * vp
+//               - w5 * robber_risk
+//               + w6 * roads
+//
+// Each component is a simple, board-derivable quantity (see functions below).
+// The default weights in `sample_weight` were tuned by hand; `simulate()` also
+// accepts an external weight vector so weights can be swept / learned later.
+//
+// Design references:
+//   - settlers-rl  (https://settlers-rl.github.io/): RL agent whose state features
+//     informed the choice of income / variety / dev_card / robber_risk terms.
+//   - catanalyzer  (https://catanalyzer.vercel.app/): analyzer that motivated
+//     the per-move "what changed in the heuristic" breakdown surfaced in the UI.
+//
+// roll_probability[sum] = (# of (d1,d2) pairs that sum to `sum`) out of 36.
+// e.g. roll_probability[7] = 6  (the 6/36 = 1/6 chance of rolling a 7).
 const roll_probability = [0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1];
-const sample_weight = [5.0, 3.0, 4.0, 2.5, 2.0, 2.0, 1.5];
 
-/* Given a game state, calculate the heuristic based on the function(s).
- * income: for each resource, returns sum(probability * # of adjacent settlements)
- * variety: number of resource types with income > 0 (may want to adjust this threshold)
- * expansion: sum(probabilities of available settlement locations)
- * dev_card: min(ore income, wheat income, sheep income)
- * vp: current number of vp
- * robber_risk: if number of cards in hand > 7, then (roll_probability[7] * number of cards in hand / 2) ("discard income")
- * roads: uses playerStats.longestRoad (if present) and squares it (L^2) so longer road networks
- *        are increasingly preferred over incremental road growth
- */
+// Default weights, indexed to match the score formula above:
+//   [income_sum, variety, expansion, dev_card_min, vp, robber_risk, roads]
+// Default weights, indexed to match the score formula:
+//   [income_sum, variety, expansion, dev_card_min, vp, robber_risk, roads, army]
+//
+// Tuned 2026-05-13 from analyze.py on 40,347 games / 161,388 player-rows.
+// Key findings driving these weights:
+//   - Largest Army lift on P(win): +0.353  (≈ 2.1× Longest Road's +0.169).
+//     ⇒ army weight should be ~2× roads weight, not equal.
+//   - n_cities is the dominant build driver: P(win | n_cities=4) = 0.713
+//     vs 0.057 at n_cities=0. The vp term captures this once cities are
+//     built, but underweighting vp leaves the heuristic blind to the
+//     scoreboard.
+//   - VP-dev-cards: P(win | held) = 0.582 vs 0.143 without. Same vp lever.
+//   - Knight saturation: P(win) plateaus near K=3 and *declines* past K=5.
+//     The `army` term itself (K²) is now clipped at K=3 (see army()).
+//   - variety has no robust signal in the data; keeping its weight modest.
+const sample_weight = [5.0, 2.0, 3.5, 2.5, 3.0, 2.0, 1.5, 3.0];
 
-// order of resources based on RESOURCE_TYPES = ["wood", "brick", "sheep", "wheat", "ore"]
+// income(state, player) → [wood, brick, sheep, wheat, ore]
+// For each owned building, sum (roll_probability[diceNumber] * production) over
+// the hexes the building touches. Cities count as production=2, settlements as 1.
+// The result is "expected pips per resource per dice roll" (in 36ths).
+// Order matches RESOURCE_TYPES = ["wood", "brick", "sheep", "wheat", "ore"].
 function income(state, player) {
   const mapState = resolve_heuristic_map_state(state);
   const hexes = mapState.tileHexStates ? Object.values(mapState.tileHexStates) : [];
@@ -42,6 +75,10 @@ function income(state, player) {
   return res;
 }
 
+// variety(incomeVec, threshold) → integer in [0, 5]
+// Number of distinct resource types where the player has *any* income above
+// `threshold`. Encourages diversified production so the player isn't locked
+// into a single resource and dependent on trades.
 function variety(incomeVec, threshold) {
   let n = 0;
   for (const v of incomeVec) {
@@ -50,6 +87,9 @@ function variety(incomeVec, threshold) {
   return n;
 }
 
+// expansion(state, player) → sum of dice probabilities at every UNOCCUPIED corner.
+// A rough proxy for "how much production is still available on the board."
+// Not weighted by reachability — a high value at a faraway corner still counts.
 function expansion(state, player) {
   const mapState = resolve_heuristic_map_state(state);
   const cornerEntries = mapState.tileCornerStates
@@ -78,17 +118,28 @@ function expansion(state, player) {
   return sum;
 }
 
+// dev_card(income) → min(sheep, wheat, ore) income.
+// Buying a development card costs 1 sheep + 1 wheat + 1 ore, so the limiting
+// resource is the "bottleneck" rate at which the player can buy them.
+// (Liebig's-law-style minimum: weakest input dominates.)
 function dev_card(income) {
   let dev_card_resources = [income[2], income[3], income[4]];
   return Math.min(...dev_card_resources);
 }
 
+// vp(state, player) → current victory-point count from the engine's stats.
+// Linear in VP; the last VPs are worth far more in practice but we don't
+// model that yet.
 function vp(state, player) {
   const stats =
     state.playerStats?.[player] ?? state.playerStats?.[String(player)] ?? null;
   return stats?.vp ?? 0;
 }
 
+// robber_risk(state, player) → "expected discards" when over the 7-card limit.
+// On a roll of 7 (probability 6/36) anyone holding >7 cards must discard half.
+// We approximate this as roll_probability[7] * (hand_size / 2); subtracted in
+// the final score so the heuristic penalizes hoarding.
 function robber_risk(state, player) {
   const cards =
     state.playerResources?.[player] ?? state.playerResources?.[String(player)];
@@ -97,12 +148,32 @@ function robber_risk(state, player) {
   return roll_probability[7] * (n / 2);
 }
 
+// roads(state, player) → L^2 where L = longest contiguous road length.
+// Squaring rewards extending an already-long road much more than starting a
+// short new one, and indirectly tracks progress toward the +2 VP Longest Road
+// bonus (which requires L >= 5).
 function roads(state, player) {
   const stats =
     state.playerStats?.[player] ?? state.playerStats?.[String(player)] ?? null;
   const L = Number(stats?.longestRoad ?? 0);
   if (!Number.isFinite(L) || L <= 0) return 0;
   return L * L;
+}
+
+// army(state, player) → min(K, 3)² where K = knights played.
+//
+// Clipped at K=3 because the data (40k games) shows P(win) plateaus there and
+// declines past K=5: K=2 → 0.167, K=3 → 0.420, K=4 → 0.361, K=5 → 0.368, K=6+
+// dropping. Knights past 3 don't help win — they actively distract from
+// other moves. The clip means each of the first three knights contributes
+// +(2K-1) to the score (1, 3, 5), and the 4th+ contribute nothing.
+function army(state, player) {
+  const stats =
+    state.playerStats?.[player] ?? state.playerStats?.[String(player)] ?? null;
+  const K = Number(stats?.knightsPlayed ?? stats?.knights ?? 0);
+  if (!Number.isFinite(K) || K <= 0) return 0;
+  const Keff = Math.min(K, 3);
+  return Keff * Keff;
 }
 
 /** Corner key -> occupying player id; used for opponent blocking on longest-road paths. */
@@ -269,7 +340,19 @@ function applyLongestRoadAfterSimulatedRoad(nextState, baseState, baseHolder, ed
   }
 }
 
-// state = current game state; player = player we are calculating heuristic for, w = weights
+// calculate_heuristric(state, player, w) → { score, stats }
+// Combines the component functions above into a single scalar score by
+// weighted sum. `stats` echoes the individual component values so the UI can
+// explain *why* a move scored what it did (see the Predicted Moves panel).
+//
+// Inputs:
+//   state  - simulated post-move game state
+//   player - id of the player whose perspective we score
+//   w      - optional length-7 weight vector; falls back to `sample_weight`
+//
+// Component design references:
+//   settlers-rl  https://settlers-rl.github.io/
+//   catanalyzer  https://catanalyzer.vercel.app/
 function calculate_heuristric(state, player, w) {
   const incomeVec = income(state, player);
   const income_sum = incomeVec.reduce((acc, curr) => acc + curr, 0);
@@ -279,29 +362,23 @@ function calculate_heuristric(state, player, w) {
   const vpVal = vp(state, player);
   const robberVal = robber_risk(state, player);
   const roadsVal = roads(state, player);
+  const armyVal = army(state, player);
 
-  let score = 0;
-  if (Array.isArray(w) && w.length >= 7) {
-    score = (
-      w[0] * income_sum +
-      w[1] * varietyVal +
-      w[2] * expansionVal +
-      w[3] * devCardVal +
-      w[4] * vpVal -
-      w[5] * robberVal +
-      w[6] * roadsVal
-    );
-  } else {
-    score = (
-      sample_weight[0] * income_sum +
-      sample_weight[1] * varietyVal +
-      sample_weight[2] * expansionVal +
-      sample_weight[3] * devCardVal +
-      sample_weight[4] * vpVal -
-      sample_weight[5] * robberVal +
-      sample_weight[6] * roadsVal
-    );
-  }
+  // Use external weights when supplied, falling back to sample_weight per-index
+  // so length-7 callers still work (army defaults to sample_weight[7]).
+  const wv = (Array.isArray(w) && w.length >= 7) ? w : sample_weight;
+  const armyWeight = (wv.length >= 8 && Number.isFinite(wv[7])) ? wv[7] : sample_weight[7];
+
+  const score = (
+    wv[0] * income_sum +
+    wv[1] * varietyVal +
+    wv[2] * expansionVal +
+    wv[3] * devCardVal +
+    wv[4] * vpVal -
+    wv[5] * robberVal +
+    wv[6] * roadsVal +
+    armyWeight * armyVal
+  );
 
   return {
     score,
@@ -312,7 +389,8 @@ function calculate_heuristric(state, player, w) {
       devCard: devCardVal,
       vp: vpVal,
       robberRisk: robberVal,
-      roads: roadsVal
+      roads: roadsVal,
+      army: armyVal,
     }
   };
 }
@@ -2944,13 +3022,12 @@ window.addEventListener("DOMContentLoaded", () => {
   const turnSlider = document.getElementById("turnSlider");
   const prevBtn = document.getElementById("prevAnalyticsTurnBtn");
   const nextBtn = document.getElementById("nextAnalyticsTurnBtn");
-  const predictBtn = document.getElementById("predictMoveBtn");
   const predictContainer = document.getElementById("predictedMovesContainer");
+  const bestMoveSummary = document.getElementById("bestMoveSummary");
 
   const clearPredictions = () => {
-    if (predictContainer) {
-      predictContainer.innerHTML = "";
-    }
+    if (predictContainer) predictContainer.innerHTML = "";
+    if (bestMoveSummary) bestMoveSummary.innerHTML = "";
   };
 
   if (turnSlider) {
@@ -2985,59 +3062,138 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (predictBtn && predictContainer) {
-    predictBtn.addEventListener("click", () => {
-      if (!currentGameData || !turnStates || currentTurnIndex >= turnStates.length) {
-        predictContainer.textContent = "No game loaded.";
-        return;
-      }
+  // Human-friendly description for each heuristic component shown in tooltips.
+  // Each entry: [label, one-line explanation, weight sign, default weight].
+  // sign is "−" for robberRisk (subtracted in the score); "+" for all others.
+  // Weight values match `sample_weight` in calculate_heuristric().
+  const HEURISTIC_INFO = {
+    income:     ["Income",       "Expected pips per roll, summed over resources. Cities count double.", "+", 5.0],
+    variety:    ["Variety",      "Distinct resources you produce. Diversified production needs fewer trades.", "+", 2.0],
+    expansion:  ["Expansion",    "Total pip-probability still available at unoccupied corners.", "+", 3.5],
+    devCard:    ["Dev-card rate","Bottleneck of sheep/wheat/ore income (min of the three).", "+", 2.5],
+    vp:         ["Victory pts",  "Current VP. Tuned up — cities and VP cards dominate win rate.", "+", 3.0],
+    robberRisk: ["Robber risk",  "Expected discards on a 7 when over the 7-card hand limit.", "−", 2.0],
+    roads:      ["Roads",        "L² where L is your longest contiguous road. Tracks Longest Road (+2 VP at L≥5).", "+", 1.5],
+    army:       ["Army",         "min(K,3)² where K = knights played. Clipped at 3: data shows K>3 doesn't help win.", "+", 3.0],
+  };
 
-      const turn = turnStates[currentTurnIndex];
-      const playerToMove = turn.activePlayer || 1;
+  const buildPredictionTooltipHtml = (move, displayNum, pColor) => {
+    let desc = "";
+    if (move.type === "build_settlement") desc = `Build settlement at corner ${move.key}`;
+    else if (move.type === "upgrade_city") desc = `Upgrade to city at corner ${move.key}`;
+    else if (move.type === "build_road") desc = `Build road at edge ${move.key}`;
+    else if (move.type === "buy_dev_card") desc = `Buy development card`;
 
-      const topMoves = simulate(turn, playerToMove, null);
-      if (!topMoves || topMoves.length === 0) {
-        predictContainer.textContent = "No valid moves predicted.";
-        return;
-      }
+    // We show three columns per row: raw component value, weight, and signed contribution.
+    // The contributions sum to the displayed total score so the math is visibly consistent.
+    let contribTotal = 0;
+    const rows = Object.entries(move.stats).map(([k, v]) => {
+      const info = HEURISTIC_INFO[k] ?? [k, "", "+", 1];
+      const [label, why, sign, weight] = info;
+      const signed = (sign === "−" ? -1 : 1) * weight * Number(v);
+      contribTotal += signed;
+      const signColor = sign === "−" ? "#fca5a5" : "#86efac";
+      const contribStr = (signed >= 0 ? "+" : "−") + Math.abs(signed).toFixed(2);
+      const contribColor = signed >= 0 ? "#86efac" : "#fca5a5";
+      return `
+        <div style="margin-bottom: 6px;">
+          <div style="display:flex; justify-content:space-between; gap:8px; align-items:baseline;">
+            <span><span style="color:${signColor};">${sign}</span> <strong>${label}</strong></span>
+            <span style="color:#cbd5e1; font-size:11px; font-variant-numeric: tabular-nums;">
+              ${Number(v).toFixed(2)} × ${weight.toFixed(1)} =
+              <span style="color:${contribColor}; font-weight:bold;">${contribStr}</span>
+            </span>
+          </div>
+          <div style="color:#94a3b8; font-size:11px; line-height:1.4;">${why}</div>
+        </div>`;
+    }).join("");
+
+    return `
+      <div style="font-weight:bold; color:#f1f5f9; margin-bottom:4px;">
+        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${pColor};border:1px solid #475569;margin-right:6px;vertical-align:middle;"></span>
+        Player ${displayNum} — ${desc}
+      </div>
+      <div style="color:#cbd5e1; margin-bottom:8px;">Total score: <strong>${move.score.toFixed(2)}</strong></div>
+      <div style="border-top:1px solid rgba(148,163,184,0.3); padding-top:6px;">${rows}</div>
+      <div style="border-top:1px solid rgba(148,163,184,0.3); padding-top:6px; display:flex; justify-content:space-between;">
+        <span style="color:#cbd5e1;"><strong>Σ weighted</strong></span>
+        <span style="color:#f1f5f9; font-variant-numeric: tabular-nums;"><strong>${contribTotal.toFixed(2)}</strong></span>
+      </div>
+      <div style="color:#94a3b8; font-size:10px; margin-top:6px;">value × weight, summed (robber risk is subtracted).</div>
+    `;
+  };
+
+  const runPrediction = () => {
+    if (!predictContainer || !bestMoveSummary) return;
+    if (!currentGameData || !turnStates || currentTurnIndex >= turnStates.length) {
+      bestMoveSummary.innerHTML = `<div style="color:#94a3b8; font-style:italic;">No available moves — end turn.</div>`;
+      predictContainer.innerHTML = "";
+      return;
+    }
+
+    const turn = turnStates[currentTurnIndex];
+    const playerToMove = turn.activePlayer || 1;
+
+    const topMoves = simulate(turn, playerToMove, null);
+    if (!topMoves || topMoves.length === 0) {
+      bestMoveSummary.innerHTML = `<div style="color:#94a3b8; font-style:italic;">No available moves — end turn.</div>`;
+      predictContainer.innerHTML = "";
+      return;
+    }
 
       const pColor = PLAYER_COLOR_NAMES[playerToMove] || "white";
       const playOrder = currentGameData?.data?.playOrder || [];
-      // Get the correct display number based on play order index
       let displayNum = playerToMove;
       const idx = playOrder.indexOf(playerToMove);
       if (idx !== -1) {
         displayNum = idx + 1;
       } else {
-        // Fallback: try Number type if string didn't match
         const idxNum = playOrder.indexOf(Number(playerToMove));
         if (idxNum !== -1) displayNum = idxNum + 1;
       }
 
-      predictContainer.innerHTML = `<div style='font-weight: bold; margin-bottom: 6px; color: #e2e8f0;'>Top Predicted Moves for <span style='color: ${pColor}'>Player ${displayNum}</span>:</div>`;
+      const moveDesc = (m) => {
+        if (m.type === "build_settlement") return `Build settlement at corner ${m.key}`;
+        if (m.type === "upgrade_city") return `Upgrade to city at corner ${m.key}`;
+        if (m.type === "build_road") return `Build road at edge ${m.key}`;
+        if (m.type === "buy_dev_card") return `Buy development card`;
+        return m.type;
+      };
+
+      const best = topMoves[0];
+      // pColor is used for the border and a small swatch only — never as text on the
+      // dark card background, since dark player colors (black, mysticblue, purple)
+      // would be unreadable. The player label itself stays white.
+      const colorChip = `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${pColor};border:1px solid #475569;vertical-align:middle;margin-right:4px;"></span>`;
+      bestMoveSummary.innerHTML = `
+        <div style="background:#0f172a; border:1px solid ${pColor}; border-radius:6px; padding:10px;">
+          <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">Recommended move for ${colorChip}<span style="color:#f1f5f9;">Player ${displayNum}</span></div>
+          <div style="font-size:15px; font-weight:bold; color:#f1f5f9; margin-top:4px;">${moveDesc(best)}</div>
+          <div style="font-size:13px; color:#cbd5e1; margin-top:2px;">Heuristic score: <strong>${best.score.toFixed(2)}</strong></div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:6px;">Hover any move below for the score breakdown.</div>
+        </div>
+      `;
+
+      predictContainer.innerHTML = `<div style='font-weight: bold; margin: 8px 0 6px 0; color: #e2e8f0;'>Top moves:</div>`;
       topMoves.forEach((move, i) => {
-        let desc = "";
-        if (move.type === "build_settlement") desc = `Build Settlement at corner ${move.key}`;
-        else if (move.type === "upgrade_city") desc = `Upgrade City at corner ${move.key}`;
-        else if (move.type === "build_road") desc = `Build Road at edge ${move.key}`;
-        else if (move.type === "buy_dev_card") desc = `Buy Development Card`;
+        const desc = moveDesc(move);
+        const isBest = i === 0;
 
         const moveDiv = document.createElement("div");
         moveDiv.style.cursor = "help";
         moveDiv.style.marginBottom = "4px";
-        moveDiv.style.padding = "6px";
-        moveDiv.style.background = "#1e293b";
+        moveDiv.style.padding = "6px 8px";
+        moveDiv.style.background = isBest ? "#1e3a5f" : "#1e293b";
         moveDiv.style.borderRadius = "4px";
-        moveDiv.style.border = "1px solid #475569";
+        moveDiv.style.border = `1px solid ${isBest ? pColor : "#475569"}`;
 
         moveDiv.innerHTML = `<strong>#${i + 1}</strong>: ${desc} <span style="color:#94a3b8; font-size:12px;">(Score: ${move.score.toFixed(2)})</span>`;
 
-        const statsStr = Object.entries(move.stats)
-          .map(([k, v]) => `${k.charAt(0).toUpperCase() + k.slice(1)}: ${v.toFixed(2)}`)
-          .join('\n');
-        moveDiv.title = `Heuristic Stats:\n----------------\n${statsStr}`;
+        const tooltipHtml = buildPredictionTooltipHtml(move, displayNum, pColor);
 
-        moveDiv.addEventListener("mouseenter", () => {
+        moveDiv.addEventListener("mouseenter", (e) => {
+          showTooltip(tooltipHtml, e);
+
           const hlGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
           hlGroup.id = "predictionHighlight";
           hlGroup.style.pointerEvents = "none";
@@ -3081,15 +3237,26 @@ window.addEventListener("DOMContentLoaded", () => {
           }
         });
 
+        moveDiv.addEventListener("mousemove", positionTooltip);
+
         moveDiv.addEventListener("mouseleave", () => {
+          hideTooltip();
           const hl = document.getElementById("predictionHighlight");
           if (hl) hl.remove();
         });
 
         predictContainer.appendChild(moveDiv);
       });
-    });
-  }
+  };
+
+  // Re-run prediction whenever the turn changes.
+  [turnSlider, prevBtn, nextBtn].forEach((el) => {
+    if (!el) return;
+    const evt = el === turnSlider ? "input" : "click";
+    el.addEventListener(evt, () => setTimeout(runPrediction, 0));
+  });
+  // Initial run after DOM ready.
+  setTimeout(runPrediction, 0);
 
   const unblurBarsBtn = document.getElementById("analyticsUnblurBarsBtn");
   if (unblurBarsBtn) {
@@ -4506,7 +4673,7 @@ function pgBlockedByPending(actionLabel) {
     return true;
   }
   if (pg.pendingRobber) {
-    pgStatus(`Place the robber before ${actionLabel || "doing anything else"} (use Random Move or click a hex).`, "warn");
+    pgStatus(`Place the robber before ${actionLabel || "doing anything else"} (use Best Move or click a hex).`, "warn");
     return true;
   }
   if (pg.pendingSteal) {
@@ -4527,6 +4694,7 @@ function pgPlayKnight(playerId) {
   const activeId = pg.players[pg.currentTurnIdx % pg.players.length]?.id;
   if (player.id !== activeId) { pgStatus("Only the active player can play a dev card.", "warn"); return; }
   if ((player.devCards.knight || 0) <= 0) { pgStatus("No knight cards.", "warn"); return; }
+  if (!pgHasPlayableDevCard(player, "knight")) { pgStatus("Can't play a dev card bought this turn — wait until next turn.", "warn"); return; }
   pgPushHistory("play-knight");
   player.devCards.knight -= 1;
   player.knightsPlayed = (player.knightsPlayed || 0) + 1;
@@ -4543,6 +4711,7 @@ function pgPlayRoadBuilding(playerId) {
   const activeId = pg.players[pg.currentTurnIdx % pg.players.length]?.id;
   if (player.id !== activeId) { pgStatus("Only the active player can play a dev card.", "warn"); return; }
   if ((player.devCards.roadBuilding || 0) <= 0) { pgStatus("No Road Building cards.", "warn"); return; }
+  if (!pgHasPlayableDevCard(player, "roadBuilding")) { pgStatus("Can't play a dev card bought this turn — wait until next turn.", "warn"); return; }
   pgPushHistory("play-road-building");
   player.devCards.roadBuilding -= 1;
   pg.pendingRoadBuilding = { playerId, remaining: 2 };
@@ -4551,7 +4720,14 @@ function pgPlayRoadBuilding(playerId) {
   pgRenderAll();
 }
 
+// If non-null, pgPromptResourceName returns the next queued value instead of
+// opening a window.prompt(). Used by the Best-Move heuristic to script the
+// YoP / Monopoly resource picks without UI.
+let _pgPromptOverrideQueue = null;
 function pgPromptResourceName(promptText) {
+  if (Array.isArray(_pgPromptOverrideQueue) && _pgPromptOverrideQueue.length) {
+    return _pgPromptOverrideQueue.shift();
+  }
   const raw = prompt(`${promptText}\n(wood / brick / sheep / wheat / ore)`);
   if (!raw) return null;
   const r = raw.trim().toLowerCase();
@@ -4566,6 +4742,7 @@ function pgPlayYearOfPlenty(playerId) {
   const activeId = pg.players[pg.currentTurnIdx % pg.players.length]?.id;
   if (player.id !== activeId) { pgStatus("Only the active player can play a dev card.", "warn"); return; }
   if ((player.devCards.yearOfPlenty || 0) <= 0) { pgStatus("No Year of Plenty cards.", "warn"); return; }
+  if (!pgHasPlayableDevCard(player, "yearOfPlenty")) { pgStatus("Can't play a dev card bought this turn — wait until next turn.", "warn"); return; }
   const r1 = pgPromptResourceName("Year of Plenty — pick the FIRST resource:");
   if (!r1) return;
   const r2 = pgPromptResourceName("Year of Plenty — pick the SECOND resource:");
@@ -4594,6 +4771,7 @@ function pgPlayMonopoly(playerId) {
   const activeId = pg.players[pg.currentTurnIdx % pg.players.length]?.id;
   if (player.id !== activeId) { pgStatus("Only the active player can play a dev card.", "warn"); return; }
   if ((player.devCards.monopoly || 0) <= 0) { pgStatus("No Monopoly cards.", "warn"); return; }
+  if (!pgHasPlayableDevCard(player, "monopoly")) { pgStatus("Can't play a dev card bought this turn — wait until next turn.", "warn"); return; }
   const r = pgPromptResourceName("Monopoly — pick a resource to take from all opponents:");
   if (!r) return;
   pgPushHistory("play-monopoly");
@@ -4614,65 +4792,71 @@ function pgPlayMonopoly(playerId) {
 }
 
 // ── BUILD / PURCHASE (without immediate placement, for dev card; bare buy)
+// Draws the top card from the shuffled deck (Catan rule: random, not chosen).
+// A newly bought card cannot be PLAYED until the player's next turn — see
+// `player.devCardsBoughtThisTurn` and the guard at the top of each pgPlayX().
+// Exception: a Victory Point card adds +1 VP immediately, so if it puts the
+// player at >=10 VP they win right away (pgCheckWinner runs inside pgRenderAll).
 function pgBuyDevCard(playerId) {
   if (!pgRequireLatestView("buying a dev card")) return;
   if (pgBlockedByPending("buying a dev card")) return;
   const player = pg.players.find(p => p.id === playerId);
   if (!player) return;
   if (!pgHasResources(player, PG_BUILD_COSTS.devcard)) { pgStatus("Not enough resources for a dev card.", "warn"); return; }
-  if (pg.bankDevCards <= 0) { pgStatus("No dev cards left in the bank.", "warn"); return; }
-  
-  // Count available dev cards in the bank by type
-  const bankCounts = { knight: 14, victoryPoint: 5, roadBuilding: 2, yearOfPlenty: 2, monopoly: 2 };
-  const deckCounts = { knight: 0, victoryPoint: 0, roadBuilding: 0, yearOfPlenty: 0, monopoly: 0 };
-  if (pg.devCardDeck && pg.devCardDeck.length) {
-    for (const card of pg.devCardDeck) {
-      deckCounts[card] = (deckCounts[card] || 0) + 1;
-    }
-  }
-  
-  // Check if any cards are available
-  const available = [];
-  for (const [cardType, count] of Object.entries(deckCounts)) {
-    if (count > 0) available.push(cardType);
-  }
-  
-  if (!available.length) {
+  if (!pg.devCardDeck || pg.devCardDeck.length === 0) {
     pgStatus("No dev cards left in the bank.", "warn");
     return;
   }
-  
-  // Show picker for player to choose which dev card to draw
-  const options = available.map(cardType => ({
-    label: `${DEV_CARD_LABEL(cardType)} (${deckCounts[cardType]} left)`,
-    val: cardType
-  }));
-  
-  pgOpenPicker(event, options, (chosen) => {
-    pgDrawDevCard(playerId, chosen);
-  });
-}
 
-function pgDrawDevCard(playerId, cardType) {
-  const player = pg.players.find(p => p.id === playerId);
-  if (!player) return;
-  if (!pgHasResources(player, PG_BUILD_COSTS.devcard)) { pgStatus("Not enough resources for a dev card.", "warn"); return; }
-  
   pgPushHistory("buy-devcard");
   pgSpendResources(player, PG_BUILD_COSTS.devcard);
-  
-  // Remove the chosen card type from the deck
-  const idx = pg.devCardDeck.indexOf(cardType);
-  if (idx !== -1) {
-    pg.devCardDeck.splice(idx, 1);
-  }
+
+  // Random draw: pop the top of the (already-shuffled) deck.
+  const cardType = pg.devCardDeck.shift();
   pg.bankDevCards = pg.devCardDeck.length;
-  
+
   player.devCards[cardType] = (player.devCards[cardType] || 0) + 1;
+  // Track that this specific card was bought THIS turn so it can't be played
+  // until the player's next turn. Reset in pgConfirmEndTurn.
+  if (!player.devCardsBoughtThisTurn) player.devCardsBoughtThisTurn = {};
+  player.devCardsBoughtThisTurn[cardType] = (player.devCardsBoughtThisTurn[cardType] || 0) + 1;
+
   if (cardType === "victoryPoint") player.vp += 1;
   pgLogEvent({ type: "devCardBought", player: playerId, count: 1 });
   pgStatus(`${player.name} drew a ${DEV_CARD_LABEL(cardType)}.`, "success");
   pgRenderAll();
+}
+
+// Kept for backwards compatibility (snapshot replay / undo paths may still
+// reference it). New buys go through pgBuyDevCard which draws randomly.
+function pgDrawDevCard(playerId, cardType) {
+  const player = pg.players.find(p => p.id === playerId);
+  if (!player) return;
+  if (!pgHasResources(player, PG_BUILD_COSTS.devcard)) { pgStatus("Not enough resources for a dev card.", "warn"); return; }
+
+  pgPushHistory("buy-devcard");
+  pgSpendResources(player, PG_BUILD_COSTS.devcard);
+
+  const idx = pg.devCardDeck.indexOf(cardType);
+  if (idx !== -1) pg.devCardDeck.splice(idx, 1);
+  pg.bankDevCards = pg.devCardDeck.length;
+
+  player.devCards[cardType] = (player.devCards[cardType] || 0) + 1;
+  if (!player.devCardsBoughtThisTurn) player.devCardsBoughtThisTurn = {};
+  player.devCardsBoughtThisTurn[cardType] = (player.devCardsBoughtThisTurn[cardType] || 0) + 1;
+
+  if (cardType === "victoryPoint") player.vp += 1;
+  pgLogEvent({ type: "devCardBought", player: playerId, count: 1 });
+  pgStatus(`${player.name} drew a ${DEV_CARD_LABEL(cardType)}.`, "success");
+  pgRenderAll();
+}
+
+// True if the given player owns at least one playable copy of `cardType` —
+// i.e. they have one that was NOT bought this turn.
+function pgHasPlayableDevCard(player, cardType) {
+  const total = player.devCards?.[cardType] || 0;
+  const justBought = player.devCardsBoughtThisTurn?.[cardType] || 0;
+  return total - justBought > 0;
 }
 
 function DEV_CARD_LABEL(t) {
@@ -4712,53 +4896,684 @@ function pgSnapshotTurn() {
   pg.viewTurn = pg.turns.length - 1;
 }
 
+// Score a candidate initial-placement settlement corner using a catanalyzer-style
+// formula: adjacent dice pips weighted by resource scarcity, plus bonuses for
+// resource diversity (relative to the player's existing settlements) and ports.
+//
+// Resource scarcity weights reflect Catan's real demand pressure:
+//   ore   ×1.30  (needed for cities, only 3 ore hexes)
+//   wheat ×1.20  (needed for cities and dev cards)
+//   brick ×1.15  (needed for roads/settlements, only 3 brick hexes)
+//   wood  ×1.05
+//   sheep ×0.95  (over-supplied; only used in settlements and dev cards)
+function pgScoreInitialSettlementCorner(cornerKey, playerId) {
+  if (!pg?.mapState?.tileCornerStates?.[cornerKey]) return -Infinity;
+  const corner = pg.mapState.tileCornerStates[cornerKey];
+  const hexes = Object.values(pg.mapState.tileHexStates || {});
+  const touches = heuristic_touching_hexes(corner, hexes);
+
+  // [wood, brick, sheep, wheat, ore] — matches RESOURCE_TYPES used elsewhere.
+  const SCARCITY = [1.05, 1.15, 0.95, 1.20, 1.30];
+
+  let pipScore = 0;
+  const resourcesHere = new Set();
+  for (const h of touches) {
+    const t = h.type;
+    if (t < 1 || t > 5) continue;
+    const dn = Number(h.diceNumber);
+    if (!(dn >= 2 && dn <= 12)) continue;
+    const pips = roll_probability[dn]; // 1..5
+    if (!pips) continue;
+    pipScore += pips * SCARCITY[t - 1];
+    resourcesHere.add(t);
+  }
+
+  // Diversity bonus: each NEW resource (not already produced by this player) is
+  // worth significantly more than a duplicate. The first two settlements should
+  // collectively cover as many resources as possible — that's how strong Catan
+  // openings work.
+  const existing = new Set();
+  for (const piece of Object.values(pg.settlements || {})) {
+    if (!piece?.owner || piece.owner !== playerId) continue;
+    if (piece.buildingType !== 1 && piece.buildingType !== 2) continue;
+    const t2 = heuristic_touching_hexes({ x: piece.x, y: piece.y, z: piece.z }, hexes);
+    for (const h of t2) {
+      if (h.type >= 1 && h.type <= 5) existing.add(h.type);
+    }
+  }
+  let diversityBonus = 0;
+  for (const r of resourcesHere) {
+    if (!existing.has(r)) diversityBonus += 2.0;
+  }
+
+  // Port bonus: 2:1 specific port on a resource we touch is a small bump; 3:1
+  // generic port is a smaller bump. We detect by checking portEdgeStates whose
+  // edge endpoints include this corner.
+  let portBonus = 0;
+  try {
+    const ports = Object.values(pg.mapState.portEdgeStates || {});
+    if (ports.length) {
+      const cpx = heuristic_corner_px(corner);
+      const SIZE_LOCAL = (typeof SIZE === "number") ? SIZE : 60;
+      for (const port of ports) {
+        const { px, py } = axialToPixel(port.x, port.y);
+        const eIdx = EDGE_Z_TO_IDX[port.z] ?? 0;
+        const v0 = hexVertex(px, py, eIdx);
+        const v1 = hexVertex(px, py, (eIdx + 1) % 6);
+        const eps2 = (SIZE_LOCAL * 0.1) ** 2;
+        const near0 = (v0.x - cpx.x) ** 2 + (v0.y - cpx.y) ** 2 < eps2;
+        const near1 = (v1.x - cpx.x) ** 2 + (v1.y - cpx.y) ** 2 < eps2;
+        if (!near0 && !near1) continue;
+        // port.type: 0 = 3:1 generic; 1..5 = 2:1 specific resource matching RESOURCE_TYPES
+        if (port.type >= 1 && port.type <= 5) {
+          portBonus += resourcesHere.has(port.type) ? 1.5 : 0.5;
+        } else {
+          portBonus += 0.5;
+        }
+      }
+    }
+  } catch (_) { /* port geometry mismatch is non-fatal; skip the bonus */ }
+
+  return pipScore + diversityBonus + portBonus;
+}
+
+// Pick the best legal road edge to connect a freshly-placed initial settlement to
+// future production: prefer edges whose far endpoint borders high-pip hexes.
+function pgScoreInitialRoadEdge(edgeKey, playerId) {
+  const edge = pg?.mapState?.tileEdgeStates?.[edgeKey];
+  if (!edge) return -Infinity;
+  const { px, py } = axialToPixel(edge.x, edge.y);
+  const eIdx = EDGE_Z_TO_IDX[edge.z] ?? 0;
+  const v0 = hexVertex(px, py, eIdx);
+  const v1 = hexVertex(px, py, (eIdx + 1) % 6);
+
+  const hexes = Object.values(pg.mapState.tileHexStates || {});
+  // Score each endpoint by adjacent pip count; the road's value is its better endpoint
+  // (where a future settlement could go) minus a small penalty if both endpoints already
+  // have a building (dead end).
+  const scoreEndpoint = (pt) => {
+    let s = 0;
+    for (const h of hexes) {
+      const { px: hx, py: hy } = axialToPixel(h.x, h.y);
+      const dx = pt.x - hx, dy = pt.y - hy;
+      const SIZE_LOCAL = (typeof SIZE === "number") ? SIZE : 60;
+      if (dx * dx + dy * dy < (SIZE_LOCAL * 1.1) ** 2) {
+        const dn = Number(h.diceNumber);
+        if (dn >= 2 && dn <= 12 && h.type >= 1 && h.type <= 5) s += roll_probability[dn];
+      }
+    }
+    return s;
+  };
+  return Math.max(scoreEndpoint(v0), scoreEndpoint(v1));
+}
+
+// ── HEURISTIC HELPERS (smart robber/steal, bank trades, dev-card plays, player trades)
+
+// What ports does this player have access to? Returns { [resName]: bestRate }.
+// Default rate is 4 (4:1 with the bank). 3:1 generic ports drop it to 3; 2:1
+// specific ports drop the matching resource to 2. We find ports by checking
+// portEdgeStates whose edge endpoint coincides with an owned settlement/city.
+function pgPlayerPortRates(playerId) {
+  const rates = { wood: 4, brick: 4, sheep: 4, wheat: 4, ore: 4 };
+  const ports = Object.values(pg?.mapState?.portEdgeStates || {});
+  if (!ports.length) return rates;
+  // Owned corners (settlements + cities) for this player.
+  const ownedCornerPx = [];
+  for (const piece of Object.values(pg.settlements || {})) {
+    if (!piece?.owner || piece.owner !== playerId) continue;
+    if (piece.buildingType !== 1 && piece.buildingType !== 2) continue;
+    ownedCornerPx.push(heuristic_corner_px({ x: piece.x, y: piece.y, z: piece.z }));
+  }
+  if (!ownedCornerPx.length) return rates;
+  const SIZE_LOCAL = (typeof SIZE === "number") ? SIZE : 60;
+  const eps2 = (SIZE_LOCAL * 0.1) ** 2;
+  for (const port of ports) {
+    const { px, py } = axialToPixel(port.x, port.y);
+    const eIdx = EDGE_Z_TO_IDX[port.z] ?? 0;
+    const v0 = hexVertex(px, py, eIdx);
+    const v1 = hexVertex(px, py, (eIdx + 1) % 6);
+    const touches = ownedCornerPx.some(cp =>
+      ((v0.x - cp.x) ** 2 + (v0.y - cp.y) ** 2 < eps2) ||
+      ((v1.x - cp.x) ** 2 + (v1.y - cp.y) ** 2 < eps2)
+    );
+    if (!touches) continue;
+    if (port.type >= 1 && port.type <= 5) {
+      const name = PG_RES_TYPE_TO_NAME[port.type];
+      if (name) rates[name] = Math.min(rates[name], 2);
+    } else {
+      // 3:1 generic — apply to all if a tighter (2) rate isn't already set.
+      for (const k of Object.keys(rates)) rates[k] = Math.min(rates[k], 3);
+    }
+  }
+  return rates;
+}
+
+// Resources still needed for `cost` given the player's current hand.
+// Returns a {resName: shortBy} map, omitting zero entries.
+function pgShortageFor(player, cost) {
+  const out = {};
+  for (const [r, c] of Object.entries(cost)) {
+    const have = player.resources?.[r] || 0;
+    if (have < c) out[r] = c - have;
+  }
+  return out;
+}
+
+// Try to enable `cost` via bank/port trades from the player's current hand.
+// Returns either null (impossible) or a list of trades to execute in order:
+//   [{ give: "wood", amount: 4, get: "ore" }, ...]
+// Trades use the player's best per-resource rate (from pgPlayerPortRates),
+// drawing from whichever resource we have the most surplus of after meeting cost.
+function pgFindBankTradesToAfford(player, cost) {
+  const shortage = pgShortageFor(player, cost);
+  if (!Object.keys(shortage).length) return [];
+  const rates = pgPlayerPortRates(player.id);
+  // Track surplus of each resource that we can spend after meeting the rest of cost.
+  const surplus = {};
+  for (const r of Object.keys(player.resources || {})) {
+    const have = player.resources[r] || 0;
+    const need = cost[r] || 0;
+    surplus[r] = Math.max(0, have - need);
+  }
+  const plan = [];
+  for (const [needR, qty] of Object.entries(shortage)) {
+    for (let i = 0; i < qty; i++) {
+      // Pick the resource we have the most surplus of, by units-after-trade
+      // (so a 2:1 port is preferred over 4:1). Tiebreak: prefer non-targeted.
+      let bestGive = null;
+      let bestSurplusAfter = -1;
+      for (const giveR of Object.keys(surplus)) {
+        if (giveR === needR) continue;
+        const rate = rates[giveR];
+        if (!rate) continue;
+        if (surplus[giveR] < rate) continue;
+        const surplusAfter = surplus[giveR] - rate;
+        if (surplusAfter > bestSurplusAfter) {
+          bestSurplusAfter = surplusAfter;
+          bestGive = giveR;
+        }
+      }
+      if (!bestGive) return null;
+      const rate = rates[bestGive];
+      plan.push({ give: bestGive, amount: rate, get: needR });
+      surplus[bestGive] -= rate;
+      surplus[needR] = (surplus[needR] || 0) + 1;
+    }
+  }
+  return plan;
+}
+
+// Execute a trade plan (list of {give, amount, get}) using the existing
+// bank-trade plumbing. Returns true on success.
+function pgExecuteBankTrades(player, plan) {
+  for (const t of plan) {
+    if ((player.resources[t.give] || 0) < t.amount) return false;
+    const giveType = PG_RES_NAME_TO_TYPE[t.give];
+    const getType = PG_RES_NAME_TO_TYPE[t.get];
+    if ((pg.bank[getType] || 0) < 1) return false;
+    player.resources[t.give] -= t.amount;
+    pg.bank[giveType] = (pg.bank[giveType] || 0) + t.amount;
+    player.resources[t.get] = (player.resources[t.get] || 0) + 1;
+    pg.bank[getType] -= 1;
+    pgLogEvent({
+      type: "bankTrade",
+      player: player.id,
+      given: Array(t.amount).fill(giveType),
+      received: [getType],
+    });
+  }
+  return true;
+}
+
+// Player-to-player trade discovery: for each resource we need to afford some
+// build target, propose `give 1 of <surplus_res> → get 1 of <needed_res>`.
+// Accept-or-not is approximated by a deterministic "rational partner" rule:
+// the partner accepts iff (a) they have ≥1 of needed_res with no immediate
+// use for it (surplus relative to *their* build options), and (b) the resource
+// we offer them is one they'd actually use.
+function pgFindPlayerTradesToAfford(player, cost) {
+  const shortage = pgShortageFor(player, cost);
+  if (!Object.keys(shortage).length) return [];
+  // Identify surplus resources we have (≥ 1 beyond what cost demands).
+  const surplus = [];
+  for (const r of Object.keys(player.resources || {})) {
+    const have = player.resources[r] || 0;
+    const need = cost[r] || 0;
+    if (have - need >= 1 && !shortage[r]) surplus.push(r);
+  }
+  if (!surplus.length) return null;
+
+  // For each shortage entry, find a partner-and-trade that closes it.
+  const trades = [];
+  // Work on a hypothetical state: a temp resources clone we mutate as trades land.
+  const myRes = { ...player.resources };
+  const partnersRes = {};
+  for (const op of pg.players) {
+    if (op.id === player.id) continue;
+    partnersRes[op.id] = { ...op.resources };
+  }
+
+  for (const [needR, qty] of Object.entries(shortage)) {
+    for (let i = 0; i < qty; i++) {
+      let chosen = null;
+      // Score each candidate trade by partner-attractiveness.
+      for (const partnerId of Object.keys(partnersRes)) {
+        const pres = partnersRes[partnerId];
+        if ((pres[needR] || 0) < 1) continue;
+        for (const giveR of surplus) {
+          if (giveR === needR) continue;
+          if ((myRes[giveR] || 0) < 1) continue;
+          // Partner accepts iff they "want" giveR. Simple proxy: their giveR
+          // count is less than 2 (i.e. they aren't already swimming in it) AND
+          // they have at least 2 of needR (so they can spare one).
+          if ((pres[giveR] || 0) >= 2) continue;
+          if ((pres[needR] || 0) < 2) continue;
+          chosen = { partnerId, give: giveR, get: needR };
+          break;
+        }
+        if (chosen) break;
+      }
+      if (!chosen) return null;
+      trades.push(chosen);
+      myRes[chosen.give] -= 1;
+      myRes[chosen.get] = (myRes[chosen.get] || 0) + 1;
+      partnersRes[chosen.partnerId][chosen.give] = (partnersRes[chosen.partnerId][chosen.give] || 0) + 1;
+      partnersRes[chosen.partnerId][chosen.get] -= 1;
+      // Refresh surplus list (giveR may no longer be surplus).
+      const idx = surplus.indexOf(chosen.give);
+      if (idx !== -1 && (myRes[chosen.give] || 0) < 1) surplus.splice(idx, 1);
+    }
+  }
+  return trades;
+}
+
+function pgExecutePlayerTrades(player, trades) {
+  for (const t of trades) {
+    const partner = pg.players.find(p => p.id === t.partnerId);
+    if (!partner) return false;
+    if ((player.resources[t.give] || 0) < 1) return false;
+    if ((partner.resources[t.get] || 0) < 1) return false;
+    player.resources[t.give] -= 1;
+    partner.resources[t.give] = (partner.resources[t.give] || 0) + 1;
+    partner.resources[t.get] -= 1;
+    player.resources[t.get] = (player.resources[t.get] || 0) + 1;
+    pgLogEvent({
+      type: "playerTrade",
+      player: player.id,
+      partner: t.partnerId,
+      given: [PG_RES_NAME_TO_TYPE[t.give]],
+      received: [PG_RES_NAME_TO_TYPE[t.get]],
+    });
+  }
+  return true;
+}
+
+// Smart robber-hex picker: maximize hurt to opponents, minimize self-damage.
+// Score = Σ(opponent_pip_production_on_hex) − Σ(self_pip_production_on_hex)
+// Tiebreak: prefer blocking the player with highest VP.
+function pgPickBestRobberHex(thiefId) {
+  const hexKeys = Object.keys(pg.mapState?.tileHexStates || {}).filter(k => k !== pg.robberHex);
+  if (!hexKeys.length) return null;
+  let bestKey = hexKeys[0];
+  let bestScore = -Infinity;
+  let bestVp = -1;
+  for (const hk of hexKeys) {
+    const hex = pg.mapState.tileHexStates[hk];
+    if (!hex || hex.type < 1 || hex.type > 5) continue; // desert/unproductive hexes
+    const dn = Number(hex.diceNumber);
+    const pips = (dn >= 2 && dn <= 12) ? roll_probability[dn] : 0;
+    if (!pips) continue;
+    const corners = pgCornerKeysOnHex(hk);
+    let oppPips = 0, selfPips = 0, victimVp = 0;
+    for (const ck of corners) {
+      const piece = pg.settlements[ck];
+      if (!piece?.owner) continue;
+      const prod = piece.buildingType === 2 ? 2 : 1;
+      if (piece.owner === thiefId) selfPips += pips * prod;
+      else {
+        oppPips += pips * prod;
+        const v = pg.players.find(p => p.id === piece.owner);
+        if (v && (v.vp || 0) > victimVp) victimVp = v.vp || 0;
+      }
+    }
+    const score = oppPips - selfPips;
+    if (score > bestScore || (score === bestScore && victimVp > bestVp)) {
+      bestScore = score;
+      bestVp = victimVp;
+      bestKey = hk;
+    }
+  }
+  return bestScore > -Infinity ? bestKey : hexKeys[0];
+}
+
+// Smart steal-victim picker: prefer the opponent closest to a build/VP (so
+// taking a card hurts most), tiebreak by hand size.
+function pgPickBestStealVictim(thiefId, candidateIds) {
+  if (!candidateIds || !candidateIds.length) return null;
+  let best = candidateIds[0];
+  let bestScore = -Infinity;
+  for (const id of candidateIds) {
+    const v = pg.players.find(p => p.id === id);
+    if (!v) continue;
+    const cards = pgPlayerTotalCards(v);
+    if (cards <= 0) continue;
+    const vp = v.vp || 0;
+    // Score = vp (closer to winning ⇒ more important to disrupt) + small hand-size bump
+    const score = vp * 10 + cards * 0.1;
+    if (score > bestScore) { bestScore = score; best = id; }
+  }
+  return best;
+}
+
+// Smart resource-picker once we've chosen a victim: take whatever resource we
+// most need for our cheapest near-affordable build. Fall back to victim's
+// most-held resource if nothing matches.
+function pgPickBestStealResource(thief, victim) {
+  const targets = ["city", "settlement", "road", "devcard"];
+  for (const target of targets) {
+    const cost = PG_BUILD_COSTS[target];
+    const shortage = pgShortageFor(thief, cost);
+    for (const needR of Object.keys(shortage)) {
+      if ((victim.resources?.[needR] || 0) > 0) return needR;
+    }
+  }
+  // Fallback: take what they have the most of.
+  let best = null, bestN = -1;
+  for (const [r, n] of Object.entries(victim.resources || {})) {
+    if (n > bestN) { bestN = n; best = r; }
+  }
+  return best;
+}
+
+// Score the expected value of playing a specific dev card we own *now*.
+// Returns a number; higher is better. Compares against the heuristic score
+// of doing nothing this turn (used inline in pgRandomMove).
+//
+// We score in "heuristic-equivalent" units: VP cards are ~ +2*sample_weight[vp];
+// Knight ~ +disruption + chance of Largest Army; YoP ~ enables a build; Mono ~
+// expected resource gain × scarcity; Road Building ~ +2 roads of value.
+function pgScoreDevCardPlay(player, cardType) {
+  if (!player) return -Infinity;
+  const owned = player.devCards?.[cardType] || 0;
+  if (owned <= 0) return -Infinity;
+  // Cards bought this turn aren't playable yet — exclude them from EV.
+  if (!pgHasPlayableDevCard(player, cardType)) return -Infinity;
+
+  if (cardType === "victoryPoint") {
+    // Always free VP, but typically played only on the winning turn. We never
+    // schedule "play VP" as an action — they auto-count toward win.
+    return -Infinity;
+  }
+
+  if (cardType === "knight") {
+    // Value = robber disruption (estimated as the best-hex score) + a bump if
+    // playing this knight would win Largest Army (+2 VP).
+    let bestHexScore = 0;
+    const hexKeys = Object.keys(pg.mapState?.tileHexStates || {}).filter(k => k !== pg.robberHex);
+    for (const hk of hexKeys) {
+      const hex = pg.mapState.tileHexStates[hk];
+      if (!hex || hex.type < 1 || hex.type > 5) continue;
+      const dn = Number(hex.diceNumber);
+      const pips = (dn >= 2 && dn <= 12) ? roll_probability[dn] : 0;
+      if (!pips) continue;
+      const corners = pgCornerKeysOnHex(hk);
+      let oppPips = 0;
+      for (const ck of corners) {
+        const piece = pg.settlements[ck];
+        if (!piece?.owner || piece.owner === player.id) continue;
+        oppPips += pips * (piece.buildingType === 2 ? 2 : 1);
+      }
+      if (oppPips > bestHexScore) bestHexScore = oppPips;
+    }
+    // Largest Army threshold: 3 knights, strictly greater to take. Estimate VP swing.
+    const newCount = (player.knightsPlayed || 0) + 1;
+    const currentHolder = pg.largestArmyOwner;
+    const currentTop = pg.players.reduce((m, p) => Math.max(m, p.knightsPlayed || 0), 0);
+    let armyBonus = 0;
+    if (newCount >= 3 && newCount > currentTop && currentHolder !== player.id) armyBonus = 4; // +2 VP × 2 weight
+    return bestHexScore + armyBonus;
+  }
+
+  if (cardType === "yearOfPlenty") {
+    // Best case: the 2 picked resources let us afford a settlement or city.
+    for (const target of ["city", "settlement", "road", "devcard"]) {
+      const cost = PG_BUILD_COSTS[target];
+      const shortage = pgShortageFor(player, cost);
+      const need = Object.values(shortage).reduce((a, b) => a + b, 0);
+      if (need > 0 && need <= 2) {
+        // Plays of YoP that complete an immediate build score very high.
+        return target === "city" ? 20 : target === "settlement" ? 18 : target === "road" ? 8 : 6;
+      }
+    }
+    return 4; // generic +2 cards of choice
+  }
+
+  if (cardType === "monopoly") {
+    // Pick the resource with maximum total in opponents' hands; value = that count.
+    let bestRes = null, bestCount = 0;
+    for (const r of Object.keys(player.resources || {})) {
+      let tot = 0;
+      for (const op of pg.players) {
+        if (op.id === player.id) continue;
+        tot += op.resources?.[r] || 0;
+      }
+      if (tot > bestCount) { bestCount = tot; bestRes = r; }
+    }
+    return bestCount >= 4 ? bestCount * 1.5 : -Infinity;
+  }
+
+  if (cardType === "roadBuilding") {
+    // Worth ~ two free roads. If a road would extend longest road toward +2 VP, big.
+    return 6;
+  }
+  return -Infinity;
+}
+
+// Find which resource a Year of Plenty / steal should target.
+// Returns the resource name (e.g. "ore") we want most for our cheapest build.
+function pgBestNeededResource(player) {
+  for (const target of ["city", "settlement", "road", "devcard"]) {
+    const cost = PG_BUILD_COSTS[target];
+    const shortage = pgShortageFor(player, cost);
+    for (const r of Object.keys(shortage)) return r;
+  }
+  return "ore"; // sensible default
+}
+
+// Score the "best build this would let us afford" given a hypothetical hand.
+// Returns a numeric value: city = 100, settlement = 80, road = 30, devcard = 25,
+// or 0 if the hand doesn't complete any build target. Higher = better.
+function pgBestBuildValueForHand(hand) {
+  // Each cost is an object like {wheat: 2, ore: 3}; check affordability.
+  const can = (cost) => Object.entries(cost).every(([r, c]) => (hand[r] || 0) >= c);
+  if (can(PG_BUILD_COSTS.city)) return 100;
+  if (can(PG_BUILD_COSTS.settlement)) return 80;
+  if (can(PG_BUILD_COSTS.road) && can(PG_BUILD_COSTS.settlement)) return 80; // road covered by settlement check anyway
+  if (can(PG_BUILD_COSTS.road)) return 30;
+  if (can(PG_BUILD_COSTS.devcard)) return 25;
+  // Partial credit for being closer: count how many resources we'd still need
+  // for the cheapest build. Smaller shortage ⇒ higher partial score.
+  let bestPartial = 0;
+  for (const [target, cost] of Object.entries(PG_BUILD_COSTS)) {
+    let short = 0;
+    for (const [r, c] of Object.entries(cost)) short += Math.max(0, c - (hand[r] || 0));
+    // Convert shortage into a small positive value bounded below the cheapest full build (25).
+    const targetWeight = target === "city" ? 100 : target === "settlement" ? 80 : target === "road" ? 30 : 25;
+    const partial = Math.max(0, targetWeight * 0.2 - short * 5);
+    if (partial > bestPartial) bestPartial = partial;
+  }
+  return bestPartial;
+}
+
+// Pick the BEST Year of Plenty resource pair: try every (r1, r2) over the 5
+// resources (15 combos with repetition) and pick the pair that maximizes the
+// best-build score after adding both to the hand. Tiebreak: prefer pairs that
+// leave more remaining shortage closed for the *next* cheapest build.
+function pgPickYearOfPlentyPair(player) {
+  const RES = ["wood", "brick", "sheep", "wheat", "ore"];
+  const base = { ...(player.resources || {}) };
+  let bestPair = [RES[0], RES[0]];
+  let bestScore = -Infinity;
+  for (let i = 0; i < RES.length; i++) {
+    for (let j = i; j < RES.length; j++) {
+      const r1 = RES[i], r2 = RES[j];
+      // Bank must have at least 1 of each (or 2 of r1 if r1===r2).
+      const t1 = PG_RES_NAME_TO_TYPE[r1], t2 = PG_RES_NAME_TO_TYPE[r2];
+      const needT1 = (r1 === r2) ? 2 : 1;
+      if ((pg.bank?.[t1] || 0) < needT1) continue;
+      if (r1 !== r2 && (pg.bank?.[t2] || 0) < 1) continue;
+      const hand = { ...base };
+      hand[r1] = (hand[r1] || 0) + 1;
+      hand[r2] = (hand[r2] || 0) + 1;
+      const score = pgBestBuildValueForHand(hand);
+      if (score > bestScore) { bestScore = score; bestPair = [r1, r2]; }
+    }
+  }
+  return bestPair;
+}
+
+// Pick the BEST Monopoly resource: it's the resource that simultaneously
+//  (a) opponents collectively hold the most of (so we take a lot), and
+//  (b) WE most need to complete a build (so the take is actionable).
+// Score = (units we'd gain) * (build-value of resulting hand − build-value of current hand).
+// Falls back to "most units gained" if no build is enabled by the take.
+function pgPickMonopolyResource(player) {
+  const RES = ["wood", "brick", "sheep", "wheat", "ore"];
+  const base = { ...(player.resources || {}) };
+  const baseVal = pgBestBuildValueForHand(base);
+  let bestRes = "ore", bestScore = -Infinity, bestRaw = -1;
+  for (const r of RES) {
+    let take = 0;
+    for (const op of pg.players) {
+      if (op.id === player.id) continue;
+      take += op.resources?.[r] || 0;
+    }
+    const hand = { ...base };
+    hand[r] = (hand[r] || 0) + take;
+    const newVal = pgBestBuildValueForHand(hand);
+    // Primary score: gain in build-value × take (so 0-gain monopoly is 0).
+    const score = take * (newVal - baseVal);
+    if (score > bestScore || (score === bestScore && take > bestRaw)) {
+      bestScore = score;
+      bestRaw = take;
+      bestRes = r;
+    }
+  }
+  return bestRes;
+}
+
 function pgRandomMove() {
   if (pg.phase === "setup" || pg.phase === "board") {
-    pgStatus("Random Move is available once the game starts (initial placement or main play).", "warn");
+    pgStatus("Best Move is available once the game starts (initial placement or main play).", "warn");
     return;
   }
   if (pg.winner != null) { pgStatus("The game is over. Hit Reset Game to start over.", "warn"); return; }
-  if (!pgRequireLatestView("playing a random move")) return;
-  // Initial placement: randomly pick a legal corner/edge for the current expected piece.
+  if (!pgRequireLatestView("playing the best move")) return;
+  // Initial placement: pick the BEST legal corner/edge by a catanalyzer-style heuristic.
   if (pg.phase === "initial") {
+    const activeId = pg.players[pg.currentTurnIdx % pg.players.length]?.id;
     if (pg.initial.expecting === "settlement") {
       const valid = Object.keys(pg.mapState.tileCornerStates || {}).filter(ck => pgCanPlaceSettlementOnCorner(ck));
       if (!valid.length) { pgStatus("No legal settlement spots found.", "warn"); return; }
-      pgClickCorner(valid[Math.floor(Math.random() * valid.length)]);
+      let bestKey = valid[0];
+      let bestScore = -Infinity;
+      for (const ck of valid) {
+        const s = pgScoreInitialSettlementCorner(ck, activeId);
+        if (s > bestScore) { bestScore = s; bestKey = ck; }
+      }
+      pgClickCorner(bestKey);
     } else {
       const valid = Object.keys(pg.mapState.tileEdgeStates || {}).filter(ek => pgCanPlaceRoadOnEdge(ek));
       if (!valid.length) { pgStatus("No legal road edges found.", "warn"); return; }
-      pgClickEdge(valid[Math.floor(Math.random() * valid.length)]);
+      let bestKey = valid[0];
+      let bestScore = -Infinity;
+      for (const ek of valid) {
+        const s = pgScoreInitialRoadEdge(ek, activeId);
+        if (s > bestScore) { bestScore = s; bestKey = ek; }
+      }
+      pgClickEdge(bestKey);
     }
     return;
   }
   // Resolve any pending robber/steal/road-building first. Robber → optional steal cascades in one click.
   if (pg.pendingRobber) {
-    const hexKeys = Object.keys(pg.mapState.tileHexStates || {}).filter(k => k !== pg.robberHex);
-    if (hexKeys.length) pgMoveRobberToHex(hexKeys[Math.floor(Math.random() * hexKeys.length)]);
+    const thiefId = pg.pendingRobber.playerId;
+    const bestHex = pgPickBestRobberHex(thiefId);
+    if (bestHex) pgMoveRobberToHex(bestHex);
     // pgMoveRobberToHex may have left a pendingSteal with 2+ candidates — resolve it now.
     if (pg.pendingSteal) {
       const c = pg.pendingSteal.candidates;
-      pgStealFrom(pg.pendingSteal.playerId, c[Math.floor(Math.random() * c.length)]);
+      const victimId = pgPickBestStealVictim(pg.pendingSteal.playerId, c);
+      const thief = pg.players.find(p => p.id === pg.pendingSteal.playerId);
+      const victim = pg.players.find(p => p.id === victimId);
+      const res = (thief && victim) ? pgPickBestStealResource(thief, victim) : null;
+      pgStealFrom(pg.pendingSteal.playerId, victimId, res);
       pgRenderAll();
     }
     return;
   }
   if (pg.pendingSteal) {
     const c = pg.pendingSteal.candidates;
-    pgPushHistory("steal-random");
-    pgStealFrom(pg.pendingSteal.playerId, c[Math.floor(Math.random() * c.length)]);
+    pgPushHistory("steal-smart");
+    const victimId = pgPickBestStealVictim(pg.pendingSteal.playerId, c);
+    const thief = pg.players.find(p => p.id === pg.pendingSteal.playerId);
+    const victim = pg.players.find(p => p.id === victimId);
+    const res = (thief && victim) ? pgPickBestStealResource(thief, victim) : null;
+    pgStealFrom(pg.pendingSteal.playerId, victimId, res);
     pgRenderAll();
     return;
   }
   if (pg.pendingRoadBuilding) {
+    // Pick the road edge that would score highest for the active player.
     const valid = Object.keys(pg.mapState.tileEdgeStates || {}).filter(ek => pgCanPlaceRoadOnEdge(ek));
     if (!valid.length) { pg.pendingRoadBuilding = null; pgStatus("No legal free-road spots; canceling.", "warn"); pgRenderAll(); return; }
-    pgClickEdge(valid[Math.floor(Math.random() * valid.length)]);
+    const activeId = pg.players[pg.currentTurnIdx % pg.players.length]?.id;
+    let bestKey = valid[0], bestScore = -Infinity;
+    for (const ek of valid) {
+      const s = pgScoreInitialRoadEdge(ek, activeId);
+      if (s > bestScore) { bestScore = s; bestKey = ek; }
+    }
+    pgClickEdge(bestKey);
     return;
   }
-  // 1) If we haven't rolled yet this turn, just roll 2d6.
+  // 1) If we haven't rolled yet this turn, FIRST consider playing a dev card
+  //    pre-roll (legal in Catan). Knight is the classic pre-roll play (block
+  //    a high-pip hex before opponents collect this turn); YoP/Mono can also
+  //    fire pre-roll if they enable a build this turn. If no pre-roll dev play
+  //    has clearly positive EV, roll 2d6.
   if (!pgRolledThisTurn()) {
+    const activeIdPre = pg.players[pg.currentTurnIdx % pg.players.length]?.id;
+    const playerPre = pg.players.find(p => p.id === activeIdPre);
+    if (playerPre) {
+      // Only Knight is meaningfully better pre-roll (because of the robber
+      // affecting THIS turn's collections). YoP/Mono pay off mainly when
+      // they enable a build, which we'll also do after rolling — but doing
+      // them pre-roll loses nothing, so consider them too.
+      let preBest = null, preBestScore = -Infinity;
+      for (const card of ["knight", "yearOfPlenty", "monopoly"]) {
+        const s = pgScoreDevCardPlay(playerPre, card);
+        if (s > preBestScore) { preBestScore = s; preBest = card; }
+      }
+      // Use a tighter threshold pre-roll (12) than the post-roll comparison —
+      // we don't want to burn a dev card that wouldn't help much.
+      if (preBest && preBestScore >= 12) {
+        if (preBest === "knight") {
+          pgPlayKnight(activeIdPre);
+          if (pg.pendingRobber || pg.pendingSteal) pgRandomMove();
+        } else if (preBest === "yearOfPlenty") {
+          const [r1, r2] = pgPickYearOfPlentyPair(playerPre);
+          _pgPromptOverrideQueue = [r1, r2];
+          try { pgPlayYearOfPlenty(activeIdPre); }
+          finally { _pgPromptOverrideQueue = null; }
+        } else if (preBest === "monopoly") {
+          const r = pgPickMonopolyResource(playerPre);
+          _pgPromptOverrideQueue = [r];
+          try { pgPlayMonopoly(activeIdPre); }
+          finally { _pgPromptOverrideQueue = null; }
+        }
+        return; // user can click Best Move again to roll and continue the turn
+      }
+    }
     const v = 1 + Math.floor(Math.random() * 6) + 1 + Math.floor(Math.random() * 6);
     pgLogRoll(v);
     pgStatus(`Rolled ${v}.`, "info");
@@ -4769,39 +5584,94 @@ function pgRandomMove() {
   const activeId = pg.players[pg.currentTurnIdx % pg.players.length]?.id;
   const player = pg.players.find(p => p.id === activeId);
   if (!player) return;
-  // 2) Otherwise, gather all candidate actions, then pick one at random.
-  const actions = [];
-  if (pgHasResources(player, PG_BUILD_COSTS.settlement) && player.settlementsLeft > 0) {
-    const wasSelected = document.getElementById("playerSelector")?.value;
-    // pgCanPlaceSettlementOnCorner uses the playerSelector for active-id heuristic
-    // during the play phase. We momentarily set it to the active player so the
-    // validity helpers work for the active player.
-    const sel = document.getElementById("playerSelector");
-    if (sel) sel.value = String(activeId);
-    for (const ck of Object.keys(pg.mapState.tileCornerStates || {})) {
-      if (pgCanPlaceSettlementOnCorner(ck)) actions.push({ type: "settlement", target: ck });
+  // 2) Pick the BEST move. Priority order:
+  //    (a) High-value dev card play (Knight, YoP, Mono, Road Building) if its
+  //        EV beats the best build we could otherwise make.
+  //    (b) Direct build from simulate() if we can already afford it.
+  //    (c) Bank/port trade to enable the best simulate() move.
+  //    (d) Player-to-player trade to enable a build.
+  //    (e) End turn.
+  let choice = { type: "endturn" };
+
+  // (a) Consider dev-card plays the player owns. These are evaluated in
+  //     heuristic-equivalent units by pgScoreDevCardPlay.
+  let bestDevPlay = null, bestDevScore = -Infinity;
+  for (const cardType of ["knight", "yearOfPlenty", "monopoly", "roadBuilding"]) {
+    const s = pgScoreDevCardPlay(player, cardType);
+    if (s > bestDevScore) { bestDevScore = s; bestDevPlay = cardType; }
+  }
+
+  const state = (typeof pgBuildSimulateState === "function") ? pgBuildSimulateState() : null;
+  let bestSimMove = null, bestSimScore = -Infinity;
+  let bestSimMoveUnaffordable = null; // top move we'd want but can't afford yet
+  if (state) {
+    const top = simulate(state, activeId, null);
+    if (Array.isArray(top) && top.length > 0) {
+      // First pass: best affordable move (this drives the comparison vs dev plays).
+      for (const m of top) {
+        const affordable =
+          (m.type === "build_settlement" && pgHasResources(player, PG_BUILD_COSTS.settlement) && player.settlementsLeft > 0) ||
+          (m.type === "upgrade_city" && pgHasResources(player, PG_BUILD_COSTS.city) && player.citiesLeft > 0) ||
+          (m.type === "build_road" && pgHasResources(player, PG_BUILD_COSTS.road) && player.roadsLeft > 0) ||
+          (m.type === "buy_dev_card" && pgHasResources(player, PG_BUILD_COSTS.devcard) && pg.bankDevCards > 0);
+        if (affordable && m.score > bestSimScore) { bestSimScore = m.score; bestSimMove = m; }
+        if (!affordable && !bestSimMoveUnaffordable &&
+            (m.type === "build_settlement" || m.type === "upgrade_city" || m.type === "build_road")) {
+          // First unaffordable build candidate is the one most worth trading for.
+          bestSimMoveUnaffordable = m;
+        }
+      }
     }
-    if (sel && wasSelected != null) sel.value = wasSelected;
   }
-  if (pgHasResources(player, PG_BUILD_COSTS.road) && player.roadsLeft > 0) {
-    const sel = document.getElementById("playerSelector");
-    const wasSelected = sel?.value;
-    if (sel) sel.value = String(activeId);
-    for (const ek of Object.keys(pg.mapState.tileEdgeStates || {})) {
-      if (pgCanPlaceRoadOnEdge(ek)) actions.push({ type: "road", target: ek });
+
+  // (a-vs-b) Decide whether the best dev-card play beats the best affordable build.
+  // Dev scores are roughly comparable to simulate() scores within a small factor;
+  // we apply a 0.6x scaling to be conservative.
+  const playDev = bestDevPlay && bestDevScore !== -Infinity &&
+                  bestDevScore * 0.6 > Math.max(0, bestSimScore);
+
+  if (playDev) {
+    choice = { type: "playDev", card: bestDevPlay };
+  } else if (bestSimMove) {
+    if (bestSimMove.type === "build_settlement") choice = { type: "settlement", target: bestSimMove.key };
+    else if (bestSimMove.type === "upgrade_city") choice = { type: "city", target: bestSimMove.key };
+    else if (bestSimMove.type === "build_road") choice = { type: "road", target: bestSimMove.key };
+    else if (bestSimMove.type === "buy_dev_card") choice = { type: "devcard" };
+  } else if (bestSimMoveUnaffordable) {
+    // (c) Try bank/port trades to afford the unaffordable target.
+    const targetType = bestSimMoveUnaffordable.type;
+    const costName = targetType === "build_settlement" ? "settlement"
+                   : targetType === "upgrade_city" ? "city"
+                   : targetType === "build_road" ? "road" : null;
+    if (costName) {
+      const cost = PG_BUILD_COSTS[costName];
+      const bankPlan = pgFindBankTradesToAfford(player, cost);
+      if (bankPlan && bankPlan.length > 0) {
+        pgPushHistory("trade-then-build");
+        if (pgExecuteBankTrades(player, bankPlan)) {
+          if (pgHasResources(player, cost)) {
+            if (costName === "settlement") choice = { type: "settlement", target: bestSimMoveUnaffordable.key };
+            else if (costName === "city") choice = { type: "city", target: bestSimMoveUnaffordable.key };
+            else if (costName === "road") choice = { type: "road", target: bestSimMoveUnaffordable.key };
+          }
+        }
+      }
+      // (d) If bank trade didn't work, try a player trade.
+      if (choice.type === "endturn") {
+        const playerPlan = pgFindPlayerTradesToAfford(player, cost);
+        if (playerPlan && playerPlan.length > 0) {
+          pgPushHistory("ptrade-then-build");
+          if (pgExecutePlayerTrades(player, playerPlan)) {
+            if (pgHasResources(player, cost)) {
+              if (costName === "settlement") choice = { type: "settlement", target: bestSimMoveUnaffordable.key };
+              else if (costName === "city") choice = { type: "city", target: bestSimMoveUnaffordable.key };
+              else if (costName === "road") choice = { type: "road", target: bestSimMoveUnaffordable.key };
+            }
+          }
+        }
+      }
     }
-    if (sel && wasSelected != null) sel.value = wasSelected;
   }
-  if (pgHasResources(player, PG_BUILD_COSTS.city) && player.citiesLeft > 0) {
-    for (const [ck, piece] of Object.entries(pg.settlements)) {
-      if (piece.owner === activeId && piece.buildingType === 1) actions.push({ type: "city", target: ck });
-    }
-  }
-  if (pgHasResources(player, PG_BUILD_COSTS.devcard) && pg.bankDevCards > 0) {
-    actions.push({ type: "devcard" });
-  }
-  actions.push({ type: "endturn" });
-  const choice = actions[Math.floor(Math.random() * actions.length)];
   if (choice.type === "settlement") {
     pgPushHistory("random-settlement");
     pgSpendResources(player, PG_BUILD_COSTS.settlement);
@@ -4837,6 +5707,35 @@ function pgRandomMove() {
   } else if (choice.type === "devcard") {
     pgBuyDevCard(activeId);
     pgStatus(`${player.name} bought a dev card.`, "success");
+  } else if (choice.type === "playDev") {
+    // Play the chosen dev card. YoP and Monopoly prompt for resources via
+    // window.prompt() inside pgPlayYearOfPlenty/pgPlayMonopoly — to keep the
+    // Best Move click fully automated, we route resource picks through the
+    // pgPromptResourceName monkey-patch trick below: temporarily replace it
+    // with a deterministic picker that returns the heuristic-chosen resource,
+    // then restore.
+    const card = choice.card;
+    if (card === "knight") {
+      pgPlayKnight(activeId);
+      // pgPlayKnight leaves pendingRobber — cascade in this same Best Move click.
+      if (pg.pendingRobber || pg.pendingSteal) pgRandomMove();
+    } else if (card === "roadBuilding") {
+      pgPlayRoadBuilding(activeId);
+      // Place both free roads via the smart picker.
+      if (pg.pendingRoadBuilding) pgRandomMove();
+      if (pg.pendingRoadBuilding) pgRandomMove();
+    } else if (card === "yearOfPlenty") {
+      const [r1, r2] = pgPickYearOfPlentyPair(player);
+      _pgPromptOverrideQueue = [r1, r2];
+      try { pgPlayYearOfPlenty(activeId); }
+      finally { _pgPromptOverrideQueue = null; }
+    } else if (card === "monopoly") {
+      const r = pgPickMonopolyResource(player);
+      _pgPromptOverrideQueue = [r];
+      try { pgPlayMonopoly(activeId); }
+      finally { _pgPromptOverrideQueue = null; }
+    }
+    pgStatus(`${player.name} played a ${card} card.`, "success");
   } else {
     pgConfirmEndTurn();
     pgStatus("Turn ended.", "info");
@@ -4922,6 +5821,10 @@ function pgConfirmEndTurn() {
     return;
   }
   pgPushHistory("end-turn");
+  // Cards bought this turn become playable starting next turn — clear the lock
+  // for the player whose turn is ending.
+  const endingPlayer = pg.players[pg.currentTurnIdx % pg.players.length];
+  if (endingPlayer) endingPlayer.devCardsBoughtThisTurn = {};
   pg.currentTurnIdx += 1;
   pgSnapshotTurn();
   pgRenderAll();
@@ -5344,6 +6247,201 @@ function pgRenderAll() {
   pgSyncToolbar();
   if (typeof updateDiceRollChart === "function") updateDiceRollChart();
   pgCheckWinner();
+  if (typeof runPgPrediction === "function") runPgPrediction();
+}
+
+// Build a state object in the shape simulate() expects from the live playground state.
+// simulate() reads: mapState, settlements, roads, playerResources[pid], playerStats[pid].
+function pgBuildSimulateState() {
+  if (!pg || !pg.mapState || !Array.isArray(pg.players) || !pg.players.length) return null;
+  const playerResources = {};
+  const playerStats = {};
+  const lengths = pgLongestRoadByPlayer();
+  for (const p of pg.players) {
+    playerResources[p.id] = { ...(p.resources || {}) };
+    playerStats[p.id] = {
+      vp: p.vp || 0,
+      longestRoad: lengths[p.id] || 0,
+      knightsPlayed: p.knightsPlayed || 0,
+    };
+  }
+  return {
+    mapState: pg.mapState,
+    settlements: pg.settlements,
+    roads: pg.roads,
+    playerResources,
+    playerStats,
+    activePlayer: pg.players[pg.currentTurnIdx % pg.players.length]?.id,
+  };
+}
+
+// [label, explanation, sign, default weight] — weights mirror sample_weight in calculate_heuristric.
+const PG_HEURISTIC_INFO = {
+  income:     ["Income",       "Expected pips per roll, summed over resources. Cities count double.", "+", 5.0],
+  variety:    ["Variety",      "Distinct resources you produce. Diversified production needs fewer trades.", "+", 2.0],
+  expansion:  ["Expansion",    "Total pip-probability still available at unoccupied corners.", "+", 3.5],
+  devCard:    ["Dev-card rate","Bottleneck of sheep/wheat/ore income (min of the three).", "+", 2.5],
+  vp:         ["Victory pts",  "Current VP. Tuned up — cities and VP cards dominate win rate.", "+", 3.0],
+  robberRisk: ["Robber risk",  "Expected discards on a 7 when over the 7-card hand limit.", "−", 2.0],
+  roads:      ["Roads",        "L² where L is your longest contiguous road. Tracks Longest Road (+2 VP at L≥5).", "+", 1.5],
+  army:       ["Army",         "min(K,3)² where K = knights played. Clipped at 3: data shows K>3 doesn't help win.", "+", 3.0],
+};
+
+function pgMoveDesc(m) {
+  if (m.type === "build_settlement") return `Build settlement at corner ${m.key}`;
+  if (m.type === "upgrade_city") return `Upgrade to city at corner ${m.key}`;
+  if (m.type === "build_road") return `Build road at edge ${m.key}`;
+  if (m.type === "buy_dev_card") return `Buy development card`;
+  return m.type;
+}
+
+function pgBuildPredictionTooltipHtml(move, playerName, pColor) {
+  const desc = pgMoveDesc(move);
+  let contribTotal = 0;
+  const rows = Object.entries(move.stats).map(([k, v]) => {
+    const [label, why, sign, weight] = PG_HEURISTIC_INFO[k] ?? [k, "", "+", 1];
+    const signed = (sign === "−" ? -1 : 1) * weight * Number(v);
+    contribTotal += signed;
+    const signColor = sign === "−" ? "#fca5a5" : "#86efac";
+    const contribStr = (signed >= 0 ? "+" : "−") + Math.abs(signed).toFixed(2);
+    const contribColor = signed >= 0 ? "#86efac" : "#fca5a5";
+    return `
+      <div style="margin-bottom: 6px;">
+        <div style="display:flex; justify-content:space-between; gap:8px; align-items:baseline;">
+          <span><span style="color:${signColor};">${sign}</span> <strong>${label}</strong></span>
+          <span style="color:#cbd5e1; font-size:11px; font-variant-numeric: tabular-nums;">
+            ${Number(v).toFixed(2)} × ${weight.toFixed(1)} =
+            <span style="color:${contribColor}; font-weight:bold;">${contribStr}</span>
+          </span>
+        </div>
+        <div style="color:#94a3b8; font-size:11px; line-height:1.4;">${why}</div>
+      </div>`;
+  }).join("");
+  return `
+    <div style="font-weight:bold; color:#f1f5f9; margin-bottom:4px;">
+      <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${pColor};border:1px solid #475569;margin-right:6px;vertical-align:middle;"></span>
+      ${playerName} — ${desc}
+    </div>
+    <div style="color:#cbd5e1; margin-bottom:8px;">Total score: <strong>${move.score.toFixed(2)}</strong></div>
+    <div style="border-top:1px solid rgba(148,163,184,0.3); padding-top:6px;">${rows}</div>
+    <div style="border-top:1px solid rgba(148,163,184,0.3); padding-top:6px; display:flex; justify-content:space-between;">
+      <span style="color:#cbd5e1;"><strong>Σ weighted</strong></span>
+      <span style="color:#f1f5f9; font-variant-numeric: tabular-nums;"><strong>${contribTotal.toFixed(2)}</strong></span>
+    </div>
+    <div style="color:#94a3b8; font-size:10px; margin-top:6px;">value × weight, summed (robber risk is subtracted).</div>
+  `;
+}
+
+function runPgPrediction() {
+  const summary = document.getElementById("pgBestMoveSummary");
+  const container = document.getElementById("pgPredictedMovesContainer");
+  if (!summary || !container) return;
+
+  // Only meaningful during normal play (not setup/win).
+  if (!pg || pg.phase !== "play" || pg.winner != null) {
+    summary.innerHTML = "";
+    container.innerHTML = "";
+    return;
+  }
+
+  const state = pgBuildSimulateState();
+  if (!state || !state.activePlayer) {
+    summary.innerHTML = `<div style="color:#94a3b8; font-style:italic;">No available moves — end turn.</div>`;
+    container.innerHTML = "";
+    return;
+  }
+
+  const playerToMove = state.activePlayer;
+  const topMoves = simulate(state, playerToMove, null);
+  if (!topMoves || topMoves.length === 0) {
+    summary.innerHTML = `<div style="color:#94a3b8; font-style:italic;">No available moves — end turn.</div>`;
+    container.innerHTML = "";
+    return;
+  }
+
+  const player = pg.players.find(p => p.id === playerToMove);
+  const pColor = playerToMove; // playground uses color strings as ids
+  const playerName = player?.name ? player.name : `Player (${playerToMove})`;
+
+  const best = topMoves[0];
+  const colorChip = `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${pColor};border:1px solid #475569;vertical-align:middle;margin-right:4px;"></span>`;
+  summary.innerHTML = `
+    <div style="background:#0f172a; border:1px solid ${pColor}; border-radius:6px; padding:10px;">
+      <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">Recommended move for ${colorChip}<span style="color:#f1f5f9;">${playerName}</span></div>
+      <div style="font-size:15px; font-weight:bold; color:#f1f5f9; margin-top:4px;">${pgMoveDesc(best)}</div>
+      <div style="font-size:13px; color:#cbd5e1; margin-top:2px;">Heuristic score: <strong>${best.score.toFixed(2)}</strong></div>
+      <div style="font-size:11px; color:#94a3b8; margin-top:6px;">Hover any move below for the score breakdown.</div>
+    </div>
+  `;
+
+  container.innerHTML = `<div style='font-weight: bold; margin: 8px 0 6px 0; color: #e2e8f0;'>Top moves:</div>`;
+  topMoves.forEach((move, i) => {
+    const isBest = i === 0;
+    const moveDiv = document.createElement("div");
+    moveDiv.style.cursor = "help";
+    moveDiv.style.marginBottom = "4px";
+    moveDiv.style.padding = "6px 8px";
+    moveDiv.style.background = isBest ? "#1e3a5f" : "#1e293b";
+    moveDiv.style.borderRadius = "4px";
+    moveDiv.style.border = `1px solid ${isBest ? pColor : "#475569"}`;
+    moveDiv.innerHTML = `<strong>#${i + 1}</strong>: ${pgMoveDesc(move)} <span style="color:#94a3b8; font-size:12px;">(Score: ${move.score.toFixed(2)})</span>`;
+
+    const tooltipHtml = pgBuildPredictionTooltipHtml(move, playerName, pColor);
+
+    moveDiv.addEventListener("mouseenter", (e) => {
+      showTooltip(tooltipHtml, e);
+
+      const hlGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      hlGroup.id = "pgPredictionHighlight";
+      hlGroup.style.pointerEvents = "none";
+      hlGroup.style.opacity = "0.6";
+
+      if (move.type === "build_settlement" || move.type === "upgrade_city") {
+        const { px, py } = axialToPixel(move.corner.x, move.corner.y);
+        const vIdx = CORNER_Z_TO_VERTEX[move.corner.z] ?? move.corner.z;
+        const pt = hexVertex(px, py, vIdx);
+        const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
+        const size = 40;
+        const bType = move.type === "upgrade_city" ? "city" : "settlement";
+        img.setAttribute("href", `./data/images/${bType}_${pColor}.svg`);
+        img.setAttribute("x", pt.x - size / 2);
+        img.setAttribute("y", pt.y - size / 2);
+        img.setAttribute("width", size);
+        img.setAttribute("height", size);
+        img.style.filter = "drop-shadow(0px 0px 4px #fff)";
+        hlGroup.appendChild(img);
+      } else if (move.type === "build_road") {
+        const { px, py } = axialToPixel(move.edge.x, move.edge.y);
+        const eIdx = EDGE_Z_TO_IDX[move.edge.z] ?? move.edge.z;
+        const pt1 = hexVertex(px, py, eIdx);
+        const pt2 = hexVertex(px, py, (eIdx + 1) % 6);
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", pt1.x);
+        line.setAttribute("y1", pt1.y);
+        line.setAttribute("x2", pt2.x);
+        line.setAttribute("y2", pt2.y);
+        line.setAttribute("stroke", pColor);
+        line.setAttribute("stroke-width", "8");
+        line.setAttribute("stroke-linecap", "round");
+        line.style.filter = "drop-shadow(0px 0px 4px #fff)";
+        hlGroup.appendChild(line);
+      }
+
+      if (hlGroup.childNodes.length > 0) {
+        const board = document.getElementById("playgroundBoard");
+        if (board) board.appendChild(hlGroup);
+      }
+    });
+
+    moveDiv.addEventListener("mousemove", positionTooltip);
+    moveDiv.addEventListener("mouseleave", () => {
+      hideTooltip();
+      const hl = document.getElementById("pgPredictionHighlight");
+      if (hl) hl.remove();
+    });
+
+    container.appendChild(moveDiv);
+  });
 }
 
 function pgCheckWinner() {
@@ -5460,10 +6558,15 @@ function pgRenderActivePlayerCard() {
   // ── Dev cards column with click-to-play border highlight ──
   const devHtml = DEV_CARD_TYPES.map(t => {
     const count = ap.devCards[t] || 0;
-    const playable = canPlay && count > 0 && playableTypes.has(t);
+    const justBought = ap.devCardsBoughtThisTurn?.[t] || 0;
+    const lockedThisTurn = playableTypes.has(t) && count > 0 && (count - justBought <= 0);
+    const playable = canPlay && count > 0 && playableTypes.has(t) && !lockedThisTurn;
+    const tipSuffix = playable
+      ? " — click to play"
+      : lockedThisTurn ? " — bought this turn (playable next turn)" : "";
     return `
-    <div class="pg-apc-token pg-apc-devcard${playable ? " playable" : ""}${count === 0 ? " empty" : ""}"
-         data-play-card="${t}" title="${DEV_CARD_LABEL(t)} (${count})${playable ? " — click to play" : ""}">
+    <div class="pg-apc-token pg-apc-devcard${playable ? " playable" : ""}${count === 0 ? " empty" : ""}${lockedThisTurn ? " locked" : ""}"
+         data-play-card="${t}" title="${DEV_CARD_LABEL(t)} (${count})${tipSuffix}">
       <img src="${DEV_CARD_IMAGES[t]}" alt="${t}">
       <span>${count}</span>
     </div>`;
