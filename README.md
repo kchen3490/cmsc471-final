@@ -33,7 +33,7 @@ Andy Diep began recording insights for the data, and Kai Chen began contacting t
 Afterwards, the group split off the tasks, where 1) Jeff Liu preprocessed the data; 2) Andy Diep gave some insights into the data json files; 3) Tony Zheng began strategic analysis of the game by developing
 a heuristic function; and 4) Kai Chen developed a new playground tab for manual input of games.
 
-Furthermore, Jeff Liu added a die rolling bar chart visualization, Andy Diep fixed some frontend bugs and spotted some bugs in the analytics and playground tab, and Kai Chen fixed those bugs.
+Furthermore, Jeff Liu added a die rolling bar chart visualization + dynamic heuristic visualization, Andy Diep fixed some frontend bugs and spotted some bugs in the analytics and playground tab, and Kai Chen fixed those bugs.
 In the end, the team met one last time to run a demo through the entire visualization and succeeded in creating a working application.
 
 Some things we wish to change in the future is developing a better heuristic function. We did use machine learning to analyze all of the games, and we wish we did so that we could've made a better heuristic function.
