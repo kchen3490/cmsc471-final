@@ -6,8 +6,9 @@ We created this project to visualize existing and manually generated games of Co
 Our webpage contains two sections for these two purposes (analytics and playground respectively).
 
 The analytics tab displays the Colonist.io board for the associated game (chosen via a dropdown). All stored games met a set
-of criteria to make analysis more easier. 
-You may go from the first move to the last move of the game, and the board updates to show the move the player made.
+of criteria to make analysis easier.
+A heuristic function helps the players see the most optimal moves to make (that we have deemed).
+The user may analyze any turn from the first one to the last one of the game, and the board updates to show the moves the player makes.
 Game events are displayed in the game log. Player profiles are dislayed underneath the game log, which contain resource counts,
 road/settlement counts and the like.
 After they roll their dice, a bar chart updates to depict the distribution in the game currently.
@@ -26,10 +27,22 @@ For example, the software does not allow the user to trade if at least 1 party h
 For more information on Colonist.io rules, please consult https://colonist.io/
 
 # Development Process
+The group first started the development process by envisioning a game analysis of colonist.io, much like chess.com's analysis of their games.
+Soon, the group started their research by playing a game in colonist.io to understand the game mechanics. Afterwards, the group found a dataset on a GitHub repository online (before it got taken down).
+Andy Diep began recording insights for the data, and Kai Chen began contacting the founders of colonist.io (who eventually provided public assets and a license for the dataset) for assistance.
+Afterwards, the group split off the tasks, where 1) Jeff Liu preprocessed the data; 2) Andy Diep gave some insights into the data json files; 3) Tony Zheng began strategic analysis of the game by developing
+a heuristic function; and 4) Kai Chen developed a new playground tab for manual input of games.
 
+Furthermore, Jeff Liu added a die rolling bar chart visualization, Andy Diep fixed some frontend bugs and spotted some bugs in the analytics and playground tab, and Kai Chen fixed those bugs.
+In the end, the team met one last time to run a demo through the entire visualization and succeeded in creating a working application.
+
+Some things we wish to change in the future is developing a better heuristic function. We did use machine learning to analyze all of the games, and we wish we did so that we could've made a better heuristic function.
 
 # Contributions:
 Andy Diep:
+- Planned the distribution of tasks amongst the group
+- Documented the skeleton code
+- Produced prompts for other group members to produce results for the playground tab
 
 Jeff Liu:
 - Data preprocessing
@@ -39,10 +52,12 @@ Jeff Liu:
 - README
 
 Tony Zheng:
+- Founded the heuristic function's skeleton code
 
 Kai Chen:
 - Playground tab
 - Modified heuristic function
 - Fixed frontend issues
+- Set up GitHub repository and webhook to update team members on commits and updates
 
 Development was done with the support of AI (Cursor, Claude, Antigravity, Gemini)
