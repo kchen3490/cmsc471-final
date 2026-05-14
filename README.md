@@ -41,7 +41,13 @@ Some things we wish to change in the future is developing a better heuristic fun
 # Contributions:
 Andy Diep:
 - Planned the distribution of tasks amongst the group
-- Documented the skeleton code
+- Created and documented the skeleton code
+- Reformatted the JSON Colonist game data files to be more readable
+- Created a Catan board visualization to show hexes, ports, and hex/vertex/edge coordinates for debugging purposes
+- Integrated public Colonist assets
+- Devised idea for dedicated Analytics and Playground tabs
+- Created turn slider, dice log, and player tracker to keep track of all in-game actions
+- Ensured smooth game flow for both analytics and playground tabs
 - Produced prompts for other group members to produce results for the playground tab
 
 Jeff Liu:
