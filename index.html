@@ -107,8 +107,8 @@
               </select>
               <button id="pgBuildBtn" type="button">Buy</button>
             </div>
-            <details class="pg-pc-details">
-              <summary>Trade</summary>
+            <div class="pg-pc-details">
+              <div class="pg-pc-section-title"><strong>Trade</strong></div>
               <div class="pg-pc-subsection-label"><strong>Bank trade</strong> (current selected player)</div>
               <div class="pg-pc-row">
                 <label>Give</label>
@@ -157,36 +157,7 @@
                 <select id="playerTradePartner" style="flex:1;min-width:120px;"></select>
                 <button id="playerTradeBtn" type="button">Trade with player</button>
               </div>
-            </details>
-            <details class="pg-pc-details">
-              <summary>Manual adjust (escape hatch)</summary>
-              <div class="pg-pc-row">
-                <label>Resource</label>
-                <select id="resourceType">
-                  <option value="wood">Wood</option>
-                  <option value="brick">Brick</option>
-                  <option value="sheep">Sheep</option>
-                  <option value="wheat">Wheat</option>
-                  <option value="ore">Ore</option>
-                </select>
-                <input id="resourceAmount" type="number" min="1" value="1" style="width:52px;">
-                <button id="addResourceBtn" type="button">+</button>
-                <button id="removeResourceBtn" type="button">−</button>
-              </div>
-              <div class="pg-pc-row">
-                <label>Dev Card</label>
-                <select id="devCardType">
-                  <option value="knight">Knight</option>
-                  <option value="victoryPoint">Victory Point</option>
-                  <option value="roadBuilding">Road Building</option>
-                  <option value="yearOfPlenty">Year of Plenty</option>
-                  <option value="monopoly">Monopoly</option>
-                </select>
-                <input id="devCardAmount" type="number" min="1" value="1" style="width:52px;">
-                <button id="addDevCardBtn" type="button">+</button>
-                <button id="removeDevCardBtn" type="button">−</button>
-              </div>
-            </details>
+            </div>
           </div>
         </div>
 

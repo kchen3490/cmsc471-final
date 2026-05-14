@@ -642,6 +642,13 @@ svg#catanBoard {
   color: #e2e8f0;
 }
 
+.pg-player-controls .pg-pc-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+  padding: 4px 0;
+}
+
 .pg-player-controls .pg-pc-subsection-label {
   margin-top: 8px;
   font-size: 12px;

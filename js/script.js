@@ -832,7 +832,8 @@ function initDiceRollChart() {
     xAxisLabel,
     yAxisLabel,
     barsGroup,
-    labelsGroup
+    labelsGroup,
+    barTransition: () => d3.transition().duration(450).ease(d3.easeCubicOut)
   };
 
   updateDiceRollChart();
@@ -844,52 +845,79 @@ function updateDiceRollChart() {
     if (!diceRollChart) return;
   }
 
-  const data = diceRollChart.diceValues.map((value) => ({
+  const { diceValues, colorScale, innerHeight, x, yAxisGroup, barsGroup, labelsGroup, barTransition } = diceRollChart;
+
+  const rollHistory = (typeof pg !== "undefined" && Array.isArray(pg.rollHistory) ? pg.rollHistory : playgroundState.rollHistory);
+  const data = diceValues.map((value) => ({
     value,
-    count: (typeof pg !== "undefined" && Array.isArray(pg.rollHistory) ? pg.rollHistory : playgroundState.rollHistory).reduce((total, entry) => total + (entry.value === value ? 1 : 0), 0)
+    count: rollHistory.reduce((total, entry) => total + (entry.value === value ? 1 : 0), 0)
   }));
 
   const maxCount = d3.max(data, (d) => d.count) ?? 0;
   const yMax = Math.max(1, maxCount);
   const y = d3.scaleLinear()
     .domain([0, yMax])
-    .range([diceRollChart.innerHeight, 0]);
+    .range([innerHeight, 0]);
+
+  yAxisGroup.interrupt();
+  barsGroup.selectAll("rect").interrupt();
+  labelsGroup.selectAll("text").interrupt();
+
+  const t = barTransition();
 
   // Only show ticks at the distinct bar heights (plus 0 and the max). Keeps the axis clean
   // when most bars share the same count.
   const distinctCounts = Array.from(new Set([0, yMax, ...data.map((d) => d.count)])).sort((a, b) => a - b);
-  diceRollChart.yAxisGroup
+  yAxisGroup
+    .transition(t)
     .call(
       d3.axisLeft(y)
         .tickValues(distinctCounts)
         .tickFormat(d3.format("d"))
     );
 
-  diceRollChart.yAxisGroup.selectAll("text")
+  yAxisGroup.selectAll("text")
     .style("fill", "#cbd5e1")
     .style("font-size", "11px");
-  diceRollChart.yAxisGroup.selectAll("path, line")
+  yAxisGroup.selectAll("path, line")
     .style("stroke", "#64748b");
 
-  const bars = diceRollChart.barsGroup.selectAll("rect").data(data, (d) => d.value);
+  const rect = barsGroup.selectAll("rect").data(data, (d) => d.value);
 
-  bars.join("rect")
-    .attr("x", (d) => diceRollChart.x(d.value))
+  const rectEnter = rect.enter()
+    .append("rect")
+    .attr("x", (d) => x(d.value))
+    .attr("width", x.bandwidth())
+    .attr("y", innerHeight)
+    .attr("height", 0)
+    .attr("fill", (d) => colorScale(d.value));
+
+  rect.merge(rectEnter)
+    .transition(t)
+    .attr("x", (d) => x(d.value))
+    .attr("width", x.bandwidth())
     .attr("y", (d) => y(d.count))
-    .attr("width", diceRollChart.x.bandwidth())
-    .attr("height", (d) => diceRollChart.innerHeight - y(d.count))
-    .attr("fill", (d) => diceRollChart.colorScale(d.value));
+    .attr("height", (d) => innerHeight - y(d.count))
+    .attr("fill", (d) => colorScale(d.value));
 
-  const labels = diceRollChart.labelsGroup.selectAll("text").data(data, (d) => d.value);
+  rect.exit().remove();
 
-  labels.join("text")
-    .attr("x", (d) => (diceRollChart.x(d.value) ?? 0) + diceRollChart.x.bandwidth() / 2)
-    .attr("y", (d) => (d.count > 0 ? y(d.count) - 6 : y(0) - 6))
+  const texts = labelsGroup.selectAll("text").data(data, (d) => d.value);
+
+  const textsEnter = texts.enter()
+    .append("text")
     .attr("text-anchor", "middle")
     .style("fill", "#e2e8f0")
     .style("font-size", "11px")
-    .style("font-weight", "600")
+    .style("font-weight", "600");
+
+  texts.merge(textsEnter)
+    .transition(t)
+    .attr("x", (d) => (x(d.value) ?? 0) + x.bandwidth() / 2)
+    .attr("y", (d) => (d.count > 0 ? y(d.count) - 6 : y(0) - 6))
     .text((d) => d.count);
+
+  texts.exit().remove();
 }
 
 // Analytics mode state
@@ -931,7 +959,7 @@ function initAnalyticsDiceRollChart() {
   const containerWidth = container.getBoundingClientRect().width;
   const width = Math.max(280, Math.floor(containerWidth || 340));
   const height = 260;
-  const margin = { top: 20, right: 12, bottom: 40, left: 30 };
+  const margin = { top: 20, right: 12, bottom: 40, left: 40 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
@@ -1693,9 +1721,10 @@ function updateAnalyticsView(turnIndex) {
 }
 
 function analyticsGetPlayerName(playerId) {
-  const players = currentGameData?.data?.playerUserStates;
-  const player = players?.[playerId] ?? players?.[String(playerId)];
-  return player?.displayName || player?.name || `Player ${playerId}`;
+  const playOrder = currentGameData?.data?.playOrder || [];
+  const idx = playOrder.indexOf(Number(playerId));
+  if (idx !== -1) return `Player ${idx + 1}`;
+  return `Player ${playerId}`;
 }
 
 function analyticsGetWinnerFromTurn(turn) {
@@ -1751,6 +1780,8 @@ function analyticsMaybeShowWinnerModal(turnIndex) {
   </div>
   <div style="color:#facc15;font-weight:600;">${winnerData.vp} Victory Points</div>
   <div class="pg-final-standings"><strong>Final Standings:</strong>${stabilized}</div>`;
+  const newGameBtn = document.getElementById("pgWinModalNewGameBtn");
+  if (newGameBtn) newGameBtn.style.display = "none";
   modal.style.display = "flex";
 }
 
@@ -3435,6 +3466,7 @@ function pgUndo() {
   pg.redoStack.push({ label: prev.label, snap: pgCaptureSnap() });
   if (pg.redoStack.length > 40) pg.redoStack.shift();
   Object.assign(pg, prev.snap);
+  pg._liveSnap = null;
   if (pg.winner == null) pgHideWinnerModal();
   pgSyncHistoryButtons();
   pgRenderAll();
@@ -3445,6 +3477,7 @@ function pgRedo() {
   const next = pg.redoStack.pop();
   pg.history.push({ label: next.label, snap: pgCaptureSnap() });
   Object.assign(pg, next.snap);
+  pg._liveSnap = null;
   if (pg.winner == null) pgHideWinnerModal();
   pgSyncHistoryButtons();
   pgRenderAll();
@@ -3659,6 +3692,7 @@ function pgConfirmSetup() {
   pg.eventLog = [];
   pg.turns = [];
   pg.viewTurn = 0;
+  pg._liveSnap = null;
   pg.phase = "board";
   pg.history = [];
   pg.redoStack = [];
@@ -4815,10 +4849,60 @@ function pgNextTurn() {
   if (pg.phase !== "play") return;
   if (!pgIsViewingLatest()) {
     pg.viewTurn += 1;
-    pgRenderTurnNav();
+    pgApplyView();
     return;
   }
   pgStatus("Already at the latest turn. Use Confirm End Turn to end the current player's turn.", "info");
+}
+
+// Apply pg.viewTurn: if past, swap in the snapshot's state for rendering;
+// if back to latest, restore the live state we stashed.
+function pgApplyView() {
+  const max = pg.turns.length - 1;
+  if (pg.viewTurn > max) pg.viewTurn = max;
+  if (pg.viewTurn < 0) pg.viewTurn = 0;
+  const viewingPast = pg.viewTurn < max;
+  if (viewingPast) {
+    // Stash live state once when first leaving "latest".
+    if (!pg._liveSnap) {
+      pg._liveSnap = {
+        currentTurnIdx: pg.currentTurnIdx,
+        players: pgClone(pg.players),
+        bank: { ...pg.bank },
+        bankDevCards: pg.bankDevCards,
+        settlements: pgClone(pg.settlements),
+        roads: pgClone(pg.roads),
+        robberHex: pg.robberHex,
+        eventLog: pgClone(pg.eventLog),
+        rollHistory: pgClone(pg.rollHistory),
+      };
+    }
+    const snap = pg.turns[pg.viewTurn];
+    if (snap) {
+      pg.currentTurnIdx = snap.currentTurnIdx;
+      pg.players = pgClone(snap.players);
+      pg.bank = { ...snap.bank };
+      pg.bankDevCards = snap.bankDevCards;
+      pg.settlements = pgClone(snap.settlements);
+      pg.roads = pgClone(snap.roads);
+      pg.robberHex = snap.robberHex;
+      pg.eventLog = pg._liveSnap.eventLog.slice(0, snap.eventLogLen);
+      pg.rollHistory = pg._liveSnap.rollHistory.slice(0, snap.rollLen);
+    }
+  } else if (pg._liveSnap) {
+    // Returning to latest — restore live state.
+    pg.currentTurnIdx = pg._liveSnap.currentTurnIdx;
+    pg.players = pg._liveSnap.players;
+    pg.bank = pg._liveSnap.bank;
+    pg.bankDevCards = pg._liveSnap.bankDevCards;
+    pg.settlements = pg._liveSnap.settlements;
+    pg.roads = pg._liveSnap.roads;
+    pg.robberHex = pg._liveSnap.robberHex;
+    pg.eventLog = pg._liveSnap.eventLog;
+    pg.rollHistory = pg._liveSnap.rollHistory;
+    pg._liveSnap = null;
+  }
+  pgRenderAll();
 }
 
 function pgConfirmEndTurn() {
@@ -5293,6 +5377,8 @@ function pgShowWinnerModal() {
   </div>
   <div style="color:#facc15;font-weight:600;">${winner.vp} Victory Points</div>
   <div class="pg-final-standings"><strong>Final Standings:</strong>${standings}</div>`;
+  const newGameBtn = document.getElementById("pgWinModalNewGameBtn");
+  if (newGameBtn) newGameBtn.style.display = "";
   modal.style.display = "flex";
 }
 
@@ -5486,6 +5572,7 @@ async function pgInit() {
     pg.turns = [];
     pg.history = [];
     pg.redoStack = [];
+    pg._liveSnap = null;
     pg._setupDraft = null;
     pg.robberHex = null;
     pg.pendingRobber = null;
@@ -5505,11 +5592,11 @@ async function pgInit() {
   document.getElementById("pgPrevTurnBtn")?.addEventListener("click", () => {
     // "Previous Turn" navigates the snapshot slider
     if (pg.viewTurn > 0) pg.viewTurn -= 1;
-    pgRenderTurnNav();
+    pgApplyView();
   });
   document.getElementById("pgTurnSlider")?.addEventListener("input", (e) => {
     pg.viewTurn = Number(e.target.value);
-    pgRenderTurnNav();
+    pgApplyView();
   });
 
   // Dice
@@ -5531,12 +5618,6 @@ async function pgInit() {
   document.getElementById("bankTradeBtn")?.addEventListener("click", pgBankTrade);
   document.getElementById("playerTradeBtn")?.addEventListener("click", pgPlayerTrade);
   document.getElementById("playerSelector")?.addEventListener("change", pgRenderPlayerSelector);
-
-  // Manual adjusters
-  document.getElementById("addResourceBtn")?.addEventListener("click", () => pgManualAdjust("resources", 1));
-  document.getElementById("removeResourceBtn")?.addEventListener("click", () => pgManualAdjust("resources", -1));
-  document.getElementById("addDevCardBtn")?.addEventListener("click", () => pgManualAdjust("devCards", 1));
-  document.getElementById("removeDevCardBtn")?.addEventListener("click", () => pgManualAdjust("devCards", -1));
 
   // Trigger setup modal when playground tab is opened (or now if already active)
   const pgTabBtn = document.getElementById("playgroundTabBtn");
@@ -5565,24 +5646,4 @@ function pgInitSidebarSync() {
     ro.observe(board);
   }
   window.addEventListener("resize", sync);
-}
-
-function pgManualAdjust(kind, delta) {
-  if (!pgRequireLatestView("adjusting resources")) return;
-  if (pgBlockedByPending("adjusting resources")) return;
-  const playerId = Number(document.getElementById("playerSelector")?.value);
-  const player = pg.players.find(p => p.id === playerId);
-  if (!player) return;
-  const typeId = kind === "resources" ? "resourceType" : "devCardType";
-  const amountId = kind === "resources" ? "resourceAmount" : "devCardAmount";
-  const cardType = document.getElementById(typeId)?.value;
-  const amt = Number(document.getElementById(amountId)?.value || 1);
-  if (!cardType || !Number.isFinite(amt) || amt <= 0) return;
-  pgPushHistory(`manual-${kind}`);
-  player[kind][cardType] = Math.max(0, (player[kind][cardType] || 0) + delta * amt);
-  if (kind === "resources") {
-    const t = PG_RES_NAME_TO_TYPE[cardType];
-    if (t) pg.bank[t] = Math.max(0, pg.bank[t] - delta * amt);
-  }
-  pgRenderAll();
 }
