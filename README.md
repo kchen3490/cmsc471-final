@@ -32,14 +32,17 @@ For more information on Colonist.io rules, please consult https://colonist.io/
 Andy Diep:
 
 Jeff Liu:
-Data preprocessing
-Dynamic heuristic line graph vis
-Dynamic dice rolling bar chart vis
-Testing playground for bugs
-README
+- Data preprocessing
+- Dynamic heuristic line graph vis
+- Dynamic dice rolling bar chart vis
+- Testing playground for bugs
+- README
 
 Tony Zheng:
 
 Kai Chen:
+- Playground tab
+- Modified heuristic function
+- Fixed frontend issues
 
 Development was done with the support of AI (Cursor, Claude, Antigravity, Gemini)
