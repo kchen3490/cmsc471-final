@@ -1240,7 +1240,17 @@ function initAnalyticsHeuristicChart() {
     .attr("width", width)
     .attr("height", height)
     .attr("viewBox", `0 0 ${width} ${height}`)
-    .style("overflow", "visible");
+    .style("overflow", "hidden");
+
+  // Clip path so zoomed lines/dots don't overflow the chart area
+  const clipId = "heuristic-chart-clip";
+  svg.append("defs").append("clipPath")
+    .attr("id", clipId)
+    .append("rect")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("width", innerWidth)
+    .attr("height", innerHeight);
 
   const chart = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -1248,8 +1258,30 @@ function initAnalyticsHeuristicChart() {
   const xAxisG = chart.append("g").attr("class", "x-axis");
   const xAxisMinorG = chart.append("g").attr("class", "x-axis-minor");
   const yAxisG = chart.append("g").attr("class", "y-axis");
-  const linesG = chart.append("g").attr("class", "heuristic-lines");
-  const dotsG = chart.append("g").attr("class", "heuristic-dots");
+
+  // Clipped group for lines and dots so they stay within axes bounds
+  const clippedG = chart.append("g")
+    .attr("clip-path", `url(#${clipId})`);
+  const linesG = clippedG.append("g").attr("class", "heuristic-lines");
+  const dotsG = clippedG.append("g").attr("class", "heuristic-dots");
+
+  // Tooltip group (rendered on top, outside clip)
+  const tooltipG = chart.append("g")
+    .attr("class", "heuristic-tooltip")
+    .style("pointer-events", "none")
+    .style("display", "none");
+
+  tooltipG.append("rect")
+    .attr("class", "tooltip-bg")
+    .attr("rx", 6).attr("ry", 6)
+    .attr("fill", "#1e293b").attr("fill-opacity", 0.94)
+    .attr("stroke", "#475569").attr("stroke-width", 1);
+
+  tooltipG.append("text")
+    .attr("class", "tooltip-text")
+    .style("fill", "#e2e8f0")
+    .style("font-size", "11px")
+    .style("font-family", "system-ui, sans-serif");
 
   chart.append("text")
     .attr("x", innerWidth / 2)
@@ -1270,6 +1302,93 @@ function initAnalyticsHeuristicChart() {
     .style("font-weight", "600")
     .text("Heuristic Score");
 
+
+  // Zoom-hint label (top-right, fades in when zoomed — positioned below legend)
+  const zoomHint = chart.append("text")
+    .attr("class", "zoom-hint")
+    .attr("x", innerWidth - 4)
+    .attr("y", -4)
+    .attr("text-anchor", "end")
+    .style("fill", "#94a3b8")
+    .style("font-size", "10px")
+    .style("font-style", "italic")
+    .style("opacity", 0)
+    .style("pointer-events", "none")
+    .text("double-click to reset zoom");
+
+  // Invisible overlay rect to capture click/scroll events for zoom
+  const zoomRect = chart.append("rect")
+    .attr("class", "zoom-overlay")
+    .attr("width", innerWidth)
+    .attr("height", innerHeight)
+    .attr("fill", "none")
+    .style("pointer-events", "all")
+    .style("cursor", "crosshair");
+
+  // D3 zoom behavior
+  const zoom = d3.zoom()
+    .scaleExtent([1, 20])
+    .translateExtent([[0, 0], [innerWidth, innerHeight]])
+    .extent([[0, 0], [innerWidth, innerHeight]])
+    .filter((event) => {
+      // Allow: wheel, dblclick, and regular click (button 0)
+      if (event.type === "wheel") return true;
+      if (event.type === "dblclick") return true;
+      if (event.type === "mousedown" && event.button === 0) return true;
+      if (event.type === "touchstart") return true;
+      return false;
+    })
+    .on("zoom", (event) => {
+      // Store current transform for use in update
+      analyticsHeuristicChart._currentTransform = event.transform;
+      // Re-render with new transform
+      updateAnalyticsHeuristicChart();
+      // Show/hide zoom hint
+      const isZoomed = event.transform.k > 1.05;
+      zoomHint.transition().duration(200).style("opacity", isZoomed ? 0.8 : 0);
+    });
+
+  zoomRect.call(zoom);
+
+  // Track mousedown position to distinguish click from drag
+  let _mouseDownPos = null;
+  zoomRect.on("mousedown.clickzoom", function (event) {
+    _mouseDownPos = [event.clientX, event.clientY];
+  });
+
+  // Click-to-zoom: single click zooms in 3x centered on click point
+  zoomRect.on("click", function (event) {
+    // Only zoom on clean click (no significant drag movement)
+    if (_mouseDownPos) {
+      const dx = event.clientX - _mouseDownPos[0];
+      const dy = event.clientY - _mouseDownPos[1];
+      if (Math.hypot(dx, dy) > 5) return; // was a drag, not a click
+    }
+    const currentK = analyticsHeuristicChart._currentTransform?.k ?? 1;
+    const targetK = Math.min(currentK * 3, 20);
+    if (targetK <= currentK) return;
+
+    const [mx, my] = d3.pointer(event, this);
+    const transform = d3.zoomIdentity
+      .translate(innerWidth / 2, innerHeight / 2)
+      .scale(targetK)
+      .translate(-mx, -my);
+
+    zoomRect.transition()
+      .duration(450)
+      .ease(d3.easeCubicOut)
+      .call(zoom.transform, transform);
+  });
+
+  // Double-click to reset zoom
+  zoomRect.on("dblclick.zoom", null); // remove default d3 dblclick handler
+  zoomRect.on("dblclick", function () {
+    zoomRect.transition()
+      .duration(450)
+      .ease(d3.easeCubicOut)
+      .call(zoom.transform, d3.zoomIdentity);
+  });
+
   analyticsHeuristicChart = {
     svg,
     chart,
@@ -1278,11 +1397,17 @@ function initAnalyticsHeuristicChart() {
     yAxisG,
     linesG,
     dotsG,
+    tooltipG,
+
+    zoomRect,
+    zoom,
+    zoomHint,
     width,
     height,
     margin,
     innerWidth,
     innerHeight,
+    _currentTransform: d3.zoomIdentity,
   };
 }
 
@@ -1321,7 +1446,7 @@ function updateAnalyticsHeuristicChart() {
   if (!analyticsHeuristicChart) initAnalyticsHeuristicChart();
   if (!analyticsHeuristicChart) return;
 
-  const { xAxisG, xAxisMinorG, yAxisG, linesG, dotsG, innerWidth, innerHeight } = analyticsHeuristicChart;
+  const { xAxisG, xAxisMinorG, yAxisG, linesG, dotsG, tooltipG, innerWidth, innerHeight } = analyticsHeuristicChart;
   const playOrder = currentGameData?.data?.playOrder || [];
   if (!playOrder.length) {
     container.innerHTML = "<p style=\"color:#94a3b8;font-size:12px;margin:0;\">No players in this game.</p>";
@@ -1333,9 +1458,28 @@ function updateAnalyticsHeuristicChart() {
   const visibleEnd = Math.max(0, Math.min(currentTurnIndex, nTurns - 1));
   // Progressive x-axis: [0, 1] at turn 0, then upper bound grows by 1 each next turn.
   const xAxisMax = Math.max(1, visibleEnd + 1);
-  const x = d3.scaleLinear()
+  const xBase = d3.scaleLinear()
     .domain([0, xAxisMax])
     .range([0, innerWidth]);
+
+  const yBase = (() => {
+    const byPlayer = analyticsHeuristicScoreCache?.byPlayer ?? {};
+    let maxH = 0;
+    for (const pid of playOrder) {
+      const scores = byPlayer[Number(pid)];
+      if (!scores) continue;
+      for (let t = 0; t <= visibleEnd; t++) {
+        if (scores[t] > maxH) maxH = scores[t];
+      }
+    }
+    const yMax = Math.max(100, Math.ceil((maxH + 10) / 100) * 100);
+    return d3.scaleLinear().domain([0, yMax]).range([innerHeight, 0]);
+  })();
+
+  // Apply current zoom transform to rescale axes
+  const transform = analyticsHeuristicChart._currentTransform || d3.zoomIdentity;
+  const x = transform.rescaleX(xBase);
+  const y = transform.rescaleY(yBase);
 
   const byPlayer = analyticsHeuristicScoreCache?.byPlayer ?? {};
 
@@ -1360,15 +1504,23 @@ function updateAnalyticsHeuristicChart() {
     series.push({ playerId: p, points });
   }
 
-  const minTop = maxH + 10;
-  const yMax = Math.max(100, Math.ceil(minTop / 100) * 100);
-  const y = d3.scaleLinear()
-    .domain([0, yMax])
-    .range([innerHeight, 0]);
-
-  // Integer tick step 1: majors at multiples of 10 (labeled); minors at other integers in [0, xAxisMax].
-  const majorXTicks = d3.range(0, xAxisMax + 1, 10);
-  const minorXTicks = d3.range(0, xAxisMax + 1).filter((t) => t % 10 !== 0);
+  // Determine tick density based on zoom level
+  const k = transform.k;
+  const xDomain = x.domain();
+  const xSpan = xDomain[1] - xDomain[0];
+  // When zoomed in, show individual turn ticks; when zoomed out, use multiples of 10
+  const majorStep = xSpan > 40 ? 10 : xSpan > 15 ? 5 : 1;
+  const majorXTicks = d3.range(
+    Math.max(0, Math.floor(xDomain[0])),
+    Math.min(xAxisMax, Math.ceil(xDomain[1])) + 1,
+    majorStep
+  );
+  const minorXTicks = majorStep > 1
+    ? d3.range(
+        Math.max(0, Math.floor(xDomain[0])),
+        Math.min(xAxisMax, Math.ceil(xDomain[1])) + 1
+      ).filter((t) => t % majorStep !== 0)
+    : [];
 
   const xAxis = d3.axisBottom(x)
     .tickValues(majorXTicks)
@@ -1399,7 +1551,15 @@ function updateAnalyticsHeuristicChart() {
     .style("stroke", "#64748b")
     .style("stroke-opacity", 0.55);
 
-  const yTickValues = d3.range(0, yMax + 1, 100);
+  // Adaptive y ticks based on visible domain
+  const yDomain = y.domain();
+  const ySpan = yDomain[1] - yDomain[0];
+  const yStep = ySpan > 500 ? 100 : ySpan > 200 ? 50 : ySpan > 80 ? 20 : 10;
+  const yTickValues = d3.range(
+    Math.max(0, Math.floor(yDomain[0] / yStep) * yStep),
+    Math.ceil(yDomain[1] / yStep) * yStep + 1,
+    yStep
+  );
   const yAxis = d3.axisLeft(y)
     .tickValues(yTickValues)
     .tickFormat(d3.format("d"));
@@ -1435,21 +1595,43 @@ function updateAnalyticsHeuristicChart() {
     s.points.map((p) => ({ ...p, playerId: s.playerId }))
   );
 
+  // Scale dot radius slightly when zoomed in for better visibility
+  const dotRadius = Math.min(6, 3.5 * Math.sqrt(k));
+
   const dotJoin = dotsG.selectAll("circle.heuristic-dot")
     .data(flatDots, (d) => `${d.playerId}-${d.turn}`);
 
   dotJoin.join(
     (enter) => enter.append("circle")
       .attr("class", "heuristic-dot")
-      .attr("r", 3.5)
       .attr("stroke", "#0f172a")
       .attr("stroke-width", 1),
     (update) => update,
     (exit) => exit.remove()
   )
+    .attr("r", dotRadius)
     .attr("cx", (d) => x(d.turn))
     .attr("cy", (d) => y(d.score))
     .attr("fill", (d) => ANALYTICS_HEURISTIC_LINE_COLORS[d.playerId] ?? "#94a3b8");
+
+  // ── Legend (separate HTML box beside the chart) ─────────────────────────────
+  const legendEl = document.getElementById("analyticsHeuristicLegend");
+  if (legendEl) {
+    legendEl.innerHTML = playOrder.map((pid, i) => {
+      const color = ANALYTICS_HEURISTIC_LINE_COLORS[Number(pid)] ?? "#94a3b8";
+      return `<div style="display:flex;align-items:center;gap:6px;white-space:nowrap;">`
+        + `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${color};flex-shrink:0;"></span>`
+        + `<span style="color:#e2e8f0;">Player ${i + 1}</span>`
+        + `</div>`;
+    }).join("");
+  }
+
+
+  // Store scales for tooltip usage
+  analyticsHeuristicChart._xScale = x;
+  analyticsHeuristicChart._yScale = y;
+  analyticsHeuristicChart._flatDots = flatDots;
+  analyticsHeuristicChart._series = series;
 }
 
 // ── TURN PARSING ────────────────────────────────────────────────────────────
