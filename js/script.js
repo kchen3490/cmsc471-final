@@ -1209,6 +1209,249 @@ function updateAnalyticsDiceRollChart() {
   applyAnalyticsDiceBarFocus();
 }
 
+/** Precomputed calculate_heuristric scores: byPlayer[playerId][turnIndex]. */
+let analyticsHeuristicScoreCache = null;
+
+/** D3 multi-line chart: per-player heuristic score vs turn (#analyticsHeuristicVis). */
+let analyticsHeuristicChart = null;
+
+const ANALYTICS_HEURISTIC_LINE_COLORS = {
+  1: "#ef4444",
+  2: "#3b82f6",
+  3: "#f97316",
+  4: "#22c55e",
+};
+
+function initAnalyticsHeuristicChart() {
+  const container = document.getElementById("analyticsHeuristicVis");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const boardW = 700;
+  const width = boardW;
+  const height = 280;
+  const margin = { top: 20, right: 14, bottom: 52, left: 58 };
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+
+  const svg = d3.select(container)
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .style("overflow", "visible");
+
+  const chart = svg.append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  const xAxisG = chart.append("g").attr("class", "x-axis");
+  const xAxisMinorG = chart.append("g").attr("class", "x-axis-minor");
+  const yAxisG = chart.append("g").attr("class", "y-axis");
+  const linesG = chart.append("g").attr("class", "heuristic-lines");
+  const dotsG = chart.append("g").attr("class", "heuristic-dots");
+
+  chart.append("text")
+    .attr("x", innerWidth / 2)
+    .attr("y", innerHeight + margin.bottom - 8)
+    .attr("text-anchor", "middle")
+    .style("fill", "#cbd5e1")
+    .style("font-size", "12px")
+    .style("font-weight", "600")
+    .text("Turn");
+
+  chart.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -innerHeight / 2)
+    .attr("y", -margin.left + 16)
+    .attr("text-anchor", "middle")
+    .style("fill", "#cbd5e1")
+    .style("font-size", "12px")
+    .style("font-weight", "600")
+    .text("Heuristic Score");
+
+  analyticsHeuristicChart = {
+    svg,
+    chart,
+    xAxisG,
+    xAxisMinorG,
+    yAxisG,
+    linesG,
+    dotsG,
+    width,
+    height,
+    margin,
+    innerWidth,
+    innerHeight,
+  };
+}
+
+/** Fill analyticsHeuristicScoreCache for the current game (call after turnStates is set). */
+function rebuildAnalyticsHeuristicScoreCache() {
+  analyticsHeuristicScoreCache = null;
+  if (!currentGameData || !turnStates?.length) return;
+  const playOrder = currentGameData?.data?.playOrder || [];
+  const n = turnStates.length;
+  /** @type {Record<number, number[]>} */
+  const byPlayer = {};
+  for (const pid of playOrder) {
+    const p = Number(pid);
+    const arr = new Array(n);
+    for (let t = 0; t < n; t++) {
+      const { score } = calculate_heuristric(turnStates[t], p, null);
+      arr[t] = Number.isFinite(score) ? score : 0;
+    }
+    byPlayer[p] = arr;
+  }
+  analyticsHeuristicScoreCache = { byPlayer };
+}
+
+function updateAnalyticsHeuristicChart() {
+  const container = document.getElementById("analyticsHeuristicVis");
+  if (!container) return;
+
+  if (!currentGameData || !turnStates?.length) {
+    container.innerHTML = "<p style=\"color:#94a3b8;font-size:12px;margin:0;\">Load a game to see heuristic scores by turn.</p>";
+    analyticsHeuristicChart = null;
+    return;
+  }
+
+  if (!analyticsHeuristicScoreCache) rebuildAnalyticsHeuristicScoreCache();
+
+  if (!analyticsHeuristicChart) initAnalyticsHeuristicChart();
+  if (!analyticsHeuristicChart) return;
+
+  const { xAxisG, xAxisMinorG, yAxisG, linesG, dotsG, innerWidth, innerHeight } = analyticsHeuristicChart;
+  const playOrder = currentGameData?.data?.playOrder || [];
+  if (!playOrder.length) {
+    container.innerHTML = "<p style=\"color:#94a3b8;font-size:12px;margin:0;\">No players in this game.</p>";
+    analyticsHeuristicChart = null;
+    return;
+  }
+
+  const nTurns = turnStates.length;
+  const visibleEnd = Math.max(0, Math.min(currentTurnIndex, nTurns - 1));
+  // Progressive x-axis: [0, 1] at turn 0, then upper bound grows by 1 each next turn.
+  const xAxisMax = Math.max(1, visibleEnd + 1);
+  const x = d3.scaleLinear()
+    .domain([0, xAxisMax])
+    .range([0, innerWidth]);
+
+  const byPlayer = analyticsHeuristicScoreCache?.byPlayer ?? {};
+
+  let maxH = 0;
+  /** @type {{ playerId: number, points: { turn: number, score: number }[] }[]} */
+  const series = [];
+  for (const pid of playOrder) {
+    const p = Number(pid);
+    const scores = byPlayer[p];
+    const points = [];
+    for (let t = 0; t <= visibleEnd; t++) {
+      let s = 0;
+      if (scores && scores[t] !== undefined) {
+        s = scores[t];
+      } else {
+        const { score } = calculate_heuristric(turnStates[t], p, null);
+        s = Number.isFinite(score) ? score : 0;
+      }
+      maxH = Math.max(maxH, s);
+      points.push({ turn: t, score: s });
+    }
+    series.push({ playerId: p, points });
+  }
+
+  const minTop = maxH + 10;
+  const yMax = Math.max(100, Math.ceil(minTop / 100) * 100);
+  const y = d3.scaleLinear()
+    .domain([0, yMax])
+    .range([innerHeight, 0]);
+
+  // Integer tick step 1: majors at multiples of 10 (labeled); minors at other integers in [0, xAxisMax].
+  const majorXTicks = d3.range(0, xAxisMax + 1, 10);
+  const minorXTicks = d3.range(0, xAxisMax + 1).filter((t) => t % 10 !== 0);
+
+  const xAxis = d3.axisBottom(x)
+    .tickValues(majorXTicks)
+    .tickFormat(d3.format("d"));
+
+  xAxisG.attr("transform", `translate(0,${innerHeight})`).call(xAxis);
+  xAxisG.selectAll(".tick text")
+    .style("fill", "#cbd5e1")
+    .style("font-size", "11px")
+    .attr("transform", null)
+    .style("text-anchor", "middle")
+    .attr("dx", "0")
+    .attr("dy", "0.71em");
+  xAxisG.selectAll(".domain, .tick line").style("stroke", "#64748b");
+
+  xAxisMinorG.attr("transform", `translate(0,${innerHeight})`);
+  xAxisMinorG.selectAll("line.x-minor-tick")
+    .data(minorXTicks, (d) => d)
+    .join(
+      (enter) => enter.append("line").attr("class", "x-minor-tick"),
+      (update) => update,
+      (exit) => exit.remove()
+    )
+    .attr("x1", (d) => x(d))
+    .attr("x2", (d) => x(d))
+    .attr("y1", 0)
+    .attr("y2", 4)
+    .style("stroke", "#64748b")
+    .style("stroke-opacity", 0.55);
+
+  const yTickValues = d3.range(0, yMax + 1, 100);
+  const yAxis = d3.axisLeft(y)
+    .tickValues(yTickValues)
+    .tickFormat(d3.format("d"));
+
+  yAxisG.call(yAxis);
+  yAxisG.selectAll("text")
+    .style("fill", "#cbd5e1")
+    .style("font-size", "11px");
+  yAxisG.selectAll("path, line").style("stroke", "#64748b");
+
+  const line = d3.line()
+    .x((d) => x(d.turn))
+    .y((d) => y(d.score))
+    .curve(d3.curveMonotoneX);
+
+  const lineJoin = linesG.selectAll("path.player-line")
+    .data(series, (d) => d.playerId);
+
+  lineJoin.join(
+    (enter) => enter.append("path")
+      .attr("class", "player-line")
+      .attr("fill", "none")
+      .attr("stroke-width", 2)
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round"),
+    (update) => update,
+    (exit) => exit.remove()
+  )
+    .attr("stroke", (d) => ANALYTICS_HEURISTIC_LINE_COLORS[d.playerId] ?? "#94a3b8")
+    .attr("d", (d) => (d.points.length >= 2 ? line(d.points) : ""));
+
+  const flatDots = series.flatMap((s) =>
+    s.points.map((p) => ({ ...p, playerId: s.playerId }))
+  );
+
+  const dotJoin = dotsG.selectAll("circle.heuristic-dot")
+    .data(flatDots, (d) => `${d.playerId}-${d.turn}`);
+
+  dotJoin.join(
+    (enter) => enter.append("circle")
+      .attr("class", "heuristic-dot")
+      .attr("r", 3.5)
+      .attr("stroke", "#0f172a")
+      .attr("stroke-width", 1),
+    (update) => update,
+    (exit) => exit.remove()
+  )
+    .attr("cx", (d) => x(d.turn))
+    .attr("cy", (d) => y(d.score))
+    .attr("fill", (d) => ANALYTICS_HEURISTIC_LINE_COLORS[d.playerId] ?? "#94a3b8");
+}
+
 // ── TURN PARSING ────────────────────────────────────────────────────────────
 function parseTurnsFromEvents(gameData) {
   const events = gameData?.data?.eventHistory?.events ?? [];
@@ -1796,6 +2039,8 @@ function updateAnalyticsView(turnIndex) {
 
   // Show the playground-style win popup when navigating to the final turn.
   analyticsMaybeShowWinnerModal(turnIndex);
+
+  updateAnalyticsHeuristicChart();
 }
 
 function analyticsGetPlayerName(playerId) {
@@ -2894,6 +3139,7 @@ async function loadGameBoard(gameId) {
     // Parse turns from events
     turnStates = parseTurnsFromEvents(gameData);
     resetAnalyticsDiceRollSelection();
+    rebuildAnalyticsHeuristicScoreCache();
 
     // Update turn slider max value
     const slider = document.getElementById("turnSlider");
@@ -2910,6 +3156,12 @@ async function loadGameBoard(gameId) {
     console.error(err);
     svg.innerHTML = "";
     svg.appendChild(svgText({ x: 0, y: 0, class: "error-label" }, `Error: ${err.message}`));
+    const hVis = document.getElementById("analyticsHeuristicVis");
+    if (hVis) {
+      hVis.innerHTML = "";
+      analyticsHeuristicChart = null;
+    }
+    analyticsHeuristicScoreCache = null;
   }
 }
 
@@ -3010,6 +3262,7 @@ window.addEventListener("DOMContentLoaded", () => {
   initTabs();
   initSelector();
   initPlayground();
+  updateAnalyticsHeuristicChart();
 
   const coordToggle = document.getElementById("coordToggle");
   if (coordToggle) {
