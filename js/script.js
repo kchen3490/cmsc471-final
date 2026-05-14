@@ -3502,14 +3502,14 @@ window.addEventListener("DOMContentLoaded", () => {
   // sign is "−" for robberRisk (subtracted in the score); "+" for all others.
   // Weight values match `sample_weight` in calculate_heuristric().
   const HEURISTIC_INFO = {
-    income:     ["Income",       "Expected pips per roll, summed over resources. Cities count double.", "+", 5.0],
-    variety:    ["Variety",      "Distinct resources you produce. Diversified production needs fewer trades.", "+", 2.0],
-    expansion:  ["Expansion",    "Total pip-probability still available at unoccupied corners.", "+", 3.5],
-    devCard:    ["Dev-card rate","Bottleneck of sheep/wheat/ore income (min of the three).", "+", 2.5],
-    vp:         ["Victory pts",  "Current VP. Tuned up — cities and VP cards dominate win rate.", "+", 3.0],
-    robberRisk: ["Robber risk",  "Expected discards on a 7 when over the 7-card hand limit.", "−", 2.0],
-    roads:      ["Roads",        "L² where L is your longest contiguous road. Tracks Longest Road (+2 VP at L≥5).", "+", 1.5],
-    army:       ["Army",         "min(K,3)² where K = knights played. Clipped at 3: data shows K>3 doesn't help win.", "+", 3.0],
+    income: ["Income", "Expected pips per roll, summed over resources. Cities count double.", "+", 5.0],
+    variety: ["Variety", "Distinct resources you produce. Diversified production needs fewer trades.", "+", 2.0],
+    expansion: ["Expansion", "Total pip-probability still available at unoccupied corners.", "+", 3.5],
+    devCard: ["Dev-card rate", "Bottleneck of sheep/wheat/ore income (min of the three).", "+", 2.5],
+    vp: ["Victory pts", "Current VP. Tuned up — cities and VP cards dominate win rate.", "+", 3.0],
+    robberRisk: ["Robber risk", "Expected discards on a 7 when over the 7-card hand limit.", "−", 2.0],
+    roads: ["Roads", "L² where L is your longest contiguous road. Tracks Longest Road (+2 VP at L≥5).", "+", 1.5],
+    army: ["Army", "min(K,3)² where K = knights played. Clipped at 3: data shows K>3 doesn't help win.", "+", 3.0],
   };
 
   const buildPredictionTooltipHtml = (move, displayNum, pColor) => {
@@ -3576,31 +3576,31 @@ window.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-      const pColor = PLAYER_COLOR_NAMES[playerToMove] || "white";
-      const playOrder = currentGameData?.data?.playOrder || [];
-      let displayNum = playerToMove;
-      const idx = playOrder.indexOf(playerToMove);
-      if (idx !== -1) {
-        displayNum = idx + 1;
-      } else {
-        const idxNum = playOrder.indexOf(Number(playerToMove));
-        if (idxNum !== -1) displayNum = idxNum + 1;
-      }
+    const pColor = PLAYER_COLOR_NAMES[playerToMove] || "white";
+    const playOrder = currentGameData?.data?.playOrder || [];
+    let displayNum = playerToMove;
+    const idx = playOrder.indexOf(playerToMove);
+    if (idx !== -1) {
+      displayNum = idx + 1;
+    } else {
+      const idxNum = playOrder.indexOf(Number(playerToMove));
+      if (idxNum !== -1) displayNum = idxNum + 1;
+    }
 
-      const moveDesc = (m) => {
-        if (m.type === "build_settlement") return `Build settlement at corner ${m.key}`;
-        if (m.type === "upgrade_city") return `Upgrade to city at corner ${m.key}`;
-        if (m.type === "build_road") return `Build road at edge ${m.key}`;
-        if (m.type === "buy_dev_card") return `Buy development card`;
-        return m.type;
-      };
+    const moveDesc = (m) => {
+      if (m.type === "build_settlement") return `Build settlement at corner ${m.key}`;
+      if (m.type === "upgrade_city") return `Upgrade to city at corner ${m.key}`;
+      if (m.type === "build_road") return `Build road at edge ${m.key}`;
+      if (m.type === "buy_dev_card") return `Buy development card`;
+      return m.type;
+    };
 
-      const best = topMoves[0];
-      // pColor is used for the border and a small swatch only — never as text on the
-      // dark card background, since dark player colors (black, mysticblue, purple)
-      // would be unreadable. The player label itself stays white.
-      const colorChip = `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${pColor};border:1px solid #475569;vertical-align:middle;margin-right:4px;"></span>`;
-      bestMoveSummary.innerHTML = `
+    const best = topMoves[0];
+    // pColor is used for the border and a small swatch only — never as text on the
+    // dark card background, since dark player colors (black, mysticblue, purple)
+    // would be unreadable. The player label itself stays white.
+    const colorChip = `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${pColor};border:1px solid #475569;vertical-align:middle;margin-right:4px;"></span>`;
+    bestMoveSummary.innerHTML = `
         <div style="background:#0f172a; border:1px solid ${pColor}; border-radius:6px; padding:10px;">
           <div style="font-size:11px; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">Recommended move for ${colorChip}<span style="color:#f1f5f9;">Player ${displayNum}</span></div>
           <div style="font-size:15px; font-weight:bold; color:#f1f5f9; margin-top:4px;">${moveDesc(best)}</div>
@@ -3609,79 +3609,79 @@ window.addEventListener("DOMContentLoaded", () => {
         </div>
       `;
 
-      predictContainer.innerHTML = `<div style='font-weight: bold; margin: 8px 0 6px 0; color: #e2e8f0;'>Top moves:</div>`;
-      topMoves.forEach((move, i) => {
-        const desc = moveDesc(move);
-        const isBest = i === 0;
+    predictContainer.innerHTML = `<div style='font-weight: bold; margin: 8px 0 6px 0; color: #e2e8f0;'>Top moves:</div>`;
+    topMoves.forEach((move, i) => {
+      const desc = moveDesc(move);
+      const isBest = i === 0;
 
-        const moveDiv = document.createElement("div");
-        moveDiv.style.cursor = "help";
-        moveDiv.style.marginBottom = "4px";
-        moveDiv.style.padding = "6px 8px";
-        moveDiv.style.background = isBest ? "#1e3a5f" : "#1e293b";
-        moveDiv.style.borderRadius = "4px";
-        moveDiv.style.border = `1px solid ${isBest ? pColor : "#475569"}`;
+      const moveDiv = document.createElement("div");
+      moveDiv.style.cursor = "help";
+      moveDiv.style.marginBottom = "4px";
+      moveDiv.style.padding = "6px 8px";
+      moveDiv.style.background = isBest ? "#1e3a5f" : "#1e293b";
+      moveDiv.style.borderRadius = "4px";
+      moveDiv.style.border = `1px solid ${isBest ? pColor : "#475569"}`;
 
-        moveDiv.innerHTML = `<strong>#${i + 1}</strong>: ${desc} <span style="color:#94a3b8; font-size:12px;">(Score: ${move.score.toFixed(2)})</span>`;
+      moveDiv.innerHTML = `<strong>#${i + 1}</strong>: ${desc} <span style="color:#94a3b8; font-size:12px;">(Score: ${move.score.toFixed(2)})</span>`;
 
-        const tooltipHtml = buildPredictionTooltipHtml(move, displayNum, pColor);
+      const tooltipHtml = buildPredictionTooltipHtml(move, displayNum, pColor);
 
-        moveDiv.addEventListener("mouseenter", (e) => {
-          showTooltip(tooltipHtml, e);
+      moveDiv.addEventListener("mouseenter", (e) => {
+        showTooltip(tooltipHtml, e);
 
-          const hlGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-          hlGroup.id = "predictionHighlight";
-          hlGroup.style.pointerEvents = "none";
-          hlGroup.style.opacity = "0.6";
+        const hlGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        hlGroup.id = "predictionHighlight";
+        hlGroup.style.pointerEvents = "none";
+        hlGroup.style.opacity = "0.6";
 
-          if (move.type === "build_settlement" || move.type === "upgrade_city") {
-            const { px, py } = axialToPixel(move.corner.x, move.corner.y);
-            const vIdx = CORNER_Z_TO_VERTEX[move.corner.z] ?? move.corner.z;
-            const pt = hexVertex(px, py, vIdx);
+        if (move.type === "build_settlement" || move.type === "upgrade_city") {
+          const { px, py } = axialToPixel(move.corner.x, move.corner.y);
+          const vIdx = CORNER_Z_TO_VERTEX[move.corner.z] ?? move.corner.z;
+          const pt = hexVertex(px, py, vIdx);
 
-            const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
-            const size = 40;
-            const bType = move.type === "upgrade_city" ? "city" : "settlement";
-            img.setAttribute("href", `./data/images/${bType}_${pColor}.svg`);
-            img.setAttribute("x", pt.x - size / 2);
-            img.setAttribute("y", pt.y - size / 2);
-            img.setAttribute("width", size);
-            img.setAttribute("height", size);
-            img.style.filter = "drop-shadow(0px 0px 4px #fff)";
-            hlGroup.appendChild(img);
-          } else if (move.type === "build_road") {
-            const { px, py } = axialToPixel(move.edge.x, move.edge.y);
-            const eIdx = EDGE_Z_TO_IDX[move.edge.z] ?? move.edge.z;
-            const pt1 = hexVertex(px, py, eIdx);
-            const pt2 = hexVertex(px, py, (eIdx + 1) % 6);
+          const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
+          const size = 40;
+          const bType = move.type === "upgrade_city" ? "city" : "settlement";
+          img.setAttribute("href", `./data/images/${bType}_${pColor}.svg`);
+          img.setAttribute("x", pt.x - size / 2);
+          img.setAttribute("y", pt.y - size / 2);
+          img.setAttribute("width", size);
+          img.setAttribute("height", size);
+          img.style.filter = "drop-shadow(0px 0px 4px #fff)";
+          hlGroup.appendChild(img);
+        } else if (move.type === "build_road") {
+          const { px, py } = axialToPixel(move.edge.x, move.edge.y);
+          const eIdx = EDGE_Z_TO_IDX[move.edge.z] ?? move.edge.z;
+          const pt1 = hexVertex(px, py, eIdx);
+          const pt2 = hexVertex(px, py, (eIdx + 1) % 6);
 
-            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            line.setAttribute("x1", pt1.x);
-            line.setAttribute("y1", pt1.y);
-            line.setAttribute("x2", pt2.x);
-            line.setAttribute("y2", pt2.y);
-            line.setAttribute("stroke", pColor);
-            line.setAttribute("stroke-width", "8");
-            line.setAttribute("stroke-linecap", "round");
-            line.style.filter = "drop-shadow(0px 0px 4px #fff)";
-            hlGroup.appendChild(line);
-          }
+          const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          line.setAttribute("x1", pt1.x);
+          line.setAttribute("y1", pt1.y);
+          line.setAttribute("x2", pt2.x);
+          line.setAttribute("y2", pt2.y);
+          line.setAttribute("stroke", pColor);
+          line.setAttribute("stroke-width", "8");
+          line.setAttribute("stroke-linecap", "round");
+          line.style.filter = "drop-shadow(0px 0px 4px #fff)";
+          hlGroup.appendChild(line);
+        }
 
-          if (hlGroup.childNodes.length > 0) {
-            document.getElementById("catanBoard").appendChild(hlGroup);
-          }
-        });
-
-        moveDiv.addEventListener("mousemove", positionTooltip);
-
-        moveDiv.addEventListener("mouseleave", () => {
-          hideTooltip();
-          const hl = document.getElementById("predictionHighlight");
-          if (hl) hl.remove();
-        });
-
-        predictContainer.appendChild(moveDiv);
+        if (hlGroup.childNodes.length > 0) {
+          document.getElementById("catanBoard").appendChild(hlGroup);
+        }
       });
+
+      moveDiv.addEventListener("mousemove", positionTooltip);
+
+      moveDiv.addEventListener("mouseleave", () => {
+        hideTooltip();
+        const hl = document.getElementById("predictionHighlight");
+        if (hl) hl.remove();
+      });
+
+      predictContainer.appendChild(moveDiv);
+    });
   };
 
   // Re-run prediction whenever the turn changes.
@@ -4766,13 +4766,13 @@ function pgClickCorner(cornerKey) {
     if (!player) return;
 
     // FIX: Check building limits BEFORE resources
-    if (player.settlementsLeft <= 0) { 
-      pgStatus("Already used the maximum number of settlements (5)", "warn"); 
-      return; 
+    if (player.settlementsLeft <= 0) {
+      pgStatus("Already used the maximum number of settlements (5)", "warn");
+      return;
     }
-    if (!pgHasResources(player, PG_BUILD_COSTS.settlement)) { 
-      pgStatus("Not enough resources for a settlement.", "warn"); 
-      return; 
+    if (!pgHasResources(player, PG_BUILD_COSTS.settlement)) {
+      pgStatus("Not enough resources for a settlement.", "warn");
+      return;
     }
 
     pgPushHistory("build-settlement");
@@ -4782,7 +4782,7 @@ function pgClickCorner(cornerKey) {
     player.settlementsLeft -= 1;
     player.vp += 1;
     pgLogEvent({ type: "buildingPurchased", player: playerId, building: "settlement", count: 1 });
-    pgRecomputeAchievements(); 
+    pgRecomputeAchievements();
     pgRenderAll();
   }
 }
@@ -4820,9 +4820,9 @@ function pgClickEdge(edgeKey) {
       const playerId = pg.pendingRoadBuilding.playerId;
       const player = pg.players.find(p => p.id === playerId);
       if (!player) return;
-      if (player.roadsLeft <= 0) { 
-        pgStatus("Already used the maximum number of roads (15)", "warn"); 
-        return; 
+      if (player.roadsLeft <= 0) {
+        pgStatus("Already used the maximum number of roads (15)", "warn");
+        return;
       }
       pgPushHistory("road-building-place");
       const edge = pg.mapState.tileEdgeStates[edgeKey];
@@ -4845,13 +4845,13 @@ function pgClickEdge(edgeKey) {
     if (!player) return;
 
     // FIX: Check building limits BEFORE resources
-    if (player.roadsLeft <= 0) { 
-      pgStatus("Already used the maximum number of roads (15)", "warn"); 
-      return; 
+    if (player.roadsLeft <= 0) {
+      pgStatus("Already used the maximum number of roads (15)", "warn");
+      return;
     }
-    if (!pgHasResources(player, PG_BUILD_COSTS.road)) { 
-      pgStatus("Not enough resources for a road.", "warn"); 
-      return; 
+    if (!pgHasResources(player, PG_BUILD_COSTS.road)) {
+      pgStatus("Not enough resources for a road.", "warn");
+      return;
     }
 
     pgPushHistory("build-road");
@@ -5042,7 +5042,7 @@ function pgStealFrom(thiefId, victimId, resourceName, anchorEvent) {
   const thief = pg.players.find(p => p.id === thiefId);
   const victim = pg.players.find(p => p.id === victimId);
   if (!thief || !victim) return;
-  
+
   // If no resource specified, show picker
   if (!resourceName) {
     const victimResources = victim.resources || {};
@@ -5071,7 +5071,7 @@ function pgStealFrom(thiefId, victimId, resourceName, anchorEvent) {
     });
     return;
   }
-  
+
   // Execute the steal with the chosen resource
   if (!victim.resources[resourceName] || victim.resources[resourceName] <= 0) {
     pgStatus(`${victim.name} doesn't have any ${resourceName} to steal.`, "warn");
@@ -6051,7 +6051,7 @@ function pgRandomMove() {
           (m.type === "buy_dev_card" && pgHasResources(player, PG_BUILD_COSTS.devcard) && pg.bankDevCards > 0);
         if (affordable && m.score > bestSimScore) { bestSimScore = m.score; bestSimMove = m; }
         if (!affordable && !bestSimMoveUnaffordable &&
-            (m.type === "build_settlement" || m.type === "upgrade_city" || m.type === "build_road")) {
+          (m.type === "build_settlement" || m.type === "upgrade_city" || m.type === "build_road")) {
           // First unaffordable build candidate is the one most worth trading for.
           bestSimMoveUnaffordable = m;
         }
@@ -6063,7 +6063,7 @@ function pgRandomMove() {
   // Dev scores are roughly comparable to simulate() scores within a small factor;
   // we apply a 0.6x scaling to be conservative.
   const playDev = bestDevPlay && bestDevScore !== -Infinity &&
-                  bestDevScore * 0.6 > Math.max(0, bestSimScore);
+    bestDevScore * 0.6 > Math.max(0, bestSimScore);
 
   if (playDev) {
     choice = { type: "playDev", card: bestDevPlay };
@@ -6076,8 +6076,8 @@ function pgRandomMove() {
     // (c) Try bank/port trades to afford the unaffordable target.
     const targetType = bestSimMoveUnaffordable.type;
     const costName = targetType === "build_settlement" ? "settlement"
-                   : targetType === "upgrade_city" ? "city"
-                   : targetType === "build_road" ? "road" : null;
+      : targetType === "upgrade_city" ? "city"
+        : targetType === "build_road" ? "road" : null;
     if (costName) {
       const cost = PG_BUILD_COSTS[costName];
       const bankPlan = pgFindBankTradesToAfford(player, cost);
@@ -6712,14 +6712,14 @@ function pgBuildSimulateState() {
 
 // [label, explanation, sign, default weight] — weights mirror sample_weight in calculate_heuristric.
 const PG_HEURISTIC_INFO = {
-  income:     ["Income",       "Expected pips per roll, summed over resources. Cities count double.", "+", 5.0],
-  variety:    ["Variety",      "Distinct resources you produce. Diversified production needs fewer trades.", "+", 2.0],
-  expansion:  ["Expansion",    "Total pip-probability still available at unoccupied corners.", "+", 3.5],
-  devCard:    ["Dev-card rate","Bottleneck of sheep/wheat/ore income (min of the three).", "+", 2.5],
-  vp:         ["Victory pts",  "Current VP. Tuned up — cities and VP cards dominate win rate.", "+", 3.0],
-  robberRisk: ["Robber risk",  "Expected discards on a 7 when over the 7-card hand limit.", "−", 2.0],
-  roads:      ["Roads",        "L² where L is your longest contiguous road. Tracks Longest Road (+2 VP at L≥5).", "+", 1.5],
-  army:       ["Army",         "min(K,3)² where K = knights played. Clipped at 3: data shows K>3 doesn't help win.", "+", 3.0],
+  income: ["Income", "Expected pips per roll, summed over resources. Cities count double.", "+", 5.0],
+  variety: ["Variety", "Distinct resources you produce. Diversified production needs fewer trades.", "+", 2.0],
+  expansion: ["Expansion", "Total pip-probability still available at unoccupied corners.", "+", 3.5],
+  devCard: ["Dev-card rate", "Bottleneck of sheep/wheat/ore income (min of the three).", "+", 2.5],
+  vp: ["Victory pts", "Current VP. Tuned up — cities and VP cards dominate win rate.", "+", 3.0],
+  robberRisk: ["Robber risk", "Expected discards on a 7 when over the 7-card hand limit.", "−", 2.0],
+  roads: ["Roads", "L² where L is your longest contiguous road. Tracks Longest Road (+2 VP at L≥5).", "+", 1.5],
+  army: ["Army", "min(K,3)² where K = knights played. Clipped at 3: data shows K>3 doesn't help win.", "+", 3.0],
 };
 
 function pgMoveDesc(m) {
@@ -7099,7 +7099,7 @@ async function pgInit() {
     pg.phase = "setup";
     pg.players = [];
     pg.turnOrder = [];
-    pg.mapState = null; 
+    pg.mapState = null;
     pg.settlements = {};
     pg.roads = {};
     pg.bank = { 1: 19, 2: 19, 3: 19, 4: 19, 5: 19 };
@@ -7185,3 +7185,24 @@ function pgInitSidebarSync() {
   }
   window.addEventListener("resize", sync);
 }
+
+const aboutBtn = document.getElementById('aboutBtn');
+const aboutOverlay = document.getElementById('aboutOverlay');
+const closeAboutBtn = document.getElementById('closeAboutBtn');
+
+// Open Overlay
+aboutBtn.addEventListener('click', () => {
+  aboutOverlay.style.display = 'flex';
+});
+
+// Close Overlay
+closeAboutBtn.addEventListener('click', () => {
+  aboutOverlay.style.display = 'none';
+});
+
+// Close if clicking outside the modal box
+aboutOverlay.addEventListener('click', (e) => {
+  if (e.target === aboutOverlay) {
+    aboutOverlay.style.display = 'none';
+  }
+});
