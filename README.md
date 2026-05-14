@@ -43,6 +43,7 @@ Andy Diep:
 - Planned the distribution of tasks amongst the group
 - Created and documented the skeleton code
 - Reformatted the JSON Colonist game data files to be more readable
+- Performed analysis of the JSON Colonist game data files to understand the enums and how information was stored
 - Created a Catan board visualization to show hexes, ports, and hex/vertex/edge coordinates for debugging purposes
 - Integrated public Colonist assets
 - Devised idea for dedicated Analytics and Playground tabs
